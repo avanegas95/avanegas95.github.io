@@ -1,0 +1,31 @@
+/*Style for index.html page*/
+body{
+	background-color: lightblue;
+	margin:0;
+}
+
+h1{
+	background-color: #128CDE;
+	margin:0;
+}
+
+#nav_bar{
+	list-style: none;
+	overflow:hidden;
+	margin: 0;
+	padding: 0;
+}
+
+#nav_bar li{
+	display: inline;
+	text-align: center;
+	padding-right: 30px;
+}
+li a{
+	text-decoration: none;
+}
+
+#nav_bar a:hover{
+	background-color: gray;
+
+}
