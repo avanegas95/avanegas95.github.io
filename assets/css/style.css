@@ -1,14 +1,20 @@
 /*Style for index.html page*/
-@import "";
+@import "{{ site.theme}}";
 
 body{
-	background-color: lightblue;
+	background-color: #111213ff;
+	margin:0;
+	font-family: Arial, Helvetica, sans-serif;
+} 
+
+h1{
+	background-color: #212224ff;
 	margin:0;
 }
 
-h1{
-	background-color: #128CDE;
-	margin:0;
+p{
+	color: #eaebed;
+	font-size: xx-large;
 }
 
 #nav_bar{
@@ -25,9 +31,11 @@ h1{
 }
 li a{
 	text-decoration: none;
+	color:#eaebed;
 }
 
 #nav_bar a:hover{
-	background-color: gray;
+	background-color: #29b9f0ff;
 
 }
+
