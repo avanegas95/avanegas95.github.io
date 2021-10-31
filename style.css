@@ -1,4 +1,6 @@
 /*Style for index.html page*/
+@import"";
+
 body{
 	background-color: lightblue;
 	margin:0;
