@@ -1,27 +1,33 @@
 /*Style for index.html page*/
 @import "{{ site.theme}}";
 
+/* Variables */
+:root {
+	--text-color: #eaebed;
+	--accent-color: #212224ff;
+	--main-color: #111213ff;
+	--hover-color:#29b9f0ff;
+}
+
 body{
-	background-color: #111213ff;
-	margin:0;
+	background-color: var(--main-color);
 	font-family: Arial, Helvetica, sans-serif;
+	margin: 0px;
 } 
 
 h1{
-	background-color: #212224ff;
+	background-color: var(--accent-color);
 	margin:0;
-}
-
-p{
-	color: #eaebed;
-	font-size: xx-large;
+	padding-top: 1px;
+	padding-bottom: 1px;
 }
 
 #nav_bar{
 	list-style: none;
 	overflow:hidden;
-	margin: 0;
+	margin: 10px;
 	padding: 0;
+
 }
 
 #nav_bar li{
@@ -31,11 +37,17 @@ p{
 }
 li a{
 	text-decoration: none;
-	color:#eaebed;
+	color:var(--text-color);
+	font-size: 28px;
 }
 
 #nav_bar a:hover{
-	background-color: #29b9f0ff;
-
+	background-color: var(--hover-color);
 }
 
+h2{
+	color: var(--text-color);
+	font-size: x-large;
+	margin: 10px;
+	font-weight: lighter;
+}
