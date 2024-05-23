@@ -1,11 +1,12 @@
 /* Define CSS variables for light and dark modes */
 :root {
-    --background-color: #e0f0ff;
-    --text-color: #333;
-    --header-background: #6495ed;
-    --nav-background: #4169e1;
-    --footer-background: #6495ed;
-    --nav-hover-background: #27408b;
+    --background-color: #094074;
+    --text-color: #fbfbfb;
+    --header-background: #3C6997;
+    --nav-background: #B0DAF1;
+    --footer-background: #B0DAF1;
+    --nav-hover-background: white;
+    --bar-text-color: black;
 }
 
 /* Dark mode styles */
@@ -74,10 +75,10 @@ nav {
 }
 
 nav a {
-    color: white;
+    color: var(--bar-text-color);
     padding: 0.5em 1em;
     text-decoration: none;
-    font-weight: bold;
+    font-weight: 600;
     position: relative;
     overflow: hidden;
 }
@@ -89,13 +90,13 @@ nav a::before {
     height: 2px;
     bottom: 0;
     left: -100%;
-    background-color: white;
+    background-color: black;
     transition: left 0.3s ease-in-out;
 }
 
 nav a:hover::before {
     left: 0;
-    background-color: var(--nav-hover-background);
+    background-color: black;
 }
 
 .container {
@@ -143,7 +144,7 @@ footer {
     text-align: center;
     padding: 1em 0;
     background-color: var(--footer-background);
-    color: white;
+    color: var(--bar-text-color);
     width: 100%;
     position: fixed;
     bottom: 0;
