@@ -14,7 +14,6 @@ body {
     min-height: 100vh;
 }
 
-
 header {
     background-color: #6495ed;
     width: 100%;
@@ -28,6 +27,7 @@ header h1 {
     color: white;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Add a subtle shadow effect */
     animation: pop 1s ease-in-out;
+
 }
 
 nav {
