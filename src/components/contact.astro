@@ -1,85 +1,92 @@
-<section id="contact" class="py-24">
-  <div class="max-w-xl mx-auto text-center">
-    <p class="text-[var(--sec)] font-mono mb-2">03. What's Next?</p>
-    <h2 class="text-4xl md:text-5xl font-bold text-[var(--white)] mb-4">Get In Touch</h2>
-    <p class="text-[var(--white-icon)] mb-12">
-      I'm currently looking for new opportunities. Whether you have a question or just want to say hi, I'll try my best to get back to you!
-    </p>
-
-    <form
-      id="contact-form"
-      action="https://formspree.io/f/mnnjznkj"
-      method="POST"
-      class="space-y-6"
-    >
-      <div class="flex flex-col gap-6">
-        <input
-          type="text"
-          name="from_name"
-          placeholder="Name"
-          required
-          class="bg-[#112240] text-[var(--white)] px-4 py-3 rounded border border-[var(--white-icon-tr)] focus:outline-none focus:border-[var(--sec)] transition-colors"
-        />
-        <input
-          type="email"
-          name="reply_to"
-          placeholder="Email"
-          required
-          class="bg-[#112240] text-[var(--white)] px-4 py-3 rounded border border-[var(--white-icon-tr)] focus:outline-none focus:border-[var(--sec)] transition-colors"
-        />
-        <textarea
-          name="message"
-          placeholder="Message"
-          rows="6"
-          required
-          class="bg-[#112240] text-[var(--white)] px-4 py-3 rounded border border-[var(--white-icon-tr)] focus:outline-none focus:border-[var(--sec)] transition-colors resize-none"
-        ></textarea>
+<section id="contact" class="w-full py-12 border-t border-[#ffffff10]">
+  <div class="max-w-5xl mx-auto">
+    <h2 class="text-lg text-[var(--sec)] mb-2 shiny-sec">Let's talk</h2>
+    <h3 class="text-4xl md:text-5xl font-medium text-[var(--white)] mb-6">
+      Contact
+    </h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div class="text-[var(--white-icon)]">
+        <p class="mb-4">
+          Have any questions or want to know more about me? Feel free to reach out.
+        </p>
+        <div class="flex items-center gap-2">
+          <span>Location:</span>
+          <span class="text-[var(--white)]">Boston, MA</span>
+        </div>
       </div>
 
-      <button
-        type="submit"
-        class="px-8 py-4 border border-[var(--sec)] text-[var(--sec)] rounded hover:bg-[var(--white-icon-tr)] transition-colors duration-300"
-      >
-        Say Hello
-      </button>
-    </form>
-
-    <div
-      id="form-message"
-      class="hidden justify-center items-center mt-8 text-[var(--sec)] text-lg"
-    >
-      Thanks for reaching out! I'll get back to you soon.
+      <div>
+        <form
+          id="contact-form"
+          action="https://formspree.io/f/mnnpzgay"
+          method="POST"
+          class="flex flex-col gap-4"
+        >
+          <input
+            type="text"
+            name="from_name"
+            placeholder="Name"
+            required
+            class="px-4 py-2 bg-[#1414149c] text-[var(--white)] border border-[var(--white-icon-tr)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--sec)]"
+          />
+          <input
+            type="email"
+            name="reply_to"
+            placeholder="Email"
+            required
+            class="px-4 py-2 bg-[#1414149c] text-[var(--white)] border border-[var(--white-icon-tr)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--sec)]"
+          />
+          <textarea
+            name="message"
+            placeholder="Message"
+            rows="6"
+            required
+            class="px-4 py-2 bg-[#1414149c] text-[var(--white)] border border-[var(--white-icon-tr)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--sec)] resize-none"
+          ></textarea>
+          <button
+            type="submit"
+            class="px-4 py-2 bg-[var(--white-icon-tr)] text-[var(--white)] rounded-lg opacity-60 transition-opacity border border-[var(--white-icon-tr)] hover:opacity-100 hover:bg-[var(--white-icon-tr)]"
+          >
+            Submit
+          </button>
+        </form>
+        <div
+          id="form-message"
+          class="hidden justify-center items-center mt-4 text-[var(--white)] text-lg"
+        >
+          ✅ Thank you for your message!
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
-<script>
+<script type="module" is:inline>
   const form = document.getElementById("contact-form");
   const formMessage = document.getElementById("form-message");
 
-  form?.addEventListener("submit", async (e) => {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const formData = new FormData(form as HTMLFormElement);
+    const formData = new FormData(form);
 
     try {
-      const response = await fetch((form as HTMLFormElement).action, {
+      const response = await fetch(form.action, {
         method: "POST",
         body: formData,
         headers: { Accept: "application/json" },
       });
       if (response.ok) {
-        (form as HTMLFormElement).reset();
+        form.reset();
         form.style.display = "none";
-        formMessage?.classList.remove("hidden");
-        formMessage?.classList.add("flex");
+        formMessage.classList.remove("hidden");
       } else {
         const data = await response.json();
         console.error("Error response:", data);
-        alert("There was a problem sending your message. Please try again.");
+        alert("There was a problem sending your message.");
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("There was a problem sending your message. Please try again.");
+      alert("There was a problem sending your message.");
     }
   });
 </script>
