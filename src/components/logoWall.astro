@@ -1,15 +1,15 @@
 ---
 const technologies = [
-  "astro",
-  "vue",
-  "react",
-  "typeScript",
-  "tailwindcss",
+  "python",
+  "selenium",
   "next",
+  "appium",
   "nodejs",
   "HTML5",
   "CSS3",
-  "javaScript",
+  "astro",
+  "react",
+  "tailwindcss",
   "git",
   "supabase",
   "mysql",
@@ -17,19 +17,19 @@ const technologies = [
 ];
 ---
 
-<div class="relative overflow-x-hidden py-8">
+<div class="relative overflow-x-hidden py-8 max-w-6xl mx-auto">
   <div
     class="pointer-events-none absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[var(--background)] to-transparent z-20"
-  >
+  > 
   </div>
   <div
     class="pointer-events-none absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-[var(--background)] to-transparent z-20"
   >
   </div>
 
-  <div class="flex animate-scroll hover:animate-paused gap-12 md:gap-20 w-max">
+  <div class="flex animate-scroll hover:animate-paused gap-12 md:gap-20 max-w-7xl mx-auto">
     {
-      [...technologies, ...technologies, ...technologies].map((tech) => (
+      [...technologies, ...technologies].map((tech) => (
         <div class="flex items-center gap-2 group transition-all duration-300">
           <img
             src={`/svg/${tech}.svg`}
@@ -54,16 +54,16 @@ const technologies = [
       transform: translateX(0);
     }
     to {
-      transform: translateX(-50%);
+      transform: translateX(-50.33%);
     }
   }
   .animate-scroll {
-    animation: scroll 60s linear infinite;
+    animation: scroll 40s linear infinite;
   }
 
   @media (min-width: 768px) {
     .animate-scroll {
-      animation-duration: 50s;
+      animation-duration: 15s;
     }
   }
 </style>
