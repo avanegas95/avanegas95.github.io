@@ -3,65 +3,43 @@ interface NavItem {
   label: string;
   href: string;
   number: string;
+  icon?: string;
 }
 
 const navItems: NavItem[] = [
   {
     number: "",
-    label: "About Me",
+    label: "Home",
     href: "#home",
+    icon: '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>'
   },
   {
     number: "",
-    label: "Work",
+    label: "Projects",
     href: "#projects",
+    icon: '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" /></svg>'
   },
   {
     number: "",
     label: "Contact",
     href: "#contact",
+    icon: '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>'
   },
 ];
 ---
 
-<div class="sticky top-0 max-w-8xl mx-auto backdrop-blur">
+<!-- Desktop Navigation -->
+<div class="sticky top-0 max-w-8xl mx-auto backdrop-blur z-50 hidden md:block">
   <nav class="flex items-center justify-between py-4">
     <a href="#" class="text-[var(--sec)] font-bold text-2xl">AV</a>
    
-      <ul class="flex space-x-8">
-        {
-          navItems.map((item) => (
-            <li>
-              <a
-                href={item.href}
-                class="group flex items-center text-sm text-[var(--white-icon)] hover:text-[var(--sec)] transition-colors duration-300"
-              >
-                <span class="text-[var(--sec)] mr-1">{item.number}</span>
-                {item.label}
-              </a>
-            </li>
-          ))
-        }
-      </ul>
-    <button
-      id="mobile-menu-button"
-      class="md:hidden text-[var(--white-icon)] hover:text-[var(--sec)] transition-colors duration-300"
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-      </svg>
-    </button>
-  </nav>
-  
-  <!-- Mobile menu -->
-  <div id="mobile-menu" class="hidden md:hidden">
-    <ul class="py-4 space-y-4">
+    <ul class="flex space-x-8">
       {
         navItems.map((item) => (
           <li>
             <a
               href={item.href}
-              class="block text-sm text-[var(--white-icon)] hover:text-[var(--sec)] transition-colors duration-300"
+              class="group flex items-center text-sm text-[var(--white-icon)] hover:text-[var(--sec)] transition-colors duration-300"
             >
               <span class="text-[var(--sec)] mr-1">{item.number}</span>
               {item.label}
@@ -70,32 +48,27 @@ const navItems: NavItem[] = [
         ))
       }
     </ul>
-  </div>
+  </nav>
 </div>
 
+<!-- Mobile Navigation -->
+<nav class="fixed bottom-0 left-0 right-0 bg-[--background] border-t border-[#ffffff10] backdrop-blur-lg z-50 md:hidden">
+  <div class="flex justify-around items-center py-2 px-4">
+    {
+      navItems.map((item) => (
+        <a
+          href={item.href}
+          class="flex flex-col items-center gap-1 text-[var(--white-icon)] hover:text-[var(--sec)] transition-colors duration-300 py-2"
+        >
+          <div set:html={item.icon} />
+          <span class="text-xs">{item.label}</span>
+        </a>
+      ))
+    }
+  </div>
+</nav>
+
 <script>
-  const mobileMenuButton = document.getElementById('mobile-menu-button');
-  const mobileMenu = document.getElementById('mobile-menu');
-
-  mobileMenuButton?.addEventListener('click', () => {
-    mobileMenu?.classList.toggle('hidden');
-  });
-
-  document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
-    anchor.addEventListener("click", function (e) {
-      e.preventDefault();
-      const target = e.currentTarget as HTMLAnchorElement;
-      const targetId = target.getAttribute("href")?.substring(1) || "";
-      const targetElement = document.getElementById(targetId);
-      if (targetElement) {
-        targetElement.scrollIntoView({
-          behavior: "smooth",
-        });
-        mobileMenu?.classList.add('hidden');
-      }
-    });
-  });
-
   document.addEventListener("DOMContentLoaded", () => {
     const sections = document.querySelectorAll("section[id]");
     const navLinks = document.querySelectorAll("nav a[href^='#']");
@@ -108,19 +81,38 @@ const navItems: NavItem[] = [
     const observerCallback = (entries) => {
       entries.forEach((entry) => {
         const id = entry.target.getAttribute("id");
-        const activeLink = document.querySelector(`nav a[href="#${id}"]`);
+        const activeLinks = document.querySelectorAll(`nav a[href="#${id}"]`);
         
         if (entry.isIntersecting && entry.intersectionRatio >= 0.2) {
-          navLinks.forEach((link) => link.classList.remove("active"));
-          if (activeLink) {
-            activeLink.classList.add("active");
-          }
+          navLinks.forEach((link) => {
+            link.classList.remove("active");
+            link.classList.add("inactive");
+          });
+          activeLinks.forEach((link) => {
+            link.classList.add("active");
+            link.classList.remove("inactive");
+          });
         }
       });
     };
 
     const observer = new IntersectionObserver(observerCallback, observerOptions);
     sections.forEach((section) => observer.observe(section));
+
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+      anchor.addEventListener("click", function (e) {
+        e.preventDefault();
+        const target = e.currentTarget as HTMLAnchorElement;
+        const targetId = target.getAttribute("href")?.substring(1) || "";
+        const targetElement = document.getElementById(targetId);
+        if (targetElement) {
+          targetElement.scrollIntoView({
+            behavior: "smooth",
+          });
+        }
+      });
+    });
   });
 </script>
 
@@ -129,11 +121,11 @@ const navItems: NavItem[] = [
     color: var(--sec);
   }
   
-  nav a:hover {
-    color: var(--sec);
+  nav a.inactive {
+    color: var(--white-icon);
   }
   
-  nav a.active:hover {
+  nav a:hover {
     color: var(--sec);
   }
 </style>

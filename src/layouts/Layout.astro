@@ -11,7 +11,7 @@ const { title } = Astro.props;
   <head>
     <meta charset="UTF-8" />
     <meta name="description" content="Anderson Vanegas - SQA Engineer" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
     <link rel="icon" type="image/png" href="../src/assets/images/favicon.png" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
@@ -51,7 +51,7 @@ const { title } = Astro.props;
       />
     </noscript>
   </head>
-  <body class="bg-[--background] px-6 sm:px-12 md:px-24 lg:px-32 xl:px-48">
+  <body class="bg-[--background] px-4 sm:px-6 md:px-8 lg:px-12 xl:px-24 pb-20 md:pb-0">
     <slot />
   </body>
 </html>
@@ -79,6 +79,19 @@ const { title } = Astro.props;
     box-sizing: border-box;
     padding: 0;
     margin: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    background: var(--background);
+    color-scheme: dark;
+    overflow-x: hidden;
+  }
+
+  body {
+    min-height: 100vh;
+    overflow-x: hidden;
   }
 
   *::selection {
@@ -88,7 +101,7 @@ const { title } = Astro.props;
 
   /* Scrollbar styles */
   ::-webkit-scrollbar {
-    width: 12px;
+    width: 8px;
   }
 
   ::-webkit-scrollbar-track {
@@ -97,7 +110,7 @@ const { title } = Astro.props;
 
   ::-webkit-scrollbar-thumb {
     background: var(--white-icon);
-    border: 3px solid var(--background);
+    border: 2px solid var(--background);
     border-radius: 10px;
   }
 
@@ -111,12 +124,22 @@ const { title } = Astro.props;
     scrollbar-color: var(--white-icon) var(--background);
   }
 
-  html {
-    background: var(--background);
-    color-scheme: dark;
-  }
-
   code {
     font-family: "SF Mono", "Fira Code", "Fira Mono", "Roboto Mono", monospace;
+  }
+
+  /* Prevent text size adjustment on orientation change */
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  /* Improve touch targets */
+  @media (max-width: 768px) {
+    button, 
+    [role="button"],
+    a {
+      min-height: 44px;
+      min-width: 44px;
+    }
   }
 </style>
