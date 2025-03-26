@@ -2,58 +2,86 @@
 interface NavItem {
   label: string;
   href: string;
-  icon: string;
+  number: string;
 }
 
 const navItems: NavItem[] = [
   {
-    label: "Home",
+    number: "01.",
+    label: "About",
     href: "#home",
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M21 20C21 20.5523 20.5523 21 20 21H4C3.44772 21 3 20.5523 3 20V9.48907C3 9.18048 3.14247 8.88917 3.38606 8.69972L11.3861 2.47749C11.7472 2.19663 12.2528 2.19663 12.6139 2.47749L20.6139 8.69972C20.8575 8.88917 21 9.18048 21 9.48907V20ZM19 19V9.97815L12 4.53371L5 9.97815V19H19Z"></path></svg>`,
   },
   {
-    label: "Projects",
+    number: "02.",
+    label: "Work",
     href: "#projects",
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M4 5V19H20V7H11.5858L9.58579 5H4ZM12.4142 5H21C21.5523 5 22 5.44772 22 6V20C22 20.5523 21.5523 21 21 21H3C2.44772 21 2 20.5523 2 20V4C2 3.44772 2.44772 3 3 3H10.4142L12.4142 5Z"></path></svg>`,
   },
   {
+    number: "03.",
     label: "Contact",
     href: "#contact",
-    icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M21.7267 2.95694L16.2734 22.0432C16.1225 22.5716 15.7979 22.5956 15.5563 22.1126L11 13L1.9229 9.36919C1.41322 9.16532 1.41953 8.86022 1.95695 8.68108L21.0432 2.31901C21.5716 2.14285 21.8747 2.43866 21.7267 2.95694ZM19.0353 5.09647L6.81221 9.17085L12.4488 11.4255L15.4895 17.5068L19.0353 5.09647Z"></path></svg>`,
   },
 ];
 ---
 
-<div class="flex justify-center w-full">
-  <nav
-    class="fixed flex left-0 right-0 z-[100] bg-[#1414149c] border border-1 border-[var(--white-icon-tr)] backdrop-blur-xl transition-all md:top-0 md:bottom-auto bottom-0 md:w-[33rem] rounded-t-2xl md:rounded-full md:mt-6 md:justify-self-center"
-  >
-    <div class="container mx-auto flex justify-center items-center p-3">
-      <ul
-        class="flex w-full justify-between md:space-x-6 md:justify-center md:gap-12 gap-6"
-      >
+<div class="fixed top-0 z-40 w-full px-6 sm:px-12 md:px-24 lg:px-32 xl:px-48 backdrop-blur">
+  <nav class="flex items-center justify-between py-4">
+    <a href="#" class="text-[var(--sec)] font-bold text-2xl">AV</a>
+    <div class="hidden md:block">
+      <ul class="flex space-x-8">
         {
           navItems.map((item) => (
-            <li class="flex-1 md:flex-none">
+            <li>
               <a
                 href={item.href}
-                class="flex flex-col items-center gap-1 text-[var(--white-icon)] transition-colors text-xs md:text-base"
+                class="group flex items-center text-sm text-[var(--white-icon)] hover:text-[var(--sec)] transition-colors duration-300"
               >
-                <span class="md:hidden flex items-center justify-center w-6 h-6">
-                  <fragment set:html={item.icon} />
-                </span>
-                <span class="hidden md:inline-block">{item.label}</span>
-                <span class="md:hidden">{item.label}</span>
+                <span class="text-[var(--sec)] mr-1">{item.number}</span>
+                {item.label}
               </a>
             </li>
           ))
         }
       </ul>
     </div>
+    <button
+      id="mobile-menu-button"
+      class="md:hidden text-[var(--white-icon)] hover:text-[var(--sec)] transition-colors duration-300"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
   </nav>
+  
+  <!-- Mobile menu -->
+  <div id="mobile-menu" class="hidden md:hidden">
+    <ul class="py-4 space-y-4">
+      {
+        navItems.map((item) => (
+          <li>
+            <a
+              href={item.href}
+              class="block text-sm text-[var(--white-icon)] hover:text-[var(--sec)] transition-colors duration-300"
+            >
+              <span class="text-[var(--sec)] mr-1">{item.number}</span>
+              {item.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
 </div>
 
 <script>
+  const mobileMenuButton = document.getElementById('mobile-menu-button');
+  const mobileMenu = document.getElementById('mobile-menu');
+
+  mobileMenuButton?.addEventListener('click', () => {
+    mobileMenu?.classList.toggle('hidden');
+  });
+
   document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     anchor.addEventListener("click", function (e) {
       e.preventDefault();
@@ -64,6 +92,7 @@ const navItems: NavItem[] = [
         targetElement.scrollIntoView({
           behavior: "smooth",
         });
+        mobileMenu?.classList.add('hidden');
       }
     });
   });
@@ -86,22 +115,13 @@ const navItems: NavItem[] = [
       });
     };
 
-    const observer = new IntersectionObserver(
-      observerCallback,
-      observerOptions
-    );
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
     sections.forEach((section) => observer.observe(section));
   });
 </script>
 
 <style>
-  @media (max-width: 767px) {
-    body {
-      padding-bottom: 70px;
-    }
-  }
-
   nav a.active {
-    color: white !important;
+    color: var(--sec) !important;
   }
 </style>
