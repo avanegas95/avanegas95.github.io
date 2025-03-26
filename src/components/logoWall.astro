@@ -29,17 +29,17 @@ const technologies = [
 
   <div class="flex animate-scroll hover:animate-paused gap-12 md:gap-20 max-w-7xl mx-auto">
     {
-      [...technologies, ...technologies].map((tech) => (
-        <div class="flex items-center gap-2 group transition-all duration-300">
+      [...technologies, ...technologies].map((tech, index) => (
+        <div class="flex items-center gap-2 group transition-all duration-300 hover:scale-110">
           <img
             src={`/svg/${tech}.svg`}
             alt={tech}
-            class="h-7 w-auto object-contain transition-transform group-hover:scale-110 opacity-60"
+            class="h-7 w-auto object-contain transition-all duration-300 group-hover:scale-110 opacity-60 group-hover:opacity-100"
             width="30"
             height="30"
             loading="lazy"
           />
-          <span class="text-lg font-medium text-[var(--white-icon)]">
+          <span class="text-lg font-medium text-[var(--white-icon)] transition-colors duration-300 group-hover:text-[var(--white)]">
             {tech.charAt(0).toUpperCase() + tech.slice(1)}
           </span>
         </div>
@@ -57,13 +57,39 @@ const technologies = [
       transform: translateX(-50.33%);
     }
   }
+
   .animate-scroll {
     animation: scroll 40s linear infinite;
+    will-change: transform;
+  }
+
+  .animate-paused {
+    animation-play-state: paused;
   }
 
   @media (min-width: 768px) {
     .animate-scroll {
       animation-duration: 15s;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-scroll {
+      animation: none;
+      transform: none;
+    }
+  }
+
+  /* Improve performance */
+  .group {
+    will-change: transform;
+    backface-visibility: hidden;
+  }
+
+  /* Add smooth scrolling for touch devices */
+  @media (hover: none) and (pointer: coarse) {
+    .animate-scroll {
+      animation-duration: 60s;
     }
   }
 </style>

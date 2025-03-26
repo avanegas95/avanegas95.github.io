@@ -1,60 +1,78 @@
-<section id="contact" class="w-full py-8 md:py-12 border-t border-[#ffffff10]">
-  <div class="max-w-5xl mx-auto">
-    <h2 class="text-base md:text-lg text-[var(--sec)] mb-2 shiny-sec">Let's talk</h2>
-    <h3 class="text-3xl sm:text-4xl md:text-5xl font-medium text-[var(--white)] mb-4 md:mb-6">
-      Contact
-    </h3>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-      <div class="text-[var(--white-icon)] text-sm md:text-base">
-        <p class="mb-4">
-          Have any questions or want to know more about me? Feel free to reach out.
-        </p>
-        <div class="flex items-center gap-2">
-          <span>Location:</span>
-          <span class="text-[var(--white)]">Boston, MA</span>
-        </div>
+<section id="contact" class="w-full py-8 md:py-12 border-t border-[#ffffff10] relative overflow-hidden">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="space-y-8 md:space-y-12">
+      <div class="space-y-4">
+        <h2 class="text-base md:text-lg text-[var(--sec)] mb-2 shiny-sec animate-fade-in">Let's talk</h2>
+        <h3 class="text-3xl sm:text-4xl md:text-5xl font-medium text-[var(--white)] mb-4 md:mb-6 animate-fade-in">
+          Contact
+        </h3>
       </div>
 
-      <div>
-        <form
-          id="contact-form"
-          action="https://formspree.io/f/mnnpzgay"
-          method="POST"
-          class="flex flex-col gap-3 md:gap-4"
-        >
-          <input
-            type="text"
-            name="from_name"
-            placeholder="Name"
-            required
-            class="px-3 md:px-4 py-2 bg-[#1414149c] text-[var(--white)] text-sm md:text-base border border-[var(--white-icon-tr)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--sec)]"
-          />
-          <input
-            type="email"
-            name="reply_to"
-            placeholder="Email"
-            required
-            class="px-3 md:px-4 py-2 bg-[#1414149c] text-[var(--white)] text-sm md:text-base border border-[var(--white-icon-tr)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--sec)]"
-          />
-          <textarea
-            name="message"
-            placeholder="Message"
-            rows="6"
-            required
-            class="px-3 md:px-4 py-2 bg-[#1414149c] text-[var(--white)] text-sm md:text-base border border-[var(--white-icon-tr)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--sec)] resize-none"
-          ></textarea>
-          <button
-            type="submit"
-            class="px-4 py-2 bg-[var(--white-icon-tr)] text-[var(--white)] text-sm md:text-base rounded-lg opacity-60 transition-opacity border border-[var(--white-icon-tr)] hover:opacity-100 hover:bg-[var(--white-icon-tr)]"
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div class="text-[var(--white-icon)] text-sm md:text-base space-y-4 animate-fade-in">
+          <p>
+            Have any questions or want to know more about me? Feel free to reach out.
+          </p>
+          <div class="flex items-center gap-2">
+            <span>Location:</span>
+            <span class="text-[var(--white)]">Boston, MA</span>
+          </div>
+        </div>
+
+        <div class="animate-fade-in">
+          <form
+            id="contact-form"
+            action="https://formspree.io/f/mnnpzgay"
+            method="POST"
+            class="flex flex-col gap-3 md:gap-4"
           >
-            Submit
-          </button>
-        </form>
-        <div
-          id="form-message"
-          class="hidden justify-center items-center mt-4 text-[var(--white)] text-base md:text-lg"
-        >
-          ✅ Thank you for your message!
+            <div class="relative">
+              <input
+                type="text"
+                name="from_name"
+                placeholder="Name"
+                required
+                class="w-full px-3 md:px-4 py-2 bg-[#1414149c] text-[var(--white)] text-sm md:text-base border border-[var(--white-icon-tr)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--sec)] transition-all duration-300"
+              />
+              <div class="absolute inset-0 rounded-lg pointer-events-none transition-all duration-300 focus-within:ring-2 focus-within:ring-[var(--sec)]"></div>
+            </div>
+
+            <div class="relative">
+              <input
+                type="email"
+                name="reply_to"
+                placeholder="Email"
+                required
+                class="w-full px-3 md:px-4 py-2 bg-[#1414149c] text-[var(--white)] text-sm md:text-base border border-[var(--white-icon-tr)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--sec)] transition-all duration-300"
+              />
+              <div class="absolute inset-0 rounded-lg pointer-events-none transition-all duration-300 focus-within:ring-2 focus-within:ring-[var(--sec)]"></div>
+            </div>
+
+            <div class="relative">
+              <textarea
+                name="message"
+                placeholder="Message"
+                rows="6"
+                required
+                class="w-full px-3 md:px-4 py-2 bg-[#1414149c] text-[var(--white)] text-sm md:text-base border border-[var(--white-icon-tr)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--sec)] resize-none transition-all duration-300"
+              ></textarea>
+              <div class="absolute inset-0 rounded-lg pointer-events-none transition-all duration-300 focus-within:ring-2 focus-within:ring-[var(--sec)]"></div>
+            </div>
+
+            <button
+              type="submit"
+              class="px-4 py-2 bg-[var(--white-icon-tr)] text-[var(--white)] text-sm md:text-base rounded-lg opacity-60 transition-all duration-300 border border-[var(--white-icon-tr)] hover:opacity-100 hover:bg-[var(--white-icon-tr)] hover:scale-105"
+            >
+              Submit
+            </button>
+          </form>
+
+          <div
+            id="form-message"
+            class="hidden justify-center items-center mt-4 text-[var(--white)] text-base md:text-lg animate-fade-in"
+          >
+            ✅ Thank you for your message!
+          </div>
         </div>
       </div>
     </div>
@@ -68,13 +86,18 @@
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const formData = new FormData(form);
-
+    const submitButton = form.querySelector('button[type="submit"]');
+    
     try {
+      submitButton.disabled = true;
+      submitButton.textContent = "Sending...";
+      
       const response = await fetch(form.action, {
         method: "POST",
         body: formData,
         headers: { Accept: "application/json" },
       });
+
       if (response.ok) {
         form.reset();
         form.style.display = "none";
@@ -87,6 +110,57 @@
     } catch (error) {
       console.error("Error:", error);
       alert("There was a problem sending your message.");
+    } finally {
+      submitButton.disabled = false;
+      submitButton.textContent = "Submit";
     }
   });
 </script>
+
+<style>
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-out forwards;
+    opacity: 0;
+  }
+
+  .animate-fade-in:nth-child(1) { animation-delay: 0.1s; }
+  .animate-fade-in:nth-child(2) { animation-delay: 0.2s; }
+  .animate-fade-in:nth-child(3) { animation-delay: 0.3s; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-fade-in {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* Improve form focus states for better accessibility */
+  input:focus-visible,
+  textarea:focus-visible {
+    outline: none;
+    border-color: var(--sec);
+    box-shadow: 0 0 0 2px rgba(var(--sec), 0.2);
+  }
+
+  /* Add focus styles for keyboard navigation */
+  @media (pointer: coarse) {
+    input:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--sec);
+      box-shadow: 0 0 0 2px rgba(var(--sec), 0.2);
+    }
+  }
+</style>

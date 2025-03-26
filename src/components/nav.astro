@@ -29,9 +29,9 @@ const navItems: NavItem[] = [
 ---
 
 <!-- Desktop Navigation -->
-<div class="sticky top-0 max-w-8xl mx-auto backdrop-blur z-50 hidden md:block">
-  <nav class="flex items-center justify-between py-4">
-    <a href="#" class="text-[var(--sec)] font-bold text-2xl">AV</a>
+<div class="fixed top-0 left-1/2 transform -translate-x-1/2 w-full max-w-7xl mx-auto backdrop-blur-md z-50 hidden md:block">
+  <nav class="flex items-center justify-between py-4 px-4 md:px-6 lg:px-8">
+    <a href="#" class="text-[var(--sec)] font-bold text-2xl hover:opacity-80 transition-opacity duration-300">AV</a>
    
     <ul class="flex space-x-8">
       {
@@ -39,10 +39,11 @@ const navItems: NavItem[] = [
           <li>
             <a
               href={item.href}
-              class="group flex items-center text-sm text-[var(--white-icon)] hover:text-[var(--sec)] transition-colors duration-300"
+              class="group flex items-center text-sm text-[var(--white-icon)] hover:text-[var(--sec)] transition-all duration-300 relative"
             >
               <span class="text-[var(--sec)] mr-1">{item.number}</span>
               {item.label}
+              <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-[var(--sec)] transition-all duration-300 group-hover:w-full"></span>
             </a>
           </li>
         ))
@@ -52,16 +53,17 @@ const navItems: NavItem[] = [
 </div>
 
 <!-- Mobile Navigation -->
-<nav class="fixed bottom-0 left-0 right-0 bg-[--background] border-t border-[#ffffff10] backdrop-blur-lg z-50 md:hidden">
-  <div class="flex justify-around items-center py-2 px-4">
+<nav class="fixed bottom-0 left-0 right-0 bg-[--background] border-t border-[#ffffff10] backdrop-blur-md z-50 md:hidden">
+  <div class="flex justify-around items-center py-2 px-4 max-w-md mx-auto">
     {
       navItems.map((item) => (
         <a
           href={item.href}
-          class="flex flex-col items-center gap-1 text-[var(--white-icon)] hover:text-[var(--sec)] transition-colors duration-300 py-2"
+          class="flex flex-col items-center gap-1 text-[var(--white-icon)] hover:text-[var(--sec)] transition-all duration-300 py-2 relative group"
         >
-          <div set:html={item.icon} />
+          <div set:html={item.icon} class="transition-transform duration-300 group-hover:scale-110" />
           <span class="text-xs">{item.label}</span>
+          <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-[var(--sec)] transition-all duration-300 group-hover:w-full"></span>
         </a>
       ))
     }
@@ -99,7 +101,7 @@ const navItems: NavItem[] = [
     const observer = new IntersectionObserver(observerCallback, observerOptions);
     sections.forEach((section) => observer.observe(section));
 
-    // Smooth scroll
+    // Smooth scroll with fallback for older browsers
     document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
       anchor.addEventListener("click", function (e) {
         e.preventDefault();
@@ -107,9 +109,19 @@ const navItems: NavItem[] = [
         const targetId = target.getAttribute("href")?.substring(1) || "";
         const targetElement = document.getElementById(targetId);
         if (targetElement) {
-          targetElement.scrollIntoView({
-            behavior: "smooth",
-          });
+          if ('scrollBehavior' in document.documentElement.style) {
+            targetElement.scrollIntoView({
+              behavior: "smooth",
+            });
+          } else {
+            // Fallback for older browsers
+            const elementPosition = targetElement.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset;
+            window.scrollTo({
+              top: offsetPosition,
+              behavior: "smooth"
+            });
+          }
         }
       });
     });
@@ -127,5 +139,12 @@ const navItems: NavItem[] = [
   
   nav a:hover {
     color: var(--sec);
+  }
+
+  @supports (-webkit-backdrop-filter: none) or (backdrop-filter: none) {
+    .backdrop-blur-md {
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+    }
   }
 </style>

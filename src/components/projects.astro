@@ -25,64 +25,97 @@ const projects: Project[] = [
 ];
 ---
 
-<section id="projects" class="py-16 md:py-24">
-  <p class="text-[var(--sec)] font-mono mb-2">My work</p>
-  <h2 class="text-[var(--white)] text-4xl sm:text-5xl md:text-6xl font-bold mb-8 md:mb-12">Projects</h2>
+<section id="projects" class="py-16 md:py-24 relative overflow-hidden">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="space-y-8 md:space-y-12">
+      <div class="space-y-4">
+        <p class="text-[var(--sec)] font-mono mb-2 animate-fade-in">My work</p>
+        <h2 class="text-[var(--white)] text-4xl sm:text-5xl md:text-6xl font-bold mb-8 md:mb-12 animate-fade-in">Projects</h2>
+      </div>
 
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
-    {
-      projects.filter(p => p.featured).map((project) => (
-        <div class="group bg-[#0c0c0c] rounded-2xl md:rounded-3xl overflow-hidden max-w-2xl mx-auto">
-          <div class="relative aspect-video overflow-hidden">
-            <div class="absolute inset-0 bg-[#000000] bg-opacity-0 transition-opacity group-hover:bg-opacity-10 z-10"></div>
-            <Image
-              src={project.image}
-              alt={project.title}
-              class="w-full h-full object-cover"
-              width={800}
-              height={450}
-            />
-          </div>
-          <div class="p-4 md:p-6">
-            <h3 class="text-lg md:text-xl font-semibold text-[var(--white)] mb-2">{project.title}</h3>
-            <p class="text-[var(--white-icon)] text-xs md:text-sm mb-4">In Development</p>
-            <div class="flex gap-3">
-              <a 
-                href={project.github} 
-                target="_blank" 
-                class="p-1.5 md:p-2 rounded-lg bg-[#1414149c] text-[var(--white-icon)] hover:text-[var(--sec)] transition-colors"
-                aria-label="View on GitHub"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 md:w-5 md:h-5">
-                  <path d="M12.001 2C6.47598 2 2.00098 6.475 2.00098 12C2.00098 16.425 4.86348 20.1625 8.83848 21.4875C9.33848 21.575 9.52598 21.275 9.52598 21.0125C9.52598 20.775 9.51348 19.9875 9.51348 19.15C7.00098 19.6125 6.35098 18.5375 6.15098 17.975C6.03848 17.6875 5.55098 16.8 5.12598 16.5625C4.77598 16.375 4.27598 15.9125 5.11348 15.9C5.90098 15.8875 6.46348 16.625 6.65098 16.925C7.55098 18.4375 8.98848 18.0125 9.56348 17.75C9.65098 17.1 9.91348 16.6625 10.201 16.4125C7.97598 16.1625 5.65098 15.3 5.65098 11.475C5.65098 10.3875 6.03848 9.4875 6.67598 8.7875C6.57598 8.5375 6.22598 7.5125 6.77598 6.1375C6.77598 6.1375 7.61348 5.875 9.52598 7.1625C10.326 6.9375 11.176 6.825 12.026 6.825C12.876 6.825 13.726 6.9375 14.526 7.1625C16.4385 5.8625 17.276 6.1375 17.276 6.1375C17.826 7.5125 17.476 8.5375 17.376 8.7875C18.0135 9.4875 18.401 10.375 18.401 11.475C18.401 15.3125 16.0635 16.1625 13.8385 16.4125C14.201 16.725 14.5135 17.325 14.5135 18.2625C14.5135 19.6 14.501 20.675 14.501 21.0125C14.501 21.275 14.6885 21.5875 15.1885 21.4875C19.259 20.1133 21.9999 16.2963 22.001 12C22.001 6.475 17.526 2 12.001 2Z"></path>
-                </svg>
-              </a>
-              <a 
-                href={project.external} 
-                target="_blank" 
-                class="p-1.5 md:p-2 rounded-lg bg-[#1414149c] text-[var(--white-icon)] hover:text-[var(--sec)] transition-colors"
-                aria-label="Visit Project"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 md:w-5 md:h-5">
-                  <path d="M16.0037 9.41421L7.39712 18.0208L5.98291 16.6066L14.5895 8H7.00373V6H18.0037V17H16.0037V9.41421Z"></path>
-                </svg>
-              </a>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+        {
+          projects.filter(p => p.featured).map((project, index) => (
+            <div class="group bg-[#0c0c0c] rounded-2xl md:rounded-3xl overflow-hidden max-w-2xl mx-auto animate-fade-in" style={`animation-delay: ${index * 0.1}s`}>
+              <div class="relative aspect-video overflow-hidden">
+                <div class="absolute inset-0 bg-[#000000] bg-opacity-0 transition-all duration-300 group-hover:bg-opacity-10 z-10"></div>
+                <Image
+                  src={project.image}
+                  alt={project.title}
+                  class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  width={800}
+                  height={450}
+                  loading="lazy"
+                />
+              </div>
+              <div class="p-4 md:p-6">
+                <h3 class="text-lg md:text-xl font-semibold text-[var(--white)] mb-2">{project.title}</h3>
+                <p class="text-[var(--white-icon)] text-xs md:text-sm mb-4">In Development</p>
+                <div class="flex gap-3">
+                  <a 
+                    href={project.github} 
+                    target="_blank" 
+                    class="p-1.5 md:p-2 rounded-lg bg-[#1414149c] text-[var(--white-icon)] hover:text-[var(--sec)] transition-all duration-300 hover:scale-110"
+                    aria-label="View on GitHub"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 md:w-5 md:h-5">
+                      <path d="M12.001 2C6.47598 2 2.00098 6.475 2.00098 12C2.00098 16.425 4.86348 20.1625 8.83848 21.4875C9.33848 21.575 9.52598 21.275 9.52598 21.0125C9.52598 20.775 9.51348 19.9875 9.51348 19.15C7.00098 19.6125 6.35098 18.5375 6.15098 17.975C6.03848 17.6875 5.55098 16.8 5.12598 16.5625C4.77598 16.375 4.27598 15.9125 5.11348 15.9C5.90098 15.8875 6.46348 16.625 6.65098 16.925C7.55098 18.4375 8.98848 18.0125 9.56348 17.75C9.65098 17.1 9.91348 16.6625 10.201 16.4125C7.97598 16.1625 5.65098 15.3 5.65098 11.475C5.65098 10.3875 6.03848 9.4875 6.67598 8.7875C6.57598 8.5375 6.22598 7.5125 6.77598 6.1375C6.77598 6.1375 7.61348 5.875 9.52598 7.1625C10.326 6.9375 11.176 6.825 12.026 6.825C12.876 6.825 13.726 6.9375 14.526 7.1625C16.4385 5.8625 17.276 6.1375 17.276 6.1375C17.826 7.5125 17.476 8.5375 17.376 8.7875C18.0135 9.4875 18.401 10.375 18.401 11.475C18.401 15.3125 16.0635 16.1625 13.8385 16.4125C14.201 16.725 14.5135 17.325 14.5135 18.2625C14.5135 19.6 14.501 20.675 14.501 21.0125C14.501 21.275 14.6885 21.5875 15.1885 21.4875C19.259 20.1133 21.9999 16.2963 22.001 12C22.001 6.475 17.526 2 12.001 2Z"></path>
+                    </svg>
+                  </a>
+                  <a 
+                    href={project.external} 
+                    target="_blank" 
+                    class="p-1.5 md:p-2 rounded-lg bg-[#1414149c] text-[var(--white-icon)] hover:text-[var(--sec)] transition-all duration-300 hover:scale-110"
+                    aria-label="Visit Project"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 md:w-5 md:h-5">
+                      <path d="M16.0037 9.41421L7.39712 18.0208L5.98291 16.6066L14.5895 8H7.00373V6H18.0037V17H16.0037V9.41421Z"></path>
+                    </svg>
+                  </a>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      ))
-    }
-  </div>
+          ))
+        }
+      </div>
 
-  <div class="mt-12 md:mt-16 bg-[#0c0c0c] rounded-2xl md:rounded-3xl p-6 md:p-8 text-center">
-    <div class="inline-flex justify-center items-center w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl bg-[#1414149c] text-[var(--sec)] mb-4 md:mb-6">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 md:w-8 md:h-8">
-        <path d="M12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22ZM11 11H7V13H11V17H13V13H17V11H13V7H11V11Z"></path>
-      </svg>
+      <div class="mt-12 md:mt-16 bg-[#0c0c0c] rounded-2xl md:rounded-3xl p-6 md:p-8 text-center animate-fade-in">
+        <div class="inline-flex justify-center items-center w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl bg-[#1414149c] text-[var(--sec)] mb-4 md:mb-6">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 md:w-8 md:h-8">
+            <path d="M12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22ZM11 11H7V13H11V17H13V13H17V11H13V7H11V11Z"></path>
+          </svg>
+        </div>
+        <h3 class="text-[var(--white)] text-xl md:text-2xl font-semibold mb-3 md:mb-4">More Coming Soon</h3>
+        <p class="text-[var(--white-icon)] text-sm md:text-base max-w-lg mx-auto">
+          This section is currently being developed. Soon you'll find more projects here.
+        </p>
+      </div>
     </div>
-    <h3 class="text-[var(--white)] text-xl md:text-2xl font-semibold mb-3 md:mb-4">More Coming Soon</h3>
-    <p class="text-[var(--white-icon)] text-sm md:text-base max-w-lg mx-auto">
-      This section is currently being developed. Soon you'll find more projects here.
-    </p>
   </div>
 </section>
+
+<style>
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-out forwards;
+    opacity: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-fade-in {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+  }
+</style>
