@@ -3,24 +3,26 @@ import SkillsList from "../React/SkillsList.tsx";
 import LogoWall from "./logoWall.astro";
 ---
 
-<section class="min-h-screen flex items-center" id="home">
-  <div class="w-full py-16 md:py-24">
-    <p class="text-[var(--sec)] font-mono mb-3 md:mb-4 text-sm md:text-base">Hi, my name is</p>
-    <h1 class="text-[var(--white)] text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-2 md:mb-3">
-      Anderson Vanegas.
-    </h1>
-    <h2 class="text-[var(--white-icon)] text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6">
-      I build quality into software.
-    </h2>
-    <p class="text-[var(--white-icon)] max-w-xl text-sm md:text-base mb-8 md:mb-12 leading-relaxed">
-      I'm a software quality assurance engineer specializing in ensuring the reliability of consumer products. Currently, I'm focused on building out automation testing to improve efficiency of software releases.
-    </p>
+<section class="min-h-screen flex items-center relative overflow-hidden" id="home">
+  <div class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+    <div class="space-y-8 md:space-y-12">
+      <div class="space-y-4 md:space-y-6">
+        <p class="text-[var(--sec)] font-mono mb-3 md:mb-4 text-sm md:text-base animate-fade-in">Hi, my name is</p>
+        <h1 class="text-[var(--white)] text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-2 md:mb-3 animate-fade-in">
+          Anderson Vanegas.
+        </h1>
+        <h2 class="text-[var(--white-icon)] text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 animate-fade-in">
+          I build quality into software.
+        </h2>
+        <p class="text-[var(--white-icon)] max-w-xl text-sm md:text-base mb-8 md:mb-12 leading-relaxed animate-fade-in">
+          I'm a software quality assurance engineer specializing in ensuring the reliability of consumer products. Currently, I'm focused on building out automation testing to improve efficiency of software releases.
+        </p>
+      </div>
 
-    <div class="space-y-10 md:space-y-16">
-      <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
+      <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 animate-fade-in">
         <a
           href="#projects"
-          class="text-center py-3 px-6 border border-[var(--sec)] text-[var(--sec)] rounded-lg hover:bg-[var(--white-icon-tr)] transition-colors duration-300 text-sm md:text-base"
+          class="text-center py-3 px-6 border border-[var(--sec)] text-[var(--sec)] rounded-lg hover:bg-[var(--white-icon-tr)] transition-all duration-300 text-sm md:text-base hover:scale-105"
         >
           Check out my work!
         </a>
@@ -28,17 +30,17 @@ import LogoWall from "./logoWall.astro";
           href="/resume.pdf"
           target="_blank"
           rel="noopener noreferrer"
-          class="text-center py-3 px-6 border border-[var(--sec)] text-[var(--sec)] rounded-lg hover:bg-[var(--white-icon-tr)] transition-colors duration-300 text-sm md:text-base"
+          class="text-center py-3 px-6 border border-[var(--sec)] text-[var(--sec)] rounded-lg hover:bg-[var(--white-icon-tr)] transition-all duration-300 text-sm md:text-base hover:scale-105"
         >
           Download Resume
         </a>
       </div>
 
-      <div class="flex justify-center sm:justify-start gap-6">
+      <div class="flex justify-center sm:justify-start gap-6 animate-fade-in">
         <a
           href="https://github.com/avanegas95"
           target="_blank"
-          class="text-[var(--white-icon)] hover:text-[var(--white)] transition duration-300 ease-in-out p-2"
+          class="text-[var(--white-icon)] hover:text-[var(--white)] transition-all duration-300 ease-in-out p-2 hover:scale-110"
           aria-label="GitHub"
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 md:w-7 md:h-7">
@@ -48,7 +50,7 @@ import LogoWall from "./logoWall.astro";
         <a
           href="https://www.linkedin.com/in/avanegas95/"
           target="_blank"
-          class="text-[var(--white-icon)] hover:text-[var(--white)] transition duration-300 ease-in-out p-2"
+          class="text-[var(--white-icon)] hover:text-[var(--white)] transition-all duration-300 ease-in-out p-2 hover:scale-110"
           aria-label="LinkedIn"
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 md:w-7 md:h-7">
@@ -58,7 +60,7 @@ import LogoWall from "./logoWall.astro";
         <a
           href="https://mail.google.com/mail/?view=cm&fs=1&to=avanegas95@gmail.com&su=Hey%20Anderson!"
           target="_blank"
-          class="text-[var(--white-icon)] hover:text-[var(--white)] transition duration-300 ease-in-out p-2"
+          class="text-[var(--white-icon)] hover:text-[var(--white)] transition-all duration-300 ease-in-out p-2 hover:scale-110"
           aria-label="Email"
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 md:w-7 md:h-7">
@@ -67,7 +69,7 @@ import LogoWall from "./logoWall.astro";
         </a>
       </div>
 
-      <div class="space-y-4">
+      <div class="space-y-4 animate-fade-in">
         <h3 class="flex items-center gap-2 text-lg md:text-xl lg:text-2xl text-[var(--white)] font-semibold">
           <span>About Me</span>
         </h3>
@@ -78,7 +80,7 @@ import LogoWall from "./logoWall.astro";
           <p class="text-sm md:text-base leading-relaxed">
             Here are a few technologies I've been working with recently:
           </p>
-          <ul class="grid grid-cols-2 gap-x-4 gap-y-2 text-xs md:text-sm">
+          <ul class="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-2 text-xs md:text-sm">
             <li class="flex items-center gap-2">
               <span class="text-[var(--sec)]">▹</span> Python
             </li>
@@ -108,5 +110,35 @@ import LogoWall from "./logoWall.astro";
 <style>
   section {
     counter-reset: section;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-out forwards;
+    opacity: 0;
+  }
+
+  .animate-fade-in:nth-child(1) { animation-delay: 0.1s; }
+  .animate-fade-in:nth-child(2) { animation-delay: 0.2s; }
+  .animate-fade-in:nth-child(3) { animation-delay: 0.3s; }
+  .animate-fade-in:nth-child(4) { animation-delay: 0.4s; }
+  .animate-fade-in:nth-child(5) { animation-delay: 0.5s; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-fade-in {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
   }
 </style>
