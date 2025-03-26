@@ -24,10 +24,10 @@ const navItems: NavItem[] = [
 ];
 ---
 
-<div class="fixed top-0 z-40 w-full px-6 sm:px-12 md:px-24 lg:px-32 xl:px-48 backdrop-blur">
+<div class="sticky top-0 max-w-8xl mx-auto backdrop-blur">
   <nav class="flex items-center justify-between py-4">
     <a href="#" class="text-[var(--sec)] font-bold text-2xl">AV</a>
-    <div class="hidden md:block">
+   
       <ul class="flex space-x-8">
         {
           navItems.map((item) => (
@@ -43,7 +43,6 @@ const navItems: NavItem[] = [
           ))
         }
       </ul>
-    </div>
     <button
       id="mobile-menu-button"
       class="md:hidden text-[var(--white-icon)] hover:text-[var(--sec)] transition-colors duration-300"
