@@ -10,15 +10,26 @@ const { title } = Astro.props;
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="description" content="Software Developer" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/png" href="/favicon.png" />
-    <meta property="og:title" content="Oscar Hernandez" />
-    <meta property="og:description" content="Software Developer" />
-    <meta property="og:image" content="https://oscarhernandez.vercel.app/og.image.png" />
-    <meta property="og:url" content="https://oscarhernandez.vercel.app" />
+    <meta name="description" content="Anderson Vanegas - SQA Engineer" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/png" href="../src/assets/images/favicon.png" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta property="og:image" content="https://avanegas.com/images/og.image.png" />
+    <meta property="og:title" content="Anderson Vanegas" />
+    <meta
+      property="og:description"
+      content="SQA Engineer | Automation Engineer"
+    />
+    <meta property="og:url" content="https://avanegas.com" />
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Oscar Hernandez Portfolio" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Anderson Vanegas" />
+    <meta
+      name="twitter:description"
+      content="SQA Engineer | Automation Engineer"
+    />
+    <meta name="twitter:image" content="https://avanegas.com/images/og.image.png" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -39,29 +50,32 @@ const { title } = Astro.props;
         href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
       />
     </noscript>
-
-    <title>{title}</title>
   </head>
-  <body class="bg-[--background] md:px-48 lg:px-20 px-9">
+  <body class="bg-[--background] px-6 sm:px-12 md:px-24 lg:px-32 xl:px-48">
     <slot />
   </body>
 </html>
 
 <style is:global>
   :root {
-    --background: #101010;
-    --sec: #a476ff;
-    --white: #dfdfdf;
-    --white-icon: #f3f3f398;
-    --white-icon-tr: #f3f3f310;
+    --background: #0a192f;
+    --sec: #64ffda;
+    --white: #ccd6f6;
+    --white-icon: #8892b0;
+    --white-icon-tr: rgba(136, 146, 176, 0.1);
+    --accent: 100, 255, 218;
+    --accent-light: 204, 229, 250;
+    --accent-dark: 10, 25, 47;
+    --accent-gradient: linear-gradient(
+      45deg,
+      rgb(var(--accent)),
+      rgb(var(--accent-light)) 30%,
+      white 60%
+    );
   }
 
   * {
-    font-family:
-      "montserrat",
-      -apple-system,
-      system-ui,
-      sans-serif;
+    font-family: "SF Mono", "Fira Code", "Fira Mono", "Roboto Mono", monospace;
     box-sizing: border-box;
     padding: 0;
     margin: 0;
@@ -73,28 +87,36 @@ const { title } = Astro.props;
   }
 
   /* Scrollbar styles */
-
   ::-webkit-scrollbar {
-    width: 15px;
+    width: 12px;
   }
 
   ::-webkit-scrollbar-track {
-    background: var(--container);
-    border-radius: 30px;
+    background: var(--background);
   }
 
   ::-webkit-scrollbar-thumb {
-    background: var(--background);
+    background: var(--white-icon);
+    border: 3px solid var(--background);
     border-radius: 10px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: var(--pink);
+    background: var(--sec);
   }
 
   /* Scrollbar styles for Firefox */
   * {
     scrollbar-width: thin;
-    scrollbar-color: var(--line) var(--container);
+    scrollbar-color: var(--white-icon) var(--background);
+  }
+
+  html {
+    background: var(--background);
+    color-scheme: dark;
+  }
+
+  code {
+    font-family: "SF Mono", "Fira Code", "Fira Mono", "Roboto Mono", monospace;
   }
 </style>
