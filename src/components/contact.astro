@@ -176,7 +176,7 @@
     document.addEventListener('DOMContentLoaded', () => {
         const fadeElements = document.querySelectorAll('.fade-in');
         fadeElements.forEach((element, index) => {
-            element.style.transitionDelay = `${index * 0.05}s`;
+            (element as HTMLElement).style.transitionDelay = `${index * 0.05}s`;
             observer.observe(element);
         });
     });

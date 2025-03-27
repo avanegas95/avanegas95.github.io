@@ -1,7 +1,6 @@
 ---
 import { Image } from "astro:assets";
 import bostondynamicsLogo from "../assets/images/bdlogo.png";
-import sharkninjaLogo from "../assets/images/placeholder.jpg";
 import bdLogo from "../assets/images/bdlogo.png";
 import spotBg from "../assets/images/spotBg.png";
 import sharkBg from "../assets/images/spotBg.png";
@@ -110,7 +109,7 @@ import sharkBg from "../assets/images/spotBg.png";
     document.addEventListener('DOMContentLoaded', () => {
         const fadeElements = document.querySelectorAll('.fade-in');
         fadeElements.forEach((element, index) => {
-            element.style.transitionDelay = `${index * 0.2}s`;
+            (element as HTMLElement).style.transitionDelay = `${index * 0.2}s`;
             observer.observe(element);
         });
     });
