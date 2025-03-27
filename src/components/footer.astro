@@ -4,7 +4,7 @@
 <footer class="w-full py-8 md:py-12 border-t border-[#ffffff10] relative overflow-hidden">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
-      <div class="flex flex-col items-center lg:items-start space-y-6 animate-fade-in">
+      <div class="flex flex-col items-center lg:items-start space-y-6 fade-in">
         <div class="flex space-x-8">
           {
             [
@@ -39,7 +39,7 @@
         </div>
       </div>
 
-      <div class="flex flex-col items-center md:items-start space-y-4 md:space-y-6 animate-fade-in" style="animation-delay: 0.1s">
+      <div class="flex flex-col items-center md:items-start space-y-4 md:space-y-6 fade-in" style="animation-delay: 0.1s">
         <div class="grid grid-cols-1 gap-2 md:gap-3 w-full max-w-xs">
           {
             [
@@ -81,7 +81,7 @@
         </div>
       </div>
 
-      <div class="flex flex-col items-center lg:items-start space-y-4 md:space-y-6 animate-fade-in" style="animation-delay: 0.2s">
+      <div class="flex flex-col items-center lg:items-start space-y-4 md:space-y-6 fade-in" style="animation-delay: 0.2s">
         <div class="w-full max-w-xs">
           <iframe 
             style="border-radius:12px; background-color: #0a192f;" 
@@ -99,7 +99,7 @@
       </div>
     </div>
 
-    <div class="mt-8 md:mt-12 pt-6 md:pt-8 border-t border-[#ffffff10] animate-fade-in" style="animation-delay: 0.3s">
+    <div class="mt-8 md:mt-12 pt-6 md:pt-8 border-t border-[#ffffff10] fade-in" style="animation-delay: 0.3s">
       <p class="text-center text-xs md:text-sm text-[var(--white-icon)] space-y-1 md:space-y-2">
         <span class="block sm:inline">
           Copyright © 2025 <a href="https://github.com/avanegas95" class="hover:text-[var(--sec)] transition-all duration-300">Anderson Vanegas</a>. All rights reserved.
@@ -109,28 +109,58 @@
   </div>
 </footer>
 
+<script>
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, {
+        threshold: 0.05,
+        rootMargin: '100px'
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const fadeElements = document.querySelectorAll('.fade-in');
+        fadeElements.forEach((element, index) => {
+            element.style.transitionDelay = `${index * 0.05}s`;
+            observer.observe(element);
+        });
+    });
+</script>
+
 <style>
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
+    .fade-in {
+        opacity: 0;
+        transform: translateY(10px);
+        transition: opacity 0.5s ease-out, transform 0.5s ease-out;
     }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
 
-  .animate-fade-in {
-    animation: fadeIn 0.6s ease-out forwards;
-    opacity: 0;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .animate-fade-in {
-      animation: none;
-      opacity: 1;
-      transform: none;
+    .fade-in.visible {
+        opacity: 1;
+        transform: translateY(0);
     }
-  }
 </style>
+
+<script>
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, {
+        threshold: 0.05,
+        rootMargin: '100px'
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const fadeElements = document.querySelectorAll('.fade-in');
+        fadeElements.forEach((element, index) => {
+            element.style.transitionDelay = `${index * 0.05}s`;
+            observer.observe(element);
+        });
+    });
+</script>
+

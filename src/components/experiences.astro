@@ -1,0 +1,117 @@
+---
+import { Image } from "astro:assets";
+import bostondynamicsLogo from "../assets/images/bdlogo.png";
+import sharkninjaLogo from "../assets/images/placeholder.jpg";
+import bdLogo from "../assets/images/bdlogo.png";
+import spotBg from "../assets/images/spotBg.png";
+import sharkBg from "../assets/images/spotBg.png";
+---
+
+<style>
+    .fade-in {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 1.2s ease-out;
+    }
+
+    .fade-in.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Remove the rounded-xl specific transition as we'll handle it in the card class */
+    .experience-card {
+        transform: translateY(0);
+        transition: all 0.3s ease-out;
+    }
+
+    .experience-card:hover {
+        transform: scale(1.05);
+    }
+</style>
+
+<section class="py-8 bg-[#0a192f] fade-in" id="experiences">
+    <div class="container mx-auto px-4">
+        <h3 class="text-3xl sm:text-4xl md:text-5xl font-medium text-[var(--white)] mb-4 md:mb-6 fade-in">
+          Experiences
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 auto-rows-fr">
+            <!-- Boston Dynamics Card -->
+            <div class="rounded-xl overflow-hidden h-full flex flex-col fade-in experience-card">
+                <div class="p-0 text-center h-40 relative overflow-hidden">
+                    <Image 
+                        src={spotBg}
+                        alt="Spot Robot"
+                        class="absolute inset-0 w-full h-full object-cover"
+                    />
+                </div>
+                <div class="bg-[#112240] p-6 text-center flex-1 relative">
+                    <div class="absolute left-1/2 top-0 transform -translate-x-1/2 -translate-y-1/2">
+                        <Image 
+                            src={bostondynamicsLogo} 
+                            alt="Boston Dynamics Logo" 
+                            class="w-24 h-24 rounded-full border-4 border-[#112240]"
+                        />
+                    </div>
+                    <div class="mt-12">
+                        <p class="text-gray-400 text-lg font-mono mb-8" style="color: #64ffda;">Boston Dynamics</p>
+                        <h4 class="text-white text-xl font-mono mb-2">Senior SQA Engineer</h4>
+                        <p class="text-gray-400 text-sm mb-6">September 2023 – Present</p>
+                        <p class="text-gray-300 mb-4 text-center">
+                            TBD
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SharkNinja Card -->
+            <div class="rounded-xl overflow-hidden h-full flex flex-col fade-in experience-card">
+                <div class="p-0 text-center h-40 relative overflow-hidden">
+                    <Image 
+                        src={spotBg}
+                        alt="SharkNinja Background"
+                        class="absolute inset-0 w-full h-full object-cover"
+                    />
+                </div>
+                <div class="bg-[#112240] p-6 text-center flex-1 relative">
+                    <div class="absolute left-1/2 top-0 transform -translate-x-1/2 -translate-y-1/2">
+                        <Image 
+                            src={bdLogo} 
+                            alt="Boston Dynamics Logo" 
+                            class="w-24 h-24 rounded-full border-4 border-[#112240]"
+                        />
+                    </div>
+                    <div class="mt-12">
+                        <p class="text-gray-400 text-lg font-mono mb-8" style="color: #64ffda;">SharkNinja</p>
+                        <h4 class="text-white text-xl font-mono mb-2">SQA Engineer I/II</h4>
+                        <p class="text-gray-400 text-sm mb-6">May 2019 – September 2023</p>
+                        <p class="text-gray-300 text-center">
+                            TBD
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, {
+        threshold: 0.1
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const fadeElements = document.querySelectorAll('.fade-in');
+        fadeElements.forEach((element, index) => {
+            element.style.transitionDelay = `${index * 0.2}s`;
+            observer.observe(element);
+        });
+    });
+</script> 

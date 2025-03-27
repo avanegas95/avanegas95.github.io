@@ -2,14 +2,14 @@
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="space-y-8 md:space-y-12">
       <div class="space-y-4">
-        <h2 class="text-base md:text-lg text-[var(--sec)] mb-2 shiny-sec animate-fade-in">Let's talk</h2>
-        <h3 class="text-3xl sm:text-4xl md:text-5xl font-medium text-[var(--white)] mb-4 md:mb-6 animate-fade-in">
+        <h2 class="text-base md:text-lg text-[var(--sec)] mb-2 shiny-sec fade-in">Let's talk</h2>
+        <h3 class="text-3xl sm:text-4xl md:text-5xl font-medium text-[var(--white)] mb-4 md:mb-6 fade-in">
           Contact
         </h3>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-        <div class="text-[var(--white-icon)] text-sm md:text-base space-y-4 animate-fade-in">
+        <div class="text-[var(--white-icon)] text-sm md:text-base space-y-4 fade-in">
           <p>
             Have any questions or want to know more about me? Feel free to reach out.
           </p>
@@ -19,7 +19,7 @@
           </div>
         </div>
 
-        <div class="animate-fade-in">
+        <div class="fade-in">
           <form
             id="contact-form"
             action="https://formspree.io/f/mnnpzgay"
@@ -69,7 +69,7 @@
 
           <div
             id="form-message"
-            class="hidden justify-center items-center mt-4 text-[var(--white)] text-base md:text-lg animate-fade-in"
+            class="hidden justify-center items-center mt-4 text-[var(--white)] text-base md:text-lg fade-in"
           >
             ✅ Thank you for your message!
           </div>
@@ -129,23 +129,6 @@
     }
   }
 
-  .animate-fade-in {
-    animation: fadeIn 0.6s ease-out forwards;
-    opacity: 0;
-  }
-
-  .animate-fade-in:nth-child(1) { animation-delay: 0.1s; }
-  .animate-fade-in:nth-child(2) { animation-delay: 0.2s; }
-  .animate-fade-in:nth-child(3) { animation-delay: 0.3s; }
-
-  @media (prefers-reduced-motion: reduce) {
-    .animate-fade-in {
-      animation: none;
-      opacity: 1;
-      transform: none;
-    }
-  }
-
   /* Improve form focus states for better accessibility */
   input:focus-visible,
   textarea:focus-visible {
@@ -164,3 +147,38 @@
     }
   }
 </style>
+
+<style>
+    .fade-in {
+        opacity: 0;
+        transform: translateY(10px);
+        transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+    }
+
+    .fade-in.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+</style>
+
+<script>
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, {
+        threshold: 0.05,
+        rootMargin: '100px'
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const fadeElements = document.querySelectorAll('.fade-in');
+        fadeElements.forEach((element, index) => {
+            element.style.transitionDelay = `${index * 0.05}s`;
+            observer.observe(element);
+        });
+    });
+</script>
+

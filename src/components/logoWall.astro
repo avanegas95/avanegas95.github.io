@@ -1,12 +1,10 @@
 ---
 const technologies = [
-  "python",
   "selenium",
-  "next",
   "appium",
+  "python",
   "nodejs",
   "HTML5",
-  "CSS3",
   "astro",
   "react",
   "tailwindcss",
@@ -15,9 +13,25 @@ const technologies = [
   "mysql",
   "bash",
 ];
+
+const techUrls = {
+  python: "https://www.python.org",
+  selenium: "https://www.selenium.dev",
+  next: "https://nextjs.org",
+  appium: "https://appium.io",
+  nodejs: "https://nodejs.org",
+  HTML5: "https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5",
+  astro: "https://astro.build",
+  react: "https://react.dev",
+  tailwindcss: "https://tailwindcss.com",
+  git: "https://git-scm.com",
+  supabase: "https://supabase.com",
+  mysql: "https://www.mysql.com",
+  bash: "https://www.gnu.org/software/bash",
+};
 ---
 
-<div class="relative overflow-x-hidden py-8 max-w-6xl mx-auto">
+<div class="relative overflow-x-hidden py-4 max-w-6xl mx-auto">
   <div
     class="pointer-events-none absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[var(--background)] to-transparent z-20"
   > 
@@ -29,8 +43,12 @@ const technologies = [
 
   <div class="flex animate-scroll hover:animate-paused gap-12 md:gap-20 max-w-7xl mx-auto">
     {
-      [...technologies, ...technologies].map((tech, index) => (
-        <div class="flex items-center gap-2 group transition-all duration-300 hover:scale-110">
+      [...technologies, ...technologies, ...technologies].map((tech, index) => (
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          class="flex items-center gap-2 group transition-all duration-300 hover:scale-110"
+        >
           <img
             src={`/svg/${tech}.svg`}
             alt={tech}
@@ -42,7 +60,7 @@ const technologies = [
           <span class="text-lg font-medium text-[var(--white-icon)] transition-colors duration-300 group-hover:text-[var(--white)]">
             {tech.charAt(0).toUpperCase() + tech.slice(1)}
           </span>
-        </div>
+        </a>
       ))
     }
   </div>
@@ -54,12 +72,12 @@ const technologies = [
       transform: translateX(0);
     }
     to {
-      transform: translateX(-50.33%);
+      transform: translateX(-66.33%);
     }
   }
 
   .animate-scroll {
-    animation: scroll 40s linear infinite;
+    animation: scroll 30s linear infinite;
     will-change: transform;
   }
 
