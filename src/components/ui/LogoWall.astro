@@ -1,0 +1,97 @@
+---
+import { technologies, techDisplayNames, techUrls } from "@/data/technologies";
+
+const logoItems = technologies.map((tech) => ({
+  tech,
+  href: techUrls[tech],
+  label: techDisplayNames[tech],
+}));
+
+const scrollingItems = [...logoItems, ...logoItems, ...logoItems];
+---
+
+<div class="relative mt-6 overflow-x-hidden py-4 max-w-6xl mx-auto">
+  <div
+    class="pointer-events-none absolute inset-y-0 left-0 z-20 w-12 bg-gradient-to-r from-[var(--background)] to-transparent sm:w-20 md:w-32"
+  >
+  </div>
+  <div
+    class="pointer-events-none absolute inset-y-0 right-0 z-20 w-12 bg-gradient-to-l from-[var(--background)] to-transparent sm:w-20 md:w-32"
+  >
+  </div>
+
+  <div class="logo-wall-track flex w-max max-w-7xl gap-12 md:gap-20">
+    {
+      scrollingItems.map(({ tech, href, label }, index) => (
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={label}
+          tabindex={index >= logoItems.length ? -1 : undefined}
+          aria-hidden={index >= logoItems.length ? true : undefined}
+          class="logo-wall-item group flex shrink-0 items-center gap-2 transition-all duration-300 hover:scale-110"
+        >
+          <img
+            src={`/svg/${tech}.svg`}
+            alt=""
+            class="h-7 w-auto object-contain opacity-60 transition-all duration-300 group-hover:scale-110 group-hover:opacity-100"
+            width="30"
+            height="30"
+            loading="lazy"
+          />
+          <span class="text-lg font-medium whitespace-nowrap text-[var(--white-icon)] transition-colors duration-300 group-hover:text-[var(--white)]">
+            {label}
+          </span>
+        </a>
+      ))
+    }
+  </div>
+</div>
+
+<style is:global>
+  @keyframes logo-wall-scroll {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-66.666%);
+    }
+  }
+
+  .logo-wall-track {
+    animation: logo-wall-scroll 30s linear infinite;
+    will-change: transform;
+  }
+
+  .logo-wall-track:hover {
+    animation-play-state: paused;
+  }
+
+  @media (min-width: 768px) {
+    .logo-wall-track {
+      animation-duration: 15s;
+    }
+  }
+
+  @media (hover: none) and (pointer: coarse) {
+    .logo-wall-track {
+      animation-duration: 60s;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .logo-wall-track {
+      animation: none;
+      transform: none;
+      flex-wrap: wrap;
+      width: 100%;
+      justify-content: center;
+      gap: 1.5rem;
+    }
+  }
+
+  .logo-wall-item {
+    backface-visibility: hidden;
+  }
+</style>

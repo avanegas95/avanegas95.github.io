@@ -1,44 +1,18 @@
 ---
-interface NavItem {
-  label: string;
-  href: string;
-  number: string;
-  icon?: string;
-}
-
-const navItems: NavItem[] = [
-  {
-    number: "",
-    label: "Home",
-    href: "#home",
-    icon: '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>'
-  },
-  {
-    number: "",
-    label: "Experiences",
-    href: "#experiences",
-    icon: '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" /></svg>'
-  },
-  {
-    number: "",
-    label: "Projects",
-    href: "#projects",
-    icon: '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" /></svg>'
-  },
-  {
-    number: "",
-    label: "Contact",
-    href: "#contact",
-    icon: '<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>'
-  }
-];
+import { navItems } from "@/data/nav";
 ---
 
 <!-- Desktop Navigation -->
-<div class="fixed top-0 left-1/2 transform -translate-x-1/2 w-full max-w-7xl mx-auto backdrop-blur-md z-50 hidden md:block">
-  <nav class="flex items-center justify-between py-4 px-4 md:px-6 lg:px-8">
-    <a href="#" class="text-[var(--sec)] font-bold text-2xl hover:opacity-80 transition-opacity duration-300">AV</a>
-   
+<div
+  class="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl mx-auto backdrop-blur-md z-50 hidden md:block"
+>
+  <nav class="flex items-center justify-between py-4 px-4 md:px-6 lg:px-8 min-h-[var(--nav-height)]">
+    <a
+      href="#"
+      class="text-[var(--sec)] font-bold text-2xl hover:opacity-80 transition-opacity duration-300"
+      >AV</a
+    >
+
     <ul class="flex space-x-8">
       {
         navItems.map((item) => (
@@ -49,7 +23,7 @@ const navItems: NavItem[] = [
             >
               <span class="text-[var(--sec)] mr-1">{item.number}</span>
               {item.label}
-              <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-[var(--sec)] transition-all duration-300 group-hover:w-full"></span>
+              <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-[var(--sec)] transition-all duration-300 group-hover:w-full" />
             </a>
           </li>
         ))
@@ -59,7 +33,9 @@ const navItems: NavItem[] = [
 </div>
 
 <!-- Mobile Navigation -->
-<nav class="fixed bottom-0 left-0 right-0 bg-[--background] border-t border-[#ffffff10] backdrop-blur-md z-50 md:hidden">
+<nav
+  class="fixed bottom-0 left-0 right-0 z-50 border-t border-[#ffffff10] bg-[var(--background)] backdrop-blur-md md:hidden"
+>
   <div class="flex justify-around items-center py-2 px-4 max-w-md mx-auto">
     {
       navItems.map((item) => (
@@ -67,9 +43,12 @@ const navItems: NavItem[] = [
           href={item.href}
           class="flex flex-col items-center gap-1 text-[var(--white-icon)] hover:text-[var(--sec)] transition-all duration-300 py-2 relative group"
         >
-          <div set:html={item.icon} class="transition-transform duration-300 group-hover:scale-110" />
+          <div
+            set:html={item.icon}
+            class="transition-transform duration-300 group-hover:scale-110"
+          />
           <span class="text-xs">{item.label}</span>
-          <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-[var(--sec)] transition-all duration-300 group-hover:w-full"></span>
+          <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-[var(--sec)] transition-all duration-300 group-hover:w-full" />
         </a>
       ))
     }
@@ -80,17 +59,17 @@ const navItems: NavItem[] = [
   document.addEventListener("DOMContentLoaded", () => {
     const sections = document.querySelectorAll("section[id]");
     const navLinks = document.querySelectorAll("nav a[href^='#']");
-    
+
     const observerOptions = {
       threshold: [0.2, 0.8],
-      rootMargin: "-20% 0px -35% 0px"
+      rootMargin: "-20% 0px -35% 0px",
     };
 
     const observerCallback = (entries: IntersectionObserverEntry[]) => {
       entries.forEach((entry: IntersectionObserverEntry) => {
         const id = entry.target.getAttribute("id");
         const activeLinks = document.querySelectorAll(`nav a[href="#${id}"]`);
-        
+
         if (entry.isIntersecting && entry.intersectionRatio >= 0.2) {
           navLinks.forEach((link) => {
             link.classList.remove("active");
@@ -104,10 +83,12 @@ const navItems: NavItem[] = [
       });
     };
 
-    const observer = new IntersectionObserver(observerCallback, observerOptions);
+    const observer = new IntersectionObserver(
+      observerCallback,
+      observerOptions,
+    );
     sections.forEach((section) => observer.observe(section));
 
-    // Smooth scroll with fallback for older browsers
     document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
       anchor.addEventListener("click", function (e) {
         e.preventDefault();
@@ -115,17 +96,16 @@ const navItems: NavItem[] = [
         const targetId = target.getAttribute("href")?.substring(1) || "";
         const targetElement = document.getElementById(targetId);
         if (targetElement) {
-          if ('scrollBehavior' in document.documentElement.style) {
+          if ("scrollBehavior" in document.documentElement.style) {
             targetElement.scrollIntoView({
               behavior: "smooth",
             });
           } else {
-            // Fallback for older browsers
             const elementPosition = targetElement.getBoundingClientRect().top;
             const offsetPosition = elementPosition + window.pageYOffset;
             window.scrollTo({
               top: offsetPosition,
-              behavior: "smooth"
+              behavior: "smooth",
             });
           }
         }
@@ -138,11 +118,11 @@ const navItems: NavItem[] = [
   nav a.active {
     color: var(--sec);
   }
-  
+
   nav a.inactive {
     color: var(--white-icon);
   }
-  
+
   nav a:hover {
     color: var(--sec);
   }

@@ -1,28 +1,11 @@
 {
+  "extends": "astro/tsconfigs/strict",
   "compilerOptions": {
-    "module": "CommonJS",
-    "allowImportingTsExtensions": true,
-    "noEmit": true,
-    "types": [
-      "astro/client"
-    ],
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "src/*"
-      ],
-      "@components/*": [
-        "src/components/*"
-      ]
-    },
-    "jsx": "react-jsx",
-    "jsxImportSource": "react"
+      "@/*": ["src/*"],
+      "@components/*": ["src/components/*"]
+    }
   },
-  "include": [
-    "src/**/*",
-    "astro.config.ts"
-  ]
+  "include": ["src/**/*", "astro.config.mjs"]
 }

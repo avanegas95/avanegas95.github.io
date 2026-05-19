@@ -1,0 +1,119 @@
+@import "tailwindcss";
+
+@source "../**/*.{astro,html,js,jsx,ts,tsx,md,mdx,svelte,vue}";
+
+:root {
+  --background: #0a192f;
+  --sec: #64ffda;
+  --white: #ccd6f6;
+  --white-icon: #8892b0;
+  --white-icon-tr: rgba(136, 146, 176, 0.1);
+  --nav-height: 5.5rem;
+  --accent: 100, 255, 218;
+  --accent-light: 204, 229, 250;
+  --accent-dark: 10, 25, 47;
+  --accent-gradient: linear-gradient(
+    45deg,
+    rgb(var(--accent)),
+    rgb(var(--accent-light)) 30%,
+    white 60%
+  );
+}
+
+@layer base {
+  * {
+    font-family: "SF Mono", "Fira Code", "Fira Mono", "Roboto Mono", monospace;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    background: var(--background);
+    color-scheme: dark;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  section[id] {
+    scroll-margin-top: var(--nav-height);
+  }
+
+  @media (min-width: 768px) {
+    body {
+      padding-top: var(--nav-height);
+    }
+  }
+
+  *::selection {
+    background-color: var(--sec);
+    color: var(--background);
+  }
+
+  code {
+    font-family: "SF Mono", "Fira Code", "Fira Mono", "Roboto Mono", monospace;
+  }
+
+  /* Improve touch targets */
+  @media (max-width: 768px) {
+    button,
+    [role="button"],
+    a {
+      min-height: 44px;
+      min-width: 44px;
+    }
+  }
+}
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--white-icon);
+  border: 2px solid var(--background);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--sec);
+}
+
+/* Scrollbar styles for Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--white-icon) var(--background);
+}
+
+.fade-in {
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 0.5s ease-out,
+    transform 0.5s ease-out;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fade-in--slow {
+  transform: translateY(20px);
+  transition: opacity 1.2s ease-out;
+}
+
+.fade-in--slow.visible {
+  transform: translateY(0);
+}

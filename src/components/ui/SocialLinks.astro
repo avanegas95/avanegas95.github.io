@@ -1,0 +1,44 @@
+---
+import type { SocialLink } from "@/lib/types";
+
+interface Props {
+  links: SocialLink[];
+  layout?: "row" | "footer";
+}
+
+const { links, layout = "row" } = Astro.props;
+---
+
+{
+  layout === "footer" ? (
+    <div class="flex space-x-8">
+      {links.map((link) => (
+        <a
+          href={link.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="flex flex-col items-center group transition-all duration-300 hover:scale-110"
+          aria-label={link.label}
+        >
+          <div class="text-[var(--white-icon)] hover:text-[var(--white)] transition-all duration-300 ease-in-out">
+            <div set:html={link.icon} />
+          </div>
+        </a>
+      ))}
+    </div>
+  ) : (
+    <div class="flex justify-center sm:justify-start gap-6 animate-fade-in">
+      {links.map((link) => (
+        <a
+          href={link.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-[var(--white-icon)] hover:text-[var(--white)] transition-all duration-300 ease-in-out p-2 hover:scale-110"
+          aria-label={link.label}
+        >
+          <div set:html={link.icon} />
+        </a>
+      ))}
+    </div>
+  )
+}

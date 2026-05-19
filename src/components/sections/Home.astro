@@ -1,0 +1,143 @@
+---
+import LogoWall from "@/components/ui/LogoWall.astro";
+import SocialLinks from "@/components/ui/SocialLinks.astro";
+import { socialLinks } from "@/data/social-links";
+---
+
+<section
+  class="relative flex min-h-[90vh] items-center lg:min-h-[80vh]"
+  id="home"
+>
+  <div
+    class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 lg:py-16"
+  >
+    <div class="space-y-6 md:space-y-8">
+      <div class="space-y-4 md:space-y-6">
+        <p
+          class="text-[var(--sec)] font-mono mb-2 md:mb-3 text-base animate-fade-in"
+        >
+          Hi, my name is
+        </p>
+        <h1
+          class="text-[var(--white)] text-5xl sm:text-6xl md:text-7xl font-bold mb-2 md:mb-3 animate-fade-in"
+        >
+          Anderson Vanegas.
+        </h1>
+        <h2
+          class="text-[var(--white-icon)] text-3xl sm:text-4xl md:text-5xl font-bold mb-3 md:mb-4 animate-fade-in"
+        >
+          I build quality into software.
+        </h2>
+        <p
+          class="text-[var(--white-icon)] max-w-2xl text-base md:text-lg mb-6 md:mb-8 leading-relaxed animate-fade-in"
+        >
+          I'm a software quality assurance engineer specializing in ensuring the
+          reliability of consumer products. Currently, I'm focused on building
+          out automation testing to improve efficiency of software releases.
+        </p>
+      </div>
+
+      <div class="flex flex-row gap-4 animate-fade-in">
+        <a
+          href="#projects"
+          class="text-center py-3 px-8 border border-[var(--sec)] text-[var(--sec)] rounded-lg hover:bg-[var(--white-icon-tr)] transition-all duration-300 text-base hover:scale-105"
+        >
+          Check out my work
+        </a>
+        <a
+          href="/Anderson_Vanegas_Resume.pdf"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-center py-3 px-8 border border-[var(--sec)] text-[var(--sec)] rounded-lg hover:bg-[var(--white-icon-tr)] transition-all duration-300 text-base hover:scale-105"
+        >
+          Download Resume
+        </a>
+      </div>
+
+      <SocialLinks links={socialLinks} />
+
+      <div class="space-y-4 animate-fade-in">
+        <h3
+          class="flex items-center gap-2 text-lg md:text-xl lg:text-2xl text-[var(--white)] font-semibold"
+        >
+          <span>About Me</span>
+        </h3>
+        <div class="space-y-4 text-[var(--white-icon)]">
+          <p class="text-sm md:text-base leading-relaxed">
+            Hello! I'm Anderson, a quality assurance engineer who loves to
+            ensure software works to the needs of users.
+          </p>
+          <p class="text-sm md:text-base leading-relaxed">
+            Here are a few technologies I've been working with recently:
+          </p>
+          <ul
+            class="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-2 text-xs md:text-sm"
+          >
+            <li class="flex items-center gap-2">
+              <span class="text-[var(--sec)]">▹</span> Python
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-[var(--sec)]">▹</span> Appium
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-[var(--sec)]">▹</span> Selenium
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-[var(--sec)]">▹</span> Node.js
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-[var(--sec)]">▹</span> Astro
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-[var(--sec)]">▹</span> HTML/CSS
+            </li>
+          </ul>
+          <LogoWall />
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  section {
+    counter-reset: section;
+  }
+
+  @keyframes fadeIn {
+    from {
+      transform: translateY(20px);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-out both;
+  }
+
+  .animate-fade-in:nth-child(1) {
+    animation-delay: 0.1s;
+  }
+  .animate-fade-in:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+  .animate-fade-in:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+  .animate-fade-in:nth-child(4) {
+    animation-delay: 0.4s;
+  }
+  .animate-fade-in:nth-child(5) {
+    animation-delay: 0.5s;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-fade-in {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+  }
+</style>
