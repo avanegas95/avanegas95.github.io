@@ -13,9 +13,48 @@ import spotBg from "@/assets/images/placeholder.jpg";
     </h3>
 
     <div
-      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 auto-rows-fr"
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 auto-rows-fr"
     >
-      <!-- Boston Dynamics Card -->
+      <!-- Boston Dynamics — Staff SQA Engineer (current) -->
+      <div
+        class="rounded-xl overflow-hidden h-full flex flex-col fade-in fade-in--slow experience-card"
+      >
+        <div class="p-0 text-center h-40 relative overflow-hidden">
+          <Image
+            src={spotBg}
+            alt="Spot Robot"
+            class="absolute inset-0 w-full h-full object-cover"
+          />
+        </div>
+        <div class="bg-[#112240] p-6 text-center flex-1 relative">
+          <div
+            class="absolute left-1/2 top-0 transform -translate-x-1/2 -translate-y-1/2"
+          >
+            <Image
+              src={companyLogo}
+              alt="Boston Dynamics Logo"
+              class="w-24 h-24 rounded-full border-4 border-[#112240]"
+            />
+          </div>
+          <div class="mt-12">
+            <p
+              class="text-gray-400 text-lg font-mono mb-8"
+              style="color: #64ffda;"
+            >
+              Boston Dynamics
+            </p>
+            <h4 class="text-white text-xl font-mono mb-2">
+              Staff SQA Engineer
+            </h4>
+            <p class="text-gray-400 text-sm mb-6">2026 – Present</p>
+            <ul class="text-gray-300 text-sm md:text-base text-left space-y-2 mx-auto max-w-xs">
+              {/* TODO: Fill in Staff SQA Engineer bullets */}
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Boston Dynamics — Senior SQA Engineer -->
       <div
         class="rounded-xl overflow-hidden h-full flex flex-col fade-in fade-in--slow experience-card"
       >
@@ -46,8 +85,25 @@ import spotBg from "@/assets/images/placeholder.jpg";
             <h4 class="text-white text-xl font-mono mb-2">
               Senior SQA Engineer
             </h4>
-            <p class="text-gray-400 text-sm mb-6">September 2023 – Present</p>
-            <p class="text-gray-300 mb-4 text-center">TBD</p>
+            <p class="text-gray-400 text-sm mb-6">September 2023 – 2026</p>
+            <ul class="text-gray-300 text-sm md:text-base text-left space-y-2 mx-auto max-w-xs">
+              <li class="flex gap-2">
+                <span class="text-[#64ffda] mt-1">▹</span>
+                <span>Project QA lead across HIL, Gazebo simulation, and Appium Android app testing.</span>
+              </li>
+              <li class="flex gap-2">
+                <span class="text-[#64ffda] mt-1">▹</span>
+                <span>Built a Python SSH-based monitoring tool for real-time robot metrics.</span>
+              </li>
+              <li class="flex gap-2">
+                <span class="text-[#64ffda] mt-1">▹</span>
+                <span>Integrated automated tests into CI/CD with stage-based reporting.</span>
+              </li>
+              <li class="flex gap-2">
+                <span class="text-[#64ffda] mt-1">▹</span>
+                <span>Onboarded non-SQA engineers through structured QA training.</span>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
@@ -69,7 +125,7 @@ import spotBg from "@/assets/images/placeholder.jpg";
           >
             <Image
               src={companyLogo}
-              alt="Boston Dynamics Logo"
+              alt="SharkNinja Logo"
               class="w-24 h-24 rounded-full border-4 border-[#112240]"
             />
           </div>
@@ -81,8 +137,25 @@ import spotBg from "@/assets/images/placeholder.jpg";
               SharkNinja
             </p>
             <h4 class="text-white text-xl font-mono mb-2">SQA Engineer I/II</h4>
-            <p class="text-gray-400 text-sm mb-6">May 2019 – September 2023</p>
-            <p class="text-gray-300 text-center">TBD</p>
+            <p class="text-gray-400 text-sm mb-6">November 2019 – September 2023</p>
+            <ul class="text-gray-300 text-sm md:text-base text-left space-y-2 mx-auto max-w-xs">
+              <li class="flex gap-2">
+                <span class="text-[#64ffda] mt-1">▹</span>
+                <span>Designed and executed manual test cases for cloud services and consumer mobile apps.</span>
+              </li>
+              <li class="flex gap-2">
+                <span class="text-[#64ffda] mt-1">▹</span>
+                <span>Mentored junior engineers and contractors across sprints.</span>
+              </li>
+              <li class="flex gap-2">
+                <span class="text-[#64ffda] mt-1">▹</span>
+                <span>Ran daily standups, defect triage, and release coordination.</span>
+              </li>
+              <li class="flex gap-2">
+                <span class="text-[#64ffda] mt-1">▹</span>
+                <span>Helped the automation team debug and improve Python scripts.</span>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
