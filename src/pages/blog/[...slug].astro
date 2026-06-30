@@ -1,0 +1,76 @@
+---
+import BlogCoverImage from "@/components/blog/BlogCoverImage.astro";
+import TagPills from "@/components/blog/TagPills.astro";
+import BlogLayout from "@/layouts/BlogLayout.astro";
+import { getCollection, render } from "astro:content";
+import type { CollectionEntry } from "astro:content";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog");
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: post,
+  }));
+}
+
+const post = Astro.props as CollectionEntry<"blog">;
+const { Content } = await render(post);
+const formattedDate = post.data.pubDate.toLocaleDateString("en-US", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
+const canonicalPath = `/blog/${post.id}/`;
+const site = Astro.site ?? new URL("https://avanegas.com");
+const ogImage = post.data.cover
+  ? new URL(post.data.cover.src, site).href
+  : undefined;
+---
+
+<BlogLayout
+  title={`${post.data.title} | Anderson Vanegas`}
+  description={post.data.description}
+  canonicalPath={canonicalPath}
+  ogType="article"
+  ogImage={ogImage}
+>
+  <article class="fade-in">
+    <header class="mb-8 pb-8 border-b border-[#ffffff10]">
+      <a
+        href="/blog/"
+        class="text-sm text-[var(--sec)] hover:opacity-80 transition-opacity"
+      >
+        ← Back to blog
+      </a>
+      <time
+        datetime={post.data.pubDate.toISOString()}
+        class="block mt-4 text-sm text-[var(--white-icon)]"
+      >
+        {formattedDate}
+      </time>
+      <h1 class="mt-2 text-3xl sm:text-4xl font-bold text-[var(--white)]">
+        {post.data.title}
+      </h1>
+      <p class="mt-4 text-[var(--white-icon)] leading-relaxed">
+        {post.data.description}
+      </p>
+      <div class="mt-4">
+        <TagPills tags={post.data.tags} />
+      </div>
+    </header>
+
+    {
+      post.data.cover && (
+        <BlogCoverImage
+          src={post.data.cover.src}
+          alt={post.data.cover.alt}
+          caption="Cover image — sits between the post header and article body."
+        />
+      )
+    }
+
+    <div class="blog-prose">
+      <Content />
+    </div>
+  </article>
+</BlogLayout>

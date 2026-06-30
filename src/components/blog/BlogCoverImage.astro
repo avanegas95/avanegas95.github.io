@@ -1,0 +1,33 @@
+---
+import { Image } from "astro:assets";
+
+interface Props {
+  src: string;
+  alt: string;
+  caption?: string;
+}
+
+const { src, alt, caption } = Astro.props;
+---
+
+<figure class="my-8">
+  <div
+    class="relative aspect-video overflow-hidden rounded-lg border border-[#ffffff10] bg-[#0c0c0c]"
+  >
+    <Image
+      src={src}
+      alt={alt}
+      width={1200}
+      height={675}
+      class="w-full h-full object-cover"
+      loading="eager"
+    />
+  </div>
+  {
+    caption && (
+      <figcaption class="mt-2 text-xs text-[var(--white-icon)] text-center">
+        {caption}
+      </figcaption>
+    )
+  }
+</figure>

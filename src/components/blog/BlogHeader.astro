@@ -1,0 +1,50 @@
+---
+interface Props {
+  active?: "blog" | "home";
+}
+
+const { active = "blog" } = Astro.props;
+---
+
+<header
+  class="fixed top-0 left-0 right-0 z-50 border-b border-[#ffffff10] bg-[var(--background)]/90 backdrop-blur-md"
+>
+  <nav
+    class="max-w-3xl mx-auto flex items-center justify-between py-4 px-4 sm:px-6 min-h-[var(--nav-height)]"
+  >
+    <a
+      href="/"
+      class="text-[var(--sec)] font-bold text-2xl hover:opacity-80 transition-opacity duration-300"
+    >
+      AV
+    </a>
+    <ul class="flex items-center gap-6 list-none m-0 p-0">
+      <li>
+        <a
+          href="/"
+          class:list={[
+            "text-sm transition-colors duration-300",
+            active === "home"
+              ? "text-[var(--sec)]"
+              : "text-[var(--white-icon)] hover:text-[var(--sec)]",
+          ]}
+        >
+          Portfolio
+        </a>
+      </li>
+      <li>
+        <a
+          href="/blog/"
+          class:list={[
+            "text-sm transition-colors duration-300",
+            active === "blog"
+              ? "text-[var(--sec)]"
+              : "text-[var(--white-icon)] hover:text-[var(--sec)]",
+          ]}
+        >
+          Blog
+        </a>
+      </li>
+    </ul>
+  </nav>
+</header>
