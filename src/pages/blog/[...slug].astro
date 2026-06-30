@@ -21,12 +21,18 @@ const formattedDate = post.data.pubDate.toLocaleDateString("en-US", {
   day: "numeric",
 });
 const canonicalPath = `/blog/${post.id}/`;
+const site = Astro.site ?? new URL("https://avanegas.com");
+const ogImage = post.data.cover
+  ? new URL(post.data.cover.src, site).href
+  : undefined;
 ---
 
 <BlogLayout
   title={`${post.data.title} | Anderson Vanegas`}
   description={post.data.description}
   canonicalPath={canonicalPath}
+  ogType="article"
+  ogImage={ogImage}
 >
   <article class="fade-in">
     <header class="mb-8 pb-8 border-b border-[#ffffff10]">

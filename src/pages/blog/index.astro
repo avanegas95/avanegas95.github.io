@@ -53,6 +53,12 @@ const tags = getAllTags(posts);
   }
 
   <section class="space-y-6" aria-label="Blog posts">
-    {posts.map((post) => <PostCard post={post} />)}
+    {
+      posts.length === 0 ? (
+        <p class="text-[var(--white-icon)] fade-in">No posts yet. Check back soon.</p>
+      ) : (
+        posts.map((post) => <PostCard post={post} />)
+      )
+    }
   </section>
 </BlogLayout>

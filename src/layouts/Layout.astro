@@ -6,12 +6,18 @@ interface Props {
   title: string;
   description?: string;
   canonicalUrl?: string;
+  ogType?: "website" | "article";
+  ogImage?: string;
 }
 
-const { title, description, canonicalUrl } = Astro.props;
+const DEFAULT_OG_IMAGE = "https://avanegas.com/images/og.image.png";
+
+const { title, description, canonicalUrl, ogType = "website", ogImage } =
+  Astro.props;
 const metaDescription =
   description ?? "Anderson Vanegas - SQA Engineer | Automation Engineer";
 const pageUrl = canonicalUrl ?? Astro.url.href;
+const socialImage = ogImage ?? DEFAULT_OG_IMAGE;
 ---
 
 <!doctype html>
@@ -27,24 +33,15 @@ const pageUrl = canonicalUrl ?? Astro.url.href;
     <link rel="icon" type="image/png" href={favicon.src} />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
-    <meta
-      property="og:image"
-      content="https://avanegas.com/images/og.image.png"
-    />
+    <meta property="og:image" content={socialImage} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={metaDescription} />
     <meta property="og:url" content={pageUrl} />
-    <meta
-      property="og:type"
-      content={canonicalUrl?.includes("/blog/") ? "article" : "website"}
-    />
+    <meta property="og:type" content={ogType} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={metaDescription} />
-    <meta
-      name="twitter:image"
-      content="https://avanegas.com/images/og.image.png"
-    />
+    <meta name="twitter:image" content={socialImage} />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

@@ -6,14 +6,22 @@ interface Props {
   title: string;
   description: string;
   canonicalPath: string;
+  ogType?: "website" | "article";
+  ogImage?: string;
 }
 
-const { title, description, canonicalPath } = Astro.props;
+const { title, description, canonicalPath, ogType, ogImage } = Astro.props;
 const site = Astro.site ?? new URL("https://avanegas.com");
 const canonicalUrl = new URL(canonicalPath, site).href;
 ---
 
-<Layout title={title} description={description} canonicalUrl={canonicalUrl}>
+<Layout
+  title={title}
+  description={description}
+  canonicalUrl={canonicalUrl}
+  ogType={ogType}
+  ogImage={ogImage}
+>
   <BlogHeader active="blog" />
   <main class="pt-[calc(var(--nav-height)+2rem)] pb-16 max-w-3xl mx-auto px-4 sm:px-6">
     <slot />
