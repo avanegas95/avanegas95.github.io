@@ -1,0 +1,59 @@
+---
+import TagPills from "@/components/blog/TagPills.astro";
+import type { BlogPost } from "@/lib/blog-tags";
+
+interface Props {
+  post: BlogPost;
+}
+
+const { post } = Astro.props;
+const formattedDate = post.data.pubDate.toLocaleDateString("en-US", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
+---
+
+<article
+  class="border border-[#ffffff10] rounded-lg overflow-hidden hover:border-[var(--sec)]/40 transition-colors duration-300"
+>
+  {
+    post.data.cover && (
+      <a
+        href={`/blog/${post.id}/`}
+        class="block aspect-video overflow-hidden bg-[#0c0c0c]"
+        aria-hidden="true"
+        tabindex="-1"
+      >
+        <img
+          src={post.data.cover.src}
+          alt=""
+          class="w-full h-full object-cover transition-transform duration-300 hover:scale-[1.02]"
+          loading="lazy"
+          width={800}
+          height={450}
+        />
+      </a>
+    )
+  }
+  <div class="p-6">
+  <time
+    datetime={post.data.pubDate.toISOString()}
+    class="text-xs text-[var(--white-icon)]"
+  >
+    {formattedDate}
+  </time>
+  <h2 class="mt-2 mb-2 text-xl font-bold">
+    <a
+      href={`/blog/${post.id}/`}
+      class="text-[var(--white)] hover:text-[var(--sec)] transition-colors duration-300"
+    >
+      {post.data.title}
+    </a>
+  </h2>
+  <p class="text-[var(--white-icon)] text-sm mb-4 leading-relaxed">
+    {post.data.description}
+  </p>
+  <TagPills tags={post.data.tags} />
+  </div>
+</article>

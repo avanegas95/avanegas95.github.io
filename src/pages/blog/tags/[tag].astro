@@ -1,0 +1,58 @@
+---
+import PostCard from "@/components/blog/PostCard.astro";
+import BlogLayout from "@/layouts/BlogLayout.astro";
+import { getCollection } from "astro:content";
+import type { BlogPost } from "@/lib/blog-tags";
+import {
+  formatTagLabel,
+  getAllTags,
+  getPostsByTag,
+  normalizeTag,
+} from "@/lib/blog-tags";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog");
+  const tags = getAllTags(posts);
+
+  return tags.map(({ tag }) => ({
+    params: { tag },
+    props: { tag, posts: getPostsByTag(posts, tag) },
+  }));
+}
+
+interface Props {
+  tag: string;
+  posts: BlogPost[];
+}
+
+const { tag, posts } = Astro.props;
+const label = formatTagLabel(tag);
+const canonicalPath = `/blog/tags/${normalizeTag(tag)}/`;
+---
+
+<BlogLayout
+  title={`${label} | Blog | Anderson Vanegas`}
+  description={`Posts tagged with ${label}.`}
+  canonicalPath={canonicalPath}
+>
+  <header class="mb-10 fade-in">
+    <a
+      href="/blog/"
+      class="text-sm text-[var(--sec)] hover:opacity-80 transition-opacity"
+    >
+      ← Back to blog
+    </a>
+    <p class="text-[var(--sec)] font-mono text-sm mt-4 mb-2">Topic</p>
+    <h1 class="text-3xl sm:text-4xl font-bold text-[var(--white)] mb-2">
+      {label}
+    </h1>
+    <p class="text-[var(--white-icon)]">
+      {posts.length}
+      {posts.length === 1 ? "post" : "posts"}
+    </p>
+  </header>
+
+  <section class="space-y-6" aria-label={`Posts tagged ${label}`}>
+    {posts.map((post) => <PostCard post={post} />)}
+  </section>
+</BlogLayout>

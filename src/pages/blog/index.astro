@@ -1,0 +1,58 @@
+---
+import PostCard from "@/components/blog/PostCard.astro";
+import BlogLayout from "@/layouts/BlogLayout.astro";
+import { getCollection } from "astro:content";
+import {
+  formatTagLabel,
+  getAllTags,
+  sortPostsFeaturedFirst,
+  tagUrl,
+} from "@/lib/blog-tags";
+
+const posts = sortPostsFeaturedFirst(await getCollection("blog"));
+const tags = getAllTags(posts);
+---
+
+<BlogLayout
+  title="Blog | Anderson Vanegas"
+  description="Notes on building reliable software and things I'm learning along the way."
+  canonicalPath="/blog/"
+>
+  <header class="mb-10 fade-in">
+    <p class="text-[var(--sec)] font-mono text-sm mb-2">Writing</p>
+    <h1 class="text-3xl sm:text-4xl font-bold text-[var(--white)] mb-4">
+      Blog
+    </h1>
+    <p class="text-[var(--white-icon)] leading-relaxed">
+      Notes on building reliable software and things I'm learning along the
+      way — QA, automation, creative projects, and life.
+    </p>
+  </header>
+
+  {
+    tags.length > 0 && (
+      <section class="mb-10 fade-in" aria-label="All tags">
+        <h2 class="text-sm text-[var(--white-icon)] mb-3 uppercase tracking-wide">
+          Topics
+        </h2>
+        <ul class="flex flex-wrap gap-2 list-none p-0 m-0">
+          {tags.map(({ tag, count }) => (
+            <li>
+              <a
+                href={tagUrl(tag)}
+                class="inline-flex items-center gap-1.5 px-3 py-1 text-xs border border-[#ffffff20] text-[var(--white-icon)] rounded-full hover:border-[var(--sec)] hover:text-[var(--sec)] transition-colors duration-300"
+              >
+                {formatTagLabel(tag)}
+                <span class="text-[var(--white-icon)]/70">({count})</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  <section class="space-y-6" aria-label="Blog posts">
+    {posts.map((post) => <PostCard post={post} />)}
+  </section>
+</BlogLayout>

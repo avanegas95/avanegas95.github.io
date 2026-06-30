@@ -4,16 +4,22 @@ import favicon from "@/assets/images/favicon.png";
 
 interface Props {
   title: string;
+  description?: string;
+  canonicalUrl?: string;
 }
 
-const { title } = Astro.props;
+const { title, description, canonicalUrl } = Astro.props;
+const metaDescription =
+  description ?? "Anderson Vanegas - SQA Engineer | Automation Engineer";
+const pageUrl = canonicalUrl ?? Astro.url.href;
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="description" content="Anderson Vanegas - SQA Engineer" />
+    <meta name="description" content={metaDescription} />
+    {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
@@ -25,19 +31,16 @@ const { title } = Astro.props;
       property="og:image"
       content="https://avanegas.com/images/og.image.png"
     />
-    <meta property="og:title" content="Anderson Vanegas" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={metaDescription} />
+    <meta property="og:url" content={pageUrl} />
     <meta
-      property="og:description"
-      content="SQA Engineer | Automation Engineer"
+      property="og:type"
+      content={canonicalUrl?.includes("/blog/") ? "article" : "website"}
     />
-    <meta property="og:url" content="https://avanegas.com" />
-    <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Anderson Vanegas" />
-    <meta
-      name="twitter:description"
-      content="SQA Engineer | Automation Engineer"
-    />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={metaDescription} />
     <meta
       name="twitter:image"
       content="https://avanegas.com/images/og.image.png"
