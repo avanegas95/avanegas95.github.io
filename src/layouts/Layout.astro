@@ -8,11 +8,12 @@ interface Props {
   canonicalUrl?: string;
   ogType?: "website" | "article";
   ogImage?: string;
+  bodyClass?: string;
 }
 
 const DEFAULT_OG_IMAGE = "https://avanegas.com/images/og.image.png";
 
-const { title, description, canonicalUrl, ogType = "website", ogImage } =
+const { title, description, canonicalUrl, ogType = "website", ogImage, bodyClass } =
   Astro.props;
 const metaDescription =
   description ?? "Anderson Vanegas - SQA Engineer | Automation Engineer";
@@ -57,7 +58,10 @@ const socialImage = ogImage ?? DEFAULT_OG_IMAGE;
     </noscript>
   </head>
   <body
-    class="bg-[var(--background)] px-4 sm:px-6 md:px-8 lg:px-12 xl:px-24 pb-20 md:pb-0"
+    class:list={[
+      "bg-[var(--background)] px-4 sm:px-6 md:px-8 lg:px-12 xl:px-24 pb-20 md:pb-0",
+      bodyClass,
+    ]}
   >
     <slot />
   </body>

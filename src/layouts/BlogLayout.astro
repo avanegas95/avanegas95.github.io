@@ -21,9 +21,10 @@ const canonicalUrl = new URL(canonicalPath, site).href;
   canonicalUrl={canonicalUrl}
   ogType={ogType}
   ogImage={ogImage}
+  bodyClass="!pt-0"
 >
   <BlogHeader active="blog" />
-  <main class="pt-[calc(var(--nav-height)+2rem)] pb-16 max-w-3xl mx-auto px-4 sm:px-6">
+  <main class="pt-[calc(var(--nav-height)+3rem)] pb-16 max-w-3xl mx-auto px-4 sm:px-6">
     <slot />
   </main>
 </Layout>
