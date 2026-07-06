@@ -63,6 +63,10 @@ export function getAllTags(posts: BlogPost[]): TagWithCount[] {
     .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag));
 }
 
+export function getPublishedPosts(posts: BlogPost[]): BlogPost[] {
+  return posts.filter((post) => !post.data.draft);
+}
+
 export function sortPostsFeaturedFirst(posts: BlogPost[]): BlogPost[] {
   return [...posts].sort((a, b) => {
     if (a.data.featured !== b.data.featured) {

@@ -7,11 +7,12 @@ import {
   formatTagLabel,
   getAllTags,
   getPostsByTag,
+  getPublishedPosts,
   normalizeTag,
 } from "@/lib/blog-tags";
 
 export async function getStaticPaths() {
-  const posts = await getCollection("blog");
+  const posts = getPublishedPosts(await getCollection("blog"));
   const tags = getAllTags(posts);
 
   return tags.map(({ tag }) => ({

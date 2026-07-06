@@ -7,6 +7,7 @@ featured: true
 cover:
   src: "/images/blog/what-this-blog-is-about-cover.png"
   alt: "A warm home desk with a laptop, notebook, and coffee beside creative hobby items"
+draft: true
 ---
 
 When I first started my career, I had no idea SQA was even a job someone could have. I happened upon it — and loved the idea of improving software through the eyes of a customer. Since then I've grown in manual testing, picked up automation, stumbled through CI testing, and with AI in the mix, taken on projects I never would have tried before.

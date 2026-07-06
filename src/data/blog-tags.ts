@@ -9,6 +9,11 @@ export const suggestedBlogTags = [
     description: "Quality assurance practices and mindset",
   },
   {
+    slug: "ai",
+    label: "AI",
+    description: "AI and machine learning",
+  },
+  {
     slug: "automation",
     label: "Automation",
     description: "Test automation and tooling",
@@ -22,11 +27,6 @@ export const suggestedBlogTags = [
     slug: "ci-cd",
     label: "CI/CD",
     description: "Pipelines, builds, and continuous integration",
-  },
-  {
-    slug: "appium",
-    label: "Appium",
-    description: "Mobile test automation",
   },
   {
     slug: "photo",

@@ -5,11 +5,14 @@ import { getCollection } from "astro:content";
 import {
   formatTagLabel,
   getAllTags,
+  getPublishedPosts,
   sortPostsFeaturedFirst,
   tagUrl,
 } from "@/lib/blog-tags";
 
-const posts = sortPostsFeaturedFirst(await getCollection("blog"));
+const posts = sortPostsFeaturedFirst(
+  getPublishedPosts(await getCollection("blog")),
+);
 const tags = getAllTags(posts);
 ---
 

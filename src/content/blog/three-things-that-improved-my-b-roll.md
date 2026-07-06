@@ -3,6 +3,7 @@ title: "Three things that improved my B-roll"
 description: "Small habit changes that made my secondary footage more usable in edits — no gear upgrade required."
 pubDate: 2026-05-05
 tags: ["video", "creative"]
+draft: true
 ---
 
 I'm not a full-time filmmaker. I shoot B-roll for personal projects and to learn editing. These three habits helped more than buying another lens.

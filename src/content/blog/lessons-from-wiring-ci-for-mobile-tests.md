@@ -2,7 +2,7 @@
 title: "Lessons from wiring CI for mobile tests"
 description: "Practical takeaways from getting Appium suites running in a pipeline — flakiness, artifacts, and what to fix first."
 pubDate: 2026-05-12
-tags: ["automation", "appium", "ci-cd"]
+tags: ["automation", "ci-cd"]
 featured: true
 cover:
   src: "/images/blog-placeholder.jpg"
