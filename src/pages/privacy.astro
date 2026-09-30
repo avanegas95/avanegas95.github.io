@@ -1,0 +1,151 @@
+---
+import BlogHeader from "@/components/blog/BlogHeader.astro";
+import Layout from "@/layouts/Layout.astro";
+
+// Keep the wording in sync with OrbitHop Docs/site/privacy.html.
+const site = Astro.site ?? new URL("https://avanegas.com");
+const canonicalUrl = new URL("/privacy/", site).href;
+const email = "avanegas95@gmail.com";
+---
+
+<Layout
+  title="Privacy Policy: Orbit Hop"
+  description="Privacy policy for Orbit Hop, a one-tap arcade game for iPhone."
+  canonicalUrl={canonicalUrl}
+>
+  <BlogHeader active="none" />
+  <main
+    class="pt-[calc(var(--nav-height)+2rem)] pb-16 max-w-3xl mx-auto px-4 sm:px-6"
+  >
+    <header class="mb-10 fade-in">
+      <p class="text-[var(--sec)] font-mono text-sm mb-2">Orbit Hop</p>
+      <h1 class="text-3xl sm:text-4xl font-bold text-[var(--white)] mb-4">
+        Privacy Policy
+      </h1>
+      <p class="text-[var(--white-icon)] leading-relaxed">
+        Last updated 30 September 2026
+      </p>
+    </header>
+
+    <article class="blog-prose fade-in">
+      <p>
+        Orbit Hop is a one-tap arcade game for iPhone. This page explains what
+        data the game uses and who handles it. The short version: <strong
+          >there are no accounts, we run no servers, and we never receive your
+          personal information.</strong
+        > The only outside service that collects data is Google AdMob, and only if
+        you choose to watch an optional rewarded ad.
+      </p>
+
+      <h2>What stays on your device</h2>
+      <p>
+        Your scores, Stardust, unlocked pilots and trails, settings and daily
+        streak are stored on your iPhone. They are never sent to us.
+      </p>
+
+      <h2>iCloud sync</h2>
+      <p>
+        If you are signed in to iCloud, the game copies the same progress to
+        your own iCloud account (iCloud key-value storage) so it follows you to
+        your other devices. This data lives in your Apple account; we cannot see
+        or access it. You can turn this off in the iOS Settings app under your
+        name &gt; iCloud.
+      </p>
+
+      <h2>Ads (Google AdMob)</h2>
+      <ul>
+        <li>
+          The game shows only <strong
+            >rewarded ads that you choose to watch</strong
+          > ("Double it" after a run). There are no banner ads and no forced ads.
+        </li>
+        <li>
+          Ads are provided by Google AdMob. We request <strong
+            >non-personalized ads</strong
+          > and we do not use Apple's App Tracking Transparency prompt or your device's
+          advertising identifier (IDFA).
+        </li>
+        <li>
+          To serve and measure ads and to prevent fraud, Google may process
+          information such as your device's IP address (used for approximate
+          location), device and app information, and how you interact with the
+          ad. This data is handled by Google under the <a
+            href="https://policies.google.com/privacy">Google Privacy Policy</a
+          > and
+          <a href="https://policies.google.com/technologies/partner-sites"
+            >how Google uses information from sites or apps that use its
+            services</a
+          >. We do not receive it in a form that identifies you.
+        </li>
+        <li>
+          The Google Mobile Ads SDK may also collect crash and performance
+          diagnostics about the ad code.
+        </li>
+      </ul>
+
+      <h2 id="consent" class="scroll-mt-[calc(var(--nav-height)+1rem)]">
+        Consent (EEA, UK and Switzerland)
+      </h2>
+      <p>
+        Where the law requires it, the game shows Google's consent form (User
+        Messaging Platform) the first time an ad is about to be offered, never
+        at launch. If consent is not given, no ads are requested. Supporter Pack
+        owners never see ads.
+      </p>
+
+      <h2>In-app purchases</h2>
+      <p>
+        Purchases (the Supporter Pack and the Space Roadster) are handled
+        entirely by Apple through the App Store. We do not receive your payment
+        details, name or email. The game checks your purchases on your device
+        with Apple's StoreKit so it can unlock what you bought and restore it on
+        your other devices.
+      </p>
+
+      <h2>What we do not do</h2>
+      <ul>
+        <li>No accounts, sign-in, email or contacts.</li>
+        <li>
+          No analytics or tracking tools of our own, and no servers of our own.
+        </li>
+        <li>No precise location, camera, microphone, photos or health data.</li>
+        <li>We do not sell your data.</li>
+      </ul>
+
+      <h2>Children</h2>
+      <p>
+        The game is suitable for all ages and is not directed specifically at
+        children. Ads are non-personalized. We do not knowingly collect personal
+        information from anyone.
+      </p>
+
+      <h2>Your choices</h2>
+      <ul>
+        <li>
+          Simply don't tap "Double it": no ad is loaded or shown unless an offer
+          is made, and none plays unless you tap it.
+        </li>
+        <li>
+          Change your ad consent choice from "Privacy choices" in the game's
+          Settings (shown where the law requires consent).
+        </li>
+        <li>
+          Delete the app to remove all data stored on the device; remove the
+          iCloud copy from iOS Settings &gt; your name &gt; iCloud &gt; Manage
+          Storage.
+        </li>
+      </ul>
+
+      <h2>Changes</h2>
+      <p>
+        If this policy changes, the updated version will be posted on this page
+        with a new date.
+      </p>
+
+      <h2>Contact</h2>
+      <p>
+        Questions about privacy: <a href={`mailto:${email}`}>{email}</a>
+      </p>
+    </article>
+  </main>
+</Layout>
