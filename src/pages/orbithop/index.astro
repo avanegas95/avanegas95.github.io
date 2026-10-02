@@ -1,0 +1,111 @@
+---
+import BlogHeader from "@/components/blog/BlogHeader.astro";
+import Layout from "@/layouts/Layout.astro";
+
+// Keep the wording in sync with OrbitHop Docs/site/support.html.
+const site = Astro.site ?? new URL("https://avanegas.com");
+const canonicalUrl = new URL("/orbithop/", site).href;
+const email = "avanegas95@gmail.com";
+---
+
+<Layout
+  title="Support: Astro Andy: Orbit Hop"
+  description="Support for Astro Andy: Orbit Hop, a one-tap arcade game for iPhone. How to play, restore purchases, and get help."
+  canonicalUrl={canonicalUrl}
+>
+  <BlogHeader active="none" />
+  <main
+    class="pt-[calc(var(--nav-height)+2rem)] pb-16 max-w-3xl mx-auto px-4 sm:px-6"
+  >
+    <header class="mb-10 fade-in">
+      <p class="text-[var(--sec)] font-mono text-sm mb-2">
+        Support · iPhone
+      </p>
+      <h1 class="text-3xl sm:text-4xl font-bold text-[var(--white)] mb-4">
+        Astro Andy: Orbit Hop
+      </h1>
+      <p class="text-[var(--white-icon)] leading-relaxed">
+        A one-tap arcade game. Tap to launch Andy from one planet's orbit to
+        the next, time it for a Perfect, collect Stardust and unlock new
+        pilots and trails.
+      </p>
+    </header>
+
+    <article class="blog-prose fade-in">
+      <div
+        class="not-prose rounded-xl px-5 py-4 mb-8 border border-[#ffffff15] bg-[var(--white-icon-tr)]"
+      >
+        <p class="text-[var(--white-icon)] leading-relaxed m-0">
+          <strong class="text-[var(--white)] font-semibold"
+            >Need help or found a bug?</strong
+          >
+          Email
+          <a
+            href={`mailto:${email}?subject=Astro%20Andy%20support`}
+            class="text-[var(--sec)] underline underline-offset-2 hover:opacity-85"
+            >{email}</a
+          >. It helps to include your iPhone model, iOS version and what
+          happened just before the problem. I usually reply within a few days.
+        </p>
+      </div>
+
+      <h2>Common questions</h2>
+
+      <h3>How do I play?</h3>
+      <p>
+        Andy orbits a planet. Tap once to launch toward the next one. Launch
+        when the guide lights up for a Perfect, which earns extra Stardust and
+        builds a combo. Miss every orbit and the run ends.
+      </p>
+
+      <h3>How do I restore my Supporter Pack?</h3>
+      <p>
+        Open <strong>Settings</strong> (the gear on the title screen) and tap
+        <strong>Restore Purchases</strong>, or use Restore on the Supporter
+        Pack screen. Use the same Apple Account you bought it with.
+      </p>
+
+      <h3>Will I lose my progress if I change phones?</h3>
+      <p>
+        Your progress is saved on your iPhone and, when iCloud is on, copied
+        to your iCloud account, so it comes back on a new iPhone signed in to
+        the same Apple Account. Deleting the app on a device without iCloud
+        removes that device's progress.
+      </p>
+
+      <h3>Do I have to watch ads?</h3>
+      <p>
+        No. The only ad is optional: after some runs you can watch one to
+        double that run's Stardust. There are no pop-up ads. The Supporter
+        Pack gives you double Stardust on every run without ads.
+      </p>
+
+      <h3>How do I change my ad privacy choices?</h3>
+      <p>
+        Where the law requires it, Settings shows a <strong
+          >Privacy choices</strong
+        > option that reopens the consent form. Ads are always non-personalized.
+        See the <a href="/privacy/">privacy policy</a>.
+      </p>
+
+      <h3>How do I turn the sound off?</h3>
+      <p>
+        Use the Sound switch in Settings. The game also follows your iPhone's
+        silent switch.
+      </p>
+
+      <h3>Game Center isn't showing my scores or achievements.</h3>
+      <p>
+        Make sure you're signed in to Game Center in the iPhone Settings app.
+        Achievements you already earned unlock the next time you open the game
+        while signed in.
+      </p>
+
+      <h2>Privacy</h2>
+      <p>
+        No accounts, no sign-in, and no personal data sent to us. Read the
+        full <a href="/privacy/">privacy policy</a>.
+      </p>
+    </article>
+  </main>
+</Layout>
