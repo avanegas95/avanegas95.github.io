@@ -6,13 +6,18 @@ import Experiences from "@/components/sections/Experiences.astro";
 import Projects from "@/components/sections/Projects.astro";
 import Contact from "@/components/sections/Contact.astro";
 import Footer from "@/components/sections/Footer.astro";
+
+const site = Astro.site ?? new URL("https://avanegas.com");
+const canonicalUrl = new URL("/", site).href;
 ---
 
-<Layout title="Anderson Vanegas">
+<Layout title="Anderson Vanegas" canonicalUrl={canonicalUrl}>
   <Nav />
-  <Home />
-  <Experiences />
-  <Projects />
-  <Contact />
+  <main id="main-content">
+    <Home />
+    <Experiences />
+    <Projects />
+    <Contact />
+  </main>
   <Footer />
 </Layout>

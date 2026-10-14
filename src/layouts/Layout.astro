@@ -14,9 +14,11 @@ const DEFAULT_OG_IMAGE = "https://avanegas.com/images/og.image.png";
 
 const { title, description, canonicalUrl, ogType = "website", ogImage } =
   Astro.props;
+const site = Astro.site ?? new URL("https://avanegas.com");
 const metaDescription =
   description ?? "Anderson Vanegas - SQA Engineer | Automation Engineer";
-const pageUrl = canonicalUrl ?? Astro.url.href;
+const resolvedCanonical =
+  canonicalUrl ?? new URL(Astro.url.pathname, site).href;
 const socialImage = ogImage ?? DEFAULT_OG_IMAGE;
 ---
 
@@ -25,40 +27,47 @@ const socialImage = ogImage ?? DEFAULT_OG_IMAGE;
   <head>
     <meta charset="UTF-8" />
     <meta name="description" content={metaDescription} />
-    {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
-    />
+    <link rel="canonical" href={resolvedCanonical} />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/png" href={favicon.src} />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <meta property="og:image" content={socialImage} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={metaDescription} />
-    <meta property="og:url" content={pageUrl} />
+    <meta property="og:url" content={resolvedCanonical} />
     <meta property="og:type" content={ogType} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={metaDescription} />
     <meta name="twitter:image" content={socialImage} />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
-    />
-    <noscript>
-      <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
-      />
-    </noscript>
+    <script is:inline type="speculationrules">
+      {
+        "prerender": [
+          {
+            "where": {
+              "or": [
+                { "href_matches": "/blog" },
+                { "href_matches": "/blog/" },
+                {
+                  "and": [
+                    { "href_matches": "/blog/*" },
+                    { "not": { "href_matches": "/blog/tags/*" } }
+                  ]
+                }
+              ]
+            },
+            "eagerness": "moderate"
+          }
+        ]
+      }
+    </script>
   </head>
   <body
     class="bg-[var(--background)] px-4 sm:px-6 md:px-8 lg:px-12 xl:px-24 pb-20 md:pb-0"
   >
+    <a href="#main-content" class="skip-link">Skip to main content</a>
     <slot />
   </body>
 </html>

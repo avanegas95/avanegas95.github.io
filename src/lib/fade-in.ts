@@ -11,6 +11,14 @@ export function initFadeInObserver(options: FadeInObserverOptions = {}): void {
     delayMultiplier = 0.05,
   } = options;
 
+  const prefersReducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)",
+  ).matches;
+
+  if (!prefersReducedMotion) {
+    document.documentElement.classList.add("has-fade-in");
+  }
+
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
@@ -25,6 +33,10 @@ export function initFadeInObserver(options: FadeInObserverOptions = {}): void {
   function observeFadeElements() {
     const fadeElements = document.querySelectorAll(".fade-in:not(.visible)");
     fadeElements.forEach((element, index) => {
+      if (prefersReducedMotion) {
+        element.classList.add("visible");
+        return;
+      }
       (element as HTMLElement).style.transitionDelay =
         `${index * delayMultiplier}s`;
       observer.observe(element);
