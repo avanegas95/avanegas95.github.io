@@ -107,31 +107,30 @@
   transform: translateY(0);
 }
 
-html.has-fade-in .fade-in:not(.visible) {
-  opacity: 0;
-  transform: translateY(10px);
+/* Transitions must live on the base rule: the destination (.visible) state's
+   transition is what the browser uses when the class is added. */
+html.has-fade-in .fade-in {
   transition:
     opacity 0.5s ease-out,
     transform 0.5s ease-out;
 }
 
-html.has-fade-in .fade-in.visible {
-  opacity: 1;
-  transform: translateY(0);
+html.has-fade-in .fade-in:not(.visible) {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+html.has-fade-in .fade-in--slow {
+  transition: opacity 1.2s ease-out;
 }
 
 html.has-fade-in .fade-in--slow:not(.visible) {
   transform: translateY(20px);
-  transition: opacity 1.2s ease-out;
-}
-
-html.has-fade-in .fade-in--slow.visible {
-  transform: translateY(0);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html.has-fade-in .fade-in:not(.visible),
-  html.has-fade-in .fade-in--slow:not(.visible) {
+  html.has-fade-in .fade-in,
+  html.has-fade-in .fade-in:not(.visible) {
     opacity: 1;
     transform: none;
     transition: none;

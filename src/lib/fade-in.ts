@@ -15,10 +15,6 @@ export function initFadeInObserver(options: FadeInObserverOptions = {}): void {
     "(prefers-reduced-motion: reduce)",
   ).matches;
 
-  if (!prefersReducedMotion) {
-    document.documentElement.classList.add("has-fade-in");
-  }
-
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
