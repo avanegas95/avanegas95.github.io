@@ -23,7 +23,10 @@ const canonicalUrl = new URL(canonicalPath, site).href;
   ogImage={ogImage}
 >
   <BlogHeader active="blog" />
-  <main class="pt-[calc(var(--nav-height)+2rem)] pb-16 max-w-3xl mx-auto px-4 sm:px-6">
+  <main
+    id="main-content"
+    class="pt-[calc(var(--nav-height)+2rem)] pb-16 max-w-3xl mx-auto px-4 sm:px-6"
+  >
     <slot />
   </main>
 </Layout>

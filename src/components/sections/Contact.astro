@@ -5,16 +5,16 @@
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="space-y-8 md:space-y-12">
       <div class="space-y-4">
-        <h2
+        <p
           class="text-base md:text-lg text-[var(--sec)] mb-2 shiny-sec fade-in"
         >
           Let's talk
-        </h2>
-        <h3
+        </p>
+        <h2
           class="text-3xl sm:text-4xl md:text-5xl font-medium text-[var(--white)] mb-4 md:mb-6 fade-in"
         >
           Contact
-        </h3>
+        </h2>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
@@ -90,10 +90,18 @@
 
           <div
             id="form-message"
-            class="hidden justify-center items-center mt-4 text-[var(--white)] text-base md:text-lg fade-in"
+            class="hidden mt-4 text-[var(--white)] text-base md:text-lg fade-in"
+            role="status"
           >
             ✅ Thank you for your message!
           </div>
+          <p
+            id="form-error"
+            class="hidden mt-4 text-sm text-red-400 fade-in"
+            role="alert"
+          >
+            There was a problem sending your message. Please try again.
+          </p>
         </div>
       </div>
     </div>
@@ -105,8 +113,9 @@
     "contact-form",
   ) as HTMLFormElement | null;
   const formMessage = document.getElementById("form-message");
+  const formError = document.getElementById("form-error");
 
-  if (form && formMessage) {
+  if (form && formMessage && formError) {
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const formData = new FormData(form);
@@ -115,6 +124,9 @@
       ) as HTMLButtonElement | null;
 
       if (!submitButton) return;
+
+      formError.classList.add("hidden");
+      formMessage.classList.add("hidden");
 
       try {
         submitButton.disabled = true;
@@ -131,13 +143,10 @@
           form.style.display = "none";
           formMessage.classList.remove("hidden");
         } else {
-          const data = await response.json();
-          console.error("Error response:", data);
-          alert("There was a problem sending your message.");
+          formError.classList.remove("hidden");
         }
-      } catch (error) {
-        console.error("Error:", error);
-        alert("There was a problem sending your message.");
+      } catch {
+        formError.classList.remove("hidden");
       } finally {
         submitButton.disabled = false;
         submitButton.textContent = "Submit";
