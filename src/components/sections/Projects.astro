@@ -9,25 +9,12 @@ const featured = projects.filter((p) => p.featured);
 function techTags(project: Project) {
   return project.tech.filter(Boolean);
 }
-
-type BentoVariant = "hero" | "accent" | "standard";
-
-function bentoVariant(index: number): BentoVariant {
-  if (index === 0) return "hero";
-  if (index === 1) return "accent";
-  return "standard";
-}
 ---
 
-<section id="projects" class="projects-section py-8 md:py-12 relative overflow-hidden">
-  <div
-    class="projects-section__grid pointer-events-none absolute inset-0 opacity-[0.35]"
-    aria-hidden="true"
-  >
-  </div>
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+<section id="projects" class="py-8 md:py-12 relative overflow-hidden">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="space-y-8 md:space-y-12">
-      <div class="space-y-4 max-w-3xl">
+      <div class="space-y-4">
         <SectionEyebrow client:visible className="mb-2 fade-in">
           Selected work
         </SectionEyebrow>
@@ -37,165 +24,113 @@ function bentoVariant(index: number): BentoVariant {
           Projects
         </h2>
         <p
-          class="text-[var(--white-icon)] text-sm md:text-base max-w-2xl fade-in leading-relaxed"
+          class="text-[var(--white-icon)] text-sm md:text-base max-w-2xl fade-in"
         >
           Selected personal projects — more case studies coming over time.
         </p>
       </div>
 
-      <ul class="projects-bento list-none p-0 m-0">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
         {
-          featured.map((project, index) => {
-            const variant = bentoVariant(index);
-            const tags = techTags(project);
-            const primaryHref = project.external ?? project.github;
-            const indexLabel = String(index + 1).padStart(2, "0");
-
-            const MediaTag = primaryHref ? "a" : "div";
-            const mediaProps = primaryHref
-              ? {
-                  href: primaryHref,
-                  target: "_blank",
-                  rel: "noopener noreferrer",
-                  "aria-label": project.external
-                    ? `Open ${project.title}`
-                    : `View ${project.title} repository`,
-                }
-              : {};
-
-            return (
-              <li
-                class={`projects-bento__item fade-in project-card project-card--${variant}`}
-                style={`animation-delay: ${index * 0.08}s`}
-              >
-                <article class="project-card__inner group h-full">
-                  <MediaTag
-                    {...mediaProps}
-                    class="project-card__media block relative overflow-hidden shrink-0"
-                  >
-                    <Image
-                      src={project.image}
-                      alt=""
-                      class="project-card__photo w-full h-full object-cover"
-                      width={800}
-                      height={450}
-                      loading={index === 0 ? "eager" : "lazy"}
-                    />
-                    <div class="project-card__media-overlay" aria-hidden="true" />
-                    <span class="project-card__index">{indexLabel}</span>
-                  </MediaTag>
-
-                  <div class="project-card__body flex flex-col flex-1 min-h-0">
-                    <div class="project-card__meta">
-                      <span class="project-card__status">
-                        {projectStatusLabels[project.status]}
-                      </span>
-                    </div>
-
-                    <h3 class="project-card__title">
-                      {primaryHref ? (
+          featured.map((project, index) => (
+            <article
+              class="max-w-2xl mx-auto w-full fade-in"
+              style={`animation-delay: ${index * 0.1}s`}
+            >
+              <div class="group overflow-hidden rounded-2xl md:rounded-3xl border border-white/[0.08] bg-[#112240] h-full flex flex-col">
+                <div class="relative aspect-video overflow-hidden shrink-0">
+                  <div class="absolute inset-0 bg-[#000000] bg-opacity-0 transition-all duration-300 group-hover:bg-opacity-10 z-10" />
+                  <Image
+                    src={project.image}
+                    alt=""
+                    class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    width={800}
+                    height={450}
+                    loading="lazy"
+                  />
+                </div>
+                <div class="p-4 md:p-6 flex flex-col flex-1">
+                  <div class="flex flex-wrap items-center gap-2 mb-2">
+                    <span class="text-[10px] md:text-xs uppercase tracking-wide text-[var(--sec)] font-mono">
+                      {projectStatusLabels[project.status]}
+                    </span>
+                  </div>
+                  <h3 class="text-lg md:text-xl font-semibold text-[var(--white)] mb-2">
+                    {project.title}
+                  </h3>
+                  <p class="text-[var(--white-icon)] text-xs md:text-sm mb-4 flex-1 leading-relaxed">
+                    {project.description}
+                  </p>
+                  {
+                    techTags(project).length > 0 && (
+                      <ul class="flex flex-wrap gap-1.5 mb-4">
+                        {techTags(project).map((tag) => (
+                          <li class="text-[10px] md:text-xs px-2 py-0.5 rounded-md bg-white/[0.06] text-[var(--white-icon)]">
+                            {tag}
+                          </li>
+                        ))}
+                      </ul>
+                    )
+                  }
+                  <div class="flex gap-3 mt-auto">
+                    {
+                      project.github && (
                         <a
-                          href={primaryHref}
+                          href={project.github}
                           target="_blank"
                           rel="noopener noreferrer"
-                          class="project-card__title-link"
+                          class="p-1.5 md:p-2 rounded-lg bg-white/[0.06] text-[var(--white-icon)] hover:text-[var(--sec)] transition-all duration-300 hover:scale-110 min-h-0 min-w-0"
+                          aria-label={`${project.title} on GitHub`}
                         >
-                          {project.title}
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                            class="w-4 h-4 md:w-5 md:h-5"
+                          >
+                            <path d="M12.001 2C6.47598 2 2.00098 6.475 2.00098 12C2.00098 16.425 4.86348 20.1625 8.83848 21.4875C9.33848 21.575 9.52598 21.275 9.52598 21.0125C9.52598 20.775 9.51348 19.9875 9.51348 19.15C7.00098 19.6125 6.35098 18.5375 6.15098 17.975C6.03848 17.6875 5.55098 16.8 5.12598 16.5625C4.77598 16.375 4.27598 15.9125 5.11348 15.9C5.90098 15.8875 6.46348 16.625 6.65098 16.925C7.55098 18.4375 8.98848 18.0125 9.56348 17.75C9.65098 17.1 9.91348 16.6625 10.201 16.4125C7.97598 16.1625 5.65098 15.3 5.65098 11.475C5.65098 10.3875 6.03848 9.4875 6.67598 8.7875C6.57598 8.5375 6.22598 7.5125 6.77598 6.1375C6.77598 6.1375 7.61348 5.875 9.52598 7.1625C10.326 6.9375 11.176 6.825 12.026 6.825C12.876 6.825 13.726 6.9375 14.526 7.1625C16.4385 5.8625 17.276 6.1375 17.276 6.1375C17.826 7.5125 17.476 8.5375 17.376 8.7875C18.0135 9.4875 18.401 10.375 18.401 11.475C18.401 15.3125 16.0635 16.1625 13.8385 16.4125C14.201 16.725 14.5135 17.325 14.5135 18.2625C14.5135 19.6 14.501 20.675 14.501 21.0125C14.501 21.275 14.6885 21.5875 15.1885 21.4875C19.259 20.1133 21.9999 16.2963 22.001 12C22.001 6.475 17.526 2 12.001 2Z" />
+                          </svg>
                         </a>
-                      ) : (
-                        project.title
-                      )}
-                    </h3>
-
-                    <p class="project-card__description">{project.description}</p>
-
-                    {
-                      tags.length > 0 && (
-                        <ul class="project-card__tags">
-                          {tags.map((tag) => (
-                            <li class="project-card__tag">{tag}</li>
-                          ))}
-                        </ul>
                       )
                     }
-
-                    <div class="project-card__actions mt-auto">
-                      {
-                        project.external && (
-                          <a
-                            href={project.external}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="project-card__cta"
+                    {
+                      project.external && (
+                        <a
+                          href={project.external}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="p-1.5 md:p-2 rounded-lg bg-white/[0.06] text-[var(--white-icon)] hover:text-[var(--sec)] transition-all duration-300 hover:scale-110 min-h-0 min-w-0"
+                          aria-label={`Visit ${project.title}`}
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                            class="w-4 h-4 md:w-5 md:h-5"
                           >
-                            Visit site
-                            <span aria-hidden="true">↗</span>
-                          </a>
-                        )
-                      }
-                      <div class="project-card__icons">
-                        {
-                          project.github && (
-                            <a
-                              href={project.github}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              class="project-card__icon-btn"
-                              aria-label={`${project.title} on GitHub`}
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 24 24"
-                                fill="currentColor"
-                                class="w-4 h-4 md:w-[1.125rem] md:h-[1.125rem]"
-                                aria-hidden="true"
-                              >
-                                <path d="M12.001 2C6.47598 2 2.00098 6.475 2.00098 12C2.00098 16.425 4.86348 20.1625 8.83848 21.4875C9.33848 21.575 9.52598 21.275 9.52598 21.0125C9.52598 20.775 9.51348 19.9875 9.51348 19.15C7.00098 19.6125 6.35098 18.5375 6.15098 17.975C6.03848 17.6875 5.55098 16.8 5.12598 16.5625C4.77598 16.375 4.27598 15.9125 5.11348 15.9C5.90098 15.8875 6.46348 16.625 6.65098 16.925C7.55098 18.4375 8.98848 18.0125 9.56348 17.75C9.65098 17.1 9.91348 16.6625 10.201 16.4125C7.97598 16.1625 5.65098 15.3 5.65098 11.475C5.65098 10.3875 6.03848 9.4875 6.67598 8.7875C6.57598 8.5375 6.22598 7.5125 6.77598 6.1375C6.77598 6.1375 7.61348 5.875 9.52598 7.1625C10.326 6.9375 11.176 6.825 12.026 6.825C12.876 6.825 13.726 6.9375 14.526 7.1625C16.4385 5.8625 17.276 6.1375 17.276 6.1375C17.826 7.5125 17.476 8.5375 17.376 8.7875C18.0135 9.4875 18.401 10.375 18.401 11.475C18.401 15.3125 16.0635 16.1625 13.8385 16.4125C14.201 16.725 14.5135 17.325 14.5135 18.2625C14.5135 19.6 14.501 20.675 14.501 21.0125C14.501 21.275 14.6885 21.5875 15.1885 21.4875C19.259 20.1133 21.9999 16.2963 22.001 12C22.001 6.475 17.526 2 12.001 2Z" />
-                              </svg>
-                            </a>
-                          )
-                        }
-                        {
-                          project.external && !project.github && (
-                            <a
-                              href={project.external}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              class="project-card__icon-btn"
-                              aria-label={`Open ${project.title}`}
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 24 24"
-                                fill="currentColor"
-                                class="w-4 h-4 md:w-[1.125rem] md:h-[1.125rem]"
-                                aria-hidden="true"
-                              >
-                                <path d="M16.0037 9.41421L7.39712 18.0208L5.98291 16.6066L14.5895 8H7.00373V6H18.0037V17H16.0037V9.41421Z" />
-                              </svg>
-                            </a>
-                          )
-                        }
-                      </div>
-                    </div>
+                            <path d="M16.0037 9.41421L7.39712 18.0208L5.98291 16.6066L14.5895 8H7.00373V6H18.0037V17H16.0037V9.41421Z" />
+                          </svg>
+                        </a>
+                      )
+                    }
                   </div>
-                </article>
-              </li>
-            );
-          })
+                </div>
+              </div>
+            </article>
+          ))
         }
-      </ul>
+      </div>
 
       <div
-        class="fade-in rounded-xl border border-white/[0.08] bg-[#112240]/80 backdrop-blur-sm p-6 md:p-8 text-center"
+        class="fade-in rounded-2xl md:rounded-3xl border border-white/[0.08] bg-[#112240] p-6 md:p-8 text-center"
       >
-        <p class="text-[var(--white-icon)] text-sm md:text-base max-w-lg mx-auto leading-relaxed">
+        <p class="text-[var(--white-icon)] text-sm md:text-base max-w-lg mx-auto">
           More repos on{" "}
           <a
             href="https://github.com/avanegas95?tab=repositories"
             target="_blank"
             rel="noopener noreferrer"
-            class="text-[var(--sec)] hover:underline underline-offset-4"
+            class="text-[var(--sec)] hover:underline"
           >
             github.com/avanegas95
           </a>
@@ -205,273 +140,3 @@ function bentoVariant(index: number): BentoVariant {
     </div>
   </div>
 </section>
-
-<style>
-  .projects-section__grid {
-    background-image:
-      linear-gradient(to right, rgba(100, 255, 218, 0.04) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(100, 255, 218, 0.04) 1px, transparent 1px);
-    background-size: 48px 48px;
-    mask-image: radial-gradient(ellipse 80% 70% at 50% 0%, black 20%, transparent 75%);
-  }
-
-  .projects-bento {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: clamp(0.875rem, 2vw, 1.25rem);
-  }
-
-  @media (min-width: 768px) {
-    .projects-bento {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .projects-bento {
-      grid-template-columns: repeat(12, minmax(0, 1fr));
-      grid-auto-rows: minmax(11.5rem, auto);
-    }
-
-    .project-card--hero {
-      grid-column: span 8;
-      grid-row: span 2;
-    }
-
-    .project-card--accent {
-      grid-column: span 4;
-      grid-row: span 1;
-    }
-
-    .project-card--standard {
-      grid-column: span 4;
-    }
-  }
-
-  .project-card {
-    container-type: inline-size;
-    container-name: project-card;
-    min-width: 0;
-  }
-
-  .project-card__inner {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    overflow: hidden;
-    border-radius: 0.75rem;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    background: #112240;
-    transition:
-      border-color 0.35s ease,
-      box-shadow 0.35s ease,
-      transform 0.35s ease;
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    .project-card__inner:hover {
-      border-color: rgba(100, 255, 218, 0.22);
-      box-shadow:
-        0 0 0 1px rgba(100, 255, 218, 0.08),
-        0 18px 40px -24px rgba(0, 0, 0, 0.65);
-      transform: translateY(-2px);
-    }
-
-    .project-card__inner:hover .project-card__photo {
-      transform: scale(1.04);
-      opacity: 1;
-    }
-  }
-
-  .project-card--hero .project-card__inner {
-    @media (min-width: 1024px) {
-      flex-direction: row;
-    }
-  }
-
-  .project-card__media {
-    position: relative;
-    aspect-ratio: 16 / 9;
-    flex-shrink: 0;
-    background: #0a192f;
-  }
-
-  .project-card--hero .project-card__media {
-    @media (min-width: 1024px) {
-      width: 52%;
-      aspect-ratio: auto;
-      min-height: 100%;
-    }
-  }
-
-  .project-card--accent .project-card__media,
-  .project-card--standard .project-card__media {
-    aspect-ratio: 16 / 10;
-  }
-
-  .project-card__photo {
-    position: absolute;
-    inset: 0;
-    opacity: 0.88;
-    transition:
-      transform 0.45s ease-out,
-      opacity 0.45s ease-out;
-  }
-
-  .project-card__media-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      180deg,
-      rgba(10, 25, 47, 0.05) 0%,
-      rgba(10, 25, 47, 0.55) 100%
-    );
-    pointer-events: none;
-  }
-
-  .project-card__index {
-    position: absolute;
-    top: clamp(0.75rem, 3cqw, 1rem);
-    left: clamp(0.75rem, 3cqw, 1rem);
-    z-index: 2;
-    font-size: clamp(0.6875rem, 0.62rem + 0.45cqw, 0.8125rem);
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    color: var(--sec);
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.375rem;
-    border: 1px solid rgba(100, 255, 218, 0.25);
-    background: rgba(10, 25, 47, 0.72);
-    backdrop-filter: blur(6px);
-  }
-
-  .project-card__body {
-    padding: clamp(1rem, 4cqw, 1.5rem);
-  }
-
-  .project-card__meta {
-    margin-bottom: 0.5rem;
-  }
-
-  .project-card__status {
-    font-size: clamp(0.625rem, 0.58rem + 0.35cqw, 0.75rem);
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    color: var(--sec);
-  }
-
-  .project-card__title {
-    margin: 0 0 0.5rem;
-    font-size: clamp(1.0625rem, 0.95rem + 1.1cqw, 1.375rem);
-    font-weight: 600;
-    line-height: 1.25;
-    color: var(--white);
-    text-wrap: balance;
-  }
-
-  .project-card__title-link {
-    color: inherit;
-    text-decoration: none;
-    transition: color 0.25s ease;
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    .project-card__title-link:hover {
-      color: var(--sec);
-    }
-  }
-
-  .project-card__description {
-    margin: 0 0 clamp(0.75rem, 2.5cqw, 1rem);
-    font-size: clamp(0.8125rem, 0.76rem + 0.55cqw, 0.9375rem);
-    line-height: 1.6;
-    color: var(--white-icon);
-    text-wrap: pretty;
-  }
-
-  .project-card--accent .project-card__description,
-  .project-card--standard .project-card__description {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
-    overflow: hidden;
-  }
-
-  .project-card__tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.375rem;
-    margin: 0 0 clamp(0.75rem, 2.5cqw, 1rem);
-    padding: 0;
-    list-style: none;
-  }
-
-  .project-card__tag {
-    font-size: clamp(0.625rem, 0.58rem + 0.3cqw, 0.75rem);
-    padding: 0.2rem 0.5rem;
-    border-radius: 0.375rem;
-    color: var(--white-icon);
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-  }
-
-  .project-card__actions {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
-    padding-top: 0.25rem;
-  }
-
-  .project-card__cta {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    font-size: clamp(0.8125rem, 0.76rem + 0.35cqw, 0.875rem);
-    font-weight: 600;
-    color: var(--sec);
-    text-decoration: none;
-    min-height: auto;
-    min-width: auto;
-    transition: opacity 0.25s ease;
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    .project-card__cta:hover {
-      opacity: 0.85;
-    }
-  }
-
-  .project-card__icons {
-    display: flex;
-    gap: 0.5rem;
-    margin-left: auto;
-  }
-
-  .project-card__icon-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 2.25rem;
-    height: 2.25rem;
-    border-radius: 0.5rem;
-    color: var(--white-icon);
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    transition:
-      color 0.25s ease,
-      border-color 0.25s ease,
-      transform 0.25s ease;
-    min-height: auto;
-    min-width: auto;
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    .project-card__icon-btn:hover {
-      color: var(--sec);
-      border-color: rgba(100, 255, 218, 0.25);
-      transform: translateY(-1px);
-    }
-  }
-</style>
