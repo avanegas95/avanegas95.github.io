@@ -44,4 +44,5 @@ export type TechnologyKey =
   | "supabase"
   | "vercel"
   | "render"
-  | "bash";
+  | "bash"
+  | "claudecode";

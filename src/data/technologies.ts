@@ -1,20 +1,21 @@
 import type { TechnologyKey } from "@/lib/types";
 
 export const technologies: TechnologyKey[] = [
-  "selenium",
-  "appium",
   "python",
+  "claudecode",
+  "git",
+  "supabase",
+  "vercel",
+  "bash",
+  "appium",
   "nodejs",
   "HTML5",
   "css",
   "astro",
   "react",
   "tailwindcss",
-  "git",
-  "supabase",
-  "vercel",
   "render",
-  "bash",
+  "selenium"
 ];
 
 export const techDisplayNames: Record<TechnologyKey, string> = {
@@ -32,6 +33,7 @@ export const techDisplayNames: Record<TechnologyKey, string> = {
   vercel: "Vercel",
   render: "Render",
   bash: "Bash",
+  claudecode: "Claude Code",
 };
 
 export const techUrls: Record<TechnologyKey, string> = {
@@ -49,4 +51,5 @@ export const techUrls: Record<TechnologyKey, string> = {
   vercel: "https://vercel.com",
   render: "https://render.com",
   bash: "https://www.gnu.org/software/bash",
+  claudecode: "https://claude.com/product/claude-code",
 };

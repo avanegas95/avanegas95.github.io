@@ -7,7 +7,7 @@ const logoItems = technologies.map((tech) => ({
   label: techDisplayNames[tech],
 }));
 
-const scrollingItems = [...logoItems, ...logoItems, ...logoItems];
+const groups = [false, true];
 ---
 
 <div class="relative mt-6 overflow-x-hidden py-4 max-w-6xl mx-auto">
@@ -20,74 +20,89 @@ const scrollingItems = [...logoItems, ...logoItems, ...logoItems];
   >
   </div>
 
-  <div class="logo-wall-track flex w-max max-w-7xl gap-12 md:gap-20">
+  <div class="logo-wall-track flex" style={`--logo-count: ${logoItems.length}`}>
     {
-      scrollingItems.map(({ tech, href, label }, index) => (
-        <a
-          href={href}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label={label}
-          tabindex={index >= logoItems.length ? -1 : undefined}
-          aria-hidden={index >= logoItems.length ? true : undefined}
-          class="logo-wall-item group flex shrink-0 items-center gap-2 transition-all duration-300 hover:scale-110"
-        >
-          <img
-            src={`/svg/${tech}.svg`}
-            alt=""
-            class="h-7 w-auto object-contain opacity-60 transition-all duration-300 group-hover:scale-110 group-hover:opacity-100"
-            width="30"
-            height="30"
-            loading="lazy"
-          />
-          <span class="text-lg font-medium whitespace-nowrap text-[var(--white-icon)] transition-colors duration-300 group-hover:text-[var(--white)]">
-            {label}
-          </span>
-        </a>
+      groups.map((isDuplicate) => (
+        <div class="logo-wall-group flex shrink-0 items-center" aria-hidden={isDuplicate ? "true" : undefined}>
+          {logoItems.map(({ tech, href, label }) => (
+            <a
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={label}
+              tabindex={isDuplicate ? -1 : undefined}
+              class="logo-wall-item group flex shrink-0 items-center gap-2 transition-all duration-300 hover:scale-110"
+            >
+              <img
+                src={`/svg/${tech}.svg`}
+                alt=""
+                class="h-7 w-auto object-contain opacity-60 transition-all duration-300 group-hover:scale-110 group-hover:opacity-100"
+                width="30"
+                height="30"
+              />
+              <span class="text-lg font-medium whitespace-nowrap text-[var(--white-icon)] transition-colors duration-300 group-hover:text-[var(--white)]">
+                {label}
+              </span>
+            </a>
+          ))}
+        </div>
       ))
     }
   </div>
 </div>
 
 <style is:global>
+  /* Each group must move by its own width plus one gap for the loop to be seamless. */
   @keyframes logo-wall-scroll {
     from {
       transform: translateX(0);
     }
     to {
-      transform: translateX(-66.666%);
+      transform: translateX(calc(-100% - var(--logo-gap)));
     }
   }
 
+  /* Seconds per logo, so scroll speed stays constant as logos are added. */
   .logo-wall-track {
-    animation: logo-wall-scroll 30s linear infinite;
+    --logo-gap: 3rem;
+    --seconds-per-logo: 3.4s;
+    gap: var(--logo-gap);
+  }
+
+  .logo-wall-group {
+    gap: var(--logo-gap);
+    animation: logo-wall-scroll calc(var(--logo-count) * var(--seconds-per-logo)) linear infinite;
     will-change: transform;
   }
 
-  .logo-wall-track:hover {
+  .logo-wall-track:hover .logo-wall-group {
     animation-play-state: paused;
   }
 
   @media (min-width: 768px) {
     .logo-wall-track {
-      animation-duration: 15s;
+      --logo-gap: 5rem;
     }
   }
 
   @media (hover: none) and (pointer: coarse) {
     .logo-wall-track {
-      animation-duration: 60s;
+      --seconds-per-logo: 5s;
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .logo-wall-track {
+    .logo-wall-group {
       animation: none;
-      transform: none;
-      flex-wrap: wrap;
       width: 100%;
+      flex-shrink: 1;
+      flex-wrap: wrap;
       justify-content: center;
       gap: 1.5rem;
+    }
+
+    .logo-wall-group[aria-hidden="true"] {
+      display: none;
     }
   }
 
