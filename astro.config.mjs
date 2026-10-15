@@ -2,16 +2,30 @@
 import { defineConfig } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 
+import react from "@astrojs/react";
+
 // https://astro.build/config
 export default defineConfig({
   site: "https://avanegas.com",
   base: "/",
   output: "static",
+
   build: {
     inlineStylesheets: "auto",
   },
+
   vite: {
     plugins: [tailwindcss()],
+    optimizeDeps: {
+      include: [
+        "react",
+        "react-dom",
+        "react-dom/client",
+        "react/jsx-dev-runtime",
+        "clsx",
+        "tailwind-merge",
+      ],
+    },
     resolve: {
       alias: {
         "@": "/src",
@@ -19,8 +33,11 @@ export default defineConfig({
       },
     },
   },
+
   server: {
     host: true,
     port: 4321,
   },
+
+  integrations: [react()],
 });

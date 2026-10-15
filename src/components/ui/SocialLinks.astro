@@ -4,9 +4,12 @@ import type { SocialLink } from "@/lib/types";
 interface Props {
   links: SocialLink[];
   layout?: "row" | "footer";
+  /** Stagger start (seconds) for row layout entrance animation. */
+  entranceBaseDelay?: number;
 }
 
-const { links, layout = "row" } = Astro.props;
+const { links, layout = "row", entranceBaseDelay = 0.62 } = Astro.props;
+const staggerStep = 0.08;
 ---
 
 {
@@ -17,23 +20,24 @@ const { links, layout = "row" } = Astro.props;
           href={link.href}
           target="_blank"
           rel="noopener noreferrer"
-          class="flex flex-col items-center group transition-all duration-300 hover:scale-110"
+          class="group flex flex-col items-center transition-all duration-300 hover:scale-110"
           aria-label={link.label}
         >
-          <div class="text-[var(--white-icon)] hover:text-[var(--white)] transition-all duration-300 ease-in-out">
+          <div class="text-[var(--white-icon)] transition-all duration-300 ease-in-out group-hover:text-[var(--sec)]">
             <div set:html={link.icon} />
           </div>
         </a>
       ))}
     </div>
   ) : (
-    <div class="flex justify-center sm:justify-start gap-6 animate-fade-in">
-      {links.map((link) => (
+    <div class="flex justify-center gap-6 sm:justify-start">
+      {links.map((link, index) => (
         <a
           href={link.href}
           target="_blank"
           rel="noopener noreferrer"
-          class="text-[var(--white-icon)] hover:text-[var(--white)] transition-all duration-300 ease-in-out p-2 hover:scale-110"
+          class="animate-fade-in p-2 text-[var(--white-icon)] transition-all duration-300 ease-in-out hover:scale-110 hover:text-[var(--sec)]"
+          style={`animation-delay: ${entranceBaseDelay + index * staggerStep}s`}
           aria-label={link.label}
         >
           <div set:html={link.icon} />

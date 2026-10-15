@@ -1,15 +1,28 @@
 ---
 import LogoWall from "@/components/ui/LogoWall.astro";
 import SocialLinks from "@/components/ui/SocialLinks.astro";
+import { DotPattern } from "@/components/ui/dot-pattern";
 import { socialLinks } from "@/data/social-links";
+
+const entranceStep = 0.08;
+/** Continue hero sequence after the last social icon. */
+const aboutEntranceStart = 0.62 + socialLinks.length * entranceStep;
+const aboutDelay = (offset: number) =>
+  `${(aboutEntranceStart + offset * entranceStep).toFixed(2)}s`;
 ---
 
 <section
-  class="relative flex min-h-[90vh] items-center lg:min-h-[80vh]"
+  class="relative flex min-h-[90vh] items-center overflow-hidden lg:min-h-[80vh]"
   id="home"
 >
+  <DotPattern client:idle width={22} height={22} cr={1} className="opacity-70" />
   <div
-    class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 lg:py-16"
+    class="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-[var(--background)]/40 to-[var(--background)]"
+    aria-hidden="true"
+  >
+  </div>
+  <div
+    class="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 lg:py-16"
   >
     <div class="space-y-6 md:space-y-8">
       <div class="space-y-4 md:space-y-6">
@@ -39,7 +52,7 @@ import { socialLinks } from "@/data/social-links";
         </p>
       </div>
 
-      <div class="flex flex-row gap-4 animate-fade-in">
+      <div class="animate-fade-in flex flex-row gap-4 [animation-delay:0.5s]">
         <a
           href="#projects"
           class="text-center py-3 px-8 border border-[var(--sec)] text-[var(--sec)] rounded-lg hover:bg-[var(--white-icon-tr)] transition-all duration-300 text-base hover:scale-105"
@@ -48,32 +61,43 @@ import { socialLinks } from "@/data/social-links";
         </a>
       </div>
 
-      <SocialLinks links={socialLinks} />
+      <SocialLinks links={socialLinks} entranceBaseDelay={0.62} />
 
-      <div class="space-y-4 animate-fade-in">
+      <div class="space-y-4">
         <h3
-          class="flex items-center gap-2 text-lg md:text-xl lg:text-2xl text-[var(--white)] font-semibold"
+          class="animate-fade-in flex items-center gap-2 text-lg md:text-xl lg:text-2xl text-[var(--white)] font-semibold"
+          style={`animation-delay: ${aboutDelay(0)}`}
         >
           <span>About Me</span>
         </h3>
         <div class="space-y-4 text-[var(--white-icon)]">
-          <p class="text-sm md:text-base leading-relaxed">
+          <p
+            class="animate-fade-in text-sm md:text-base leading-relaxed"
+            style={`animation-delay: ${aboutDelay(1)}`}
+          >
             I'm an SQA engineer who cares about shipping software that is
             makes sense, works, and meets customer expectations. I started my
             career in manually testing consumer home robotic products and have expanded
             into automation, CI/CD, and helping to create tooling to scale up testing,
             not just for myself, but for developers as well.
           </p>
-          <p class="text-sm md:text-base leading-relaxed">
+          <p
+            class="animate-fade-in text-sm md:text-base leading-relaxed"
+            style={`animation-delay: ${aboutDelay(2)}`}
+          >
           More recently, I've been learning and keeping up with the latest agentic tools
           in order to expand my knowledge into new domains and accelerate my workflows.
           </p>
-          <p class="text-sm md:text-base leading-relaxed">
+          <p
+            class="animate-fade-in text-sm md:text-base leading-relaxed"
+            style={`animation-delay: ${aboutDelay(3)}`}
+          >
             I hold a B.S. in Computer Engineering from Boston University and
             work day-to-day with:
           </p>
           <ul
-            class="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-2 text-xs md:text-sm"
+            class="animate-fade-in grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-2 text-xs md:text-sm"
+            style={`animation-delay: ${aboutDelay(4)}`}
           >
             <li class="flex items-center gap-2">
               <span class="text-[var(--sec)]">▹</span> Python
@@ -94,7 +118,12 @@ import { socialLinks } from "@/data/social-links";
               <span class="text-[var(--sec)]">▹</span> Linux / Bash / Windows
             </li>
           </ul>
-          <LogoWall />
+          <div
+            class="animate-fade-in"
+            style={`animation-delay: ${aboutDelay(5)}`}
+          >
+            <LogoWall />
+          </div>
         </div>
       </div>
     </div>
@@ -106,40 +135,16 @@ import { socialLinks } from "@/data/social-links";
     counter-reset: section;
   }
 
-  @keyframes fadeIn {
-    from {
-      transform: translateY(20px);
-    }
-    to {
-      transform: translateY(0);
-    }
-  }
-
-  .animate-fade-in {
-    animation: fadeIn 0.6s ease-out both;
-  }
-
-  .animate-fade-in:nth-child(1) {
+  #home .space-y-4 > .animate-fade-in:nth-child(1) {
     animation-delay: 0.1s;
   }
-  .animate-fade-in:nth-child(2) {
+  #home .space-y-4 > .animate-fade-in:nth-child(2) {
     animation-delay: 0.2s;
   }
-  .animate-fade-in:nth-child(3) {
+  #home .space-y-4 > .animate-fade-in:nth-child(3) {
     animation-delay: 0.3s;
   }
-  .animate-fade-in:nth-child(4) {
+  #home .space-y-4 > .animate-fade-in:nth-child(4) {
     animation-delay: 0.4s;
-  }
-  .animate-fade-in:nth-child(5) {
-    animation-delay: 0.5s;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .animate-fade-in {
-      animation: none;
-      opacity: 1;
-      transform: none;
-    }
   }
 </style>

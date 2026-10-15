@@ -1,5 +1,6 @@
 ---
 import { Image } from "astro:assets";
+import { SectionEyebrow } from "@/components/ui/section-eyebrow";
 import { projects } from "@/data/projects";
 ---
 
@@ -7,7 +8,9 @@ import { projects } from "@/data/projects";
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="space-y-8 md:space-y-12">
       <div class="space-y-4">
-        <p class="text-[var(--sec)] font-mono mb-2 fade-in"></p>
+        <SectionEyebrow client:visible className="mb-2 fade-in">
+          Selected work
+        </SectionEyebrow>
         <h2
           class="text-3xl sm:text-4xl md:text-5xl font-medium text-[var(--white)] mb-4 md:mb-6 fade-in"
         >
@@ -21,9 +24,10 @@ import { projects } from "@/data/projects";
             .filter((p) => p.featured)
             .map((project, index) => (
               <div
-                class="group bg-[#0c0c0c] rounded-2xl md:rounded-3xl overflow-hidden max-w-2xl mx-auto fade-in"
+                class="max-w-2xl mx-auto fade-in"
                 style={`animation-delay: ${index * 0.1}s`}
               >
+                <div class="group overflow-hidden rounded-2xl md:rounded-3xl border border-white/[0.08] bg-[#0c0c0c]">
                 <div class="relative aspect-video overflow-hidden">
                   <div class="absolute inset-0 bg-[#000000] bg-opacity-0 transition-all duration-300 group-hover:bg-opacity-10 z-10" />
                   <Image
@@ -77,13 +81,14 @@ import { projects } from "@/data/projects";
                     </a>
                   </div>
                 </div>
+                </div>
               </div>
             ))
         }
       </div>
 
       <div
-        class="mt-12 md:mt-16 bg-[#0c0c0c] rounded-2xl md:rounded-3xl p-6 md:p-8 text-center fade-in"
+        class="mt-12 md:mt-16 fade-in rounded-2xl md:rounded-3xl border border-white/[0.08] bg-[#0c0c0c] p-6 md:p-8 text-center"
       >
         <div
           class="inline-flex justify-center items-center w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl bg-[#1414149c] text-[var(--sec)] mb-4 md:mb-6"
