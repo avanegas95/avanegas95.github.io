@@ -18,9 +18,10 @@ import sharkNinjaHqBg from "@/assets/images/sharkninja-hq.jpg";
       class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 auto-rows-fr"
     >
       <!-- Boston Dynamics — Staff SQA Engineer (current) -->
-      <article
-        class="rounded-xl overflow-hidden h-full flex flex-col fade-in fade-in--slow experience-card"
+      <div
+        class="experience-card fade-in fade-in--slow relative h-full overflow-hidden rounded-xl border border-white/[0.08] bg-[#112240]"
       >
+      <article class="flex h-full flex-col overflow-hidden rounded-[inherit]">
         <div class="experience-card__media">
           <Image
             src={bdHqBg}
@@ -46,11 +47,13 @@ import sharkNinjaHqBg from "@/assets/images/sharkninja-hq.jpg";
           </div>
         </div>
       </article>
+      </div>
 
       <!-- Boston Dynamics — Senior SQA Engineer -->
-      <article
-        class="rounded-xl overflow-hidden h-full flex flex-col fade-in fade-in--slow experience-card"
+      <div
+        class="experience-card fade-in fade-in--slow relative h-full overflow-hidden rounded-xl border border-white/[0.08] bg-[#112240]"
       >
+      <article class="flex h-full flex-col overflow-hidden rounded-[inherit]">
         <div class="experience-card__media">
           <Image
             src={bdHqBg}
@@ -91,11 +94,13 @@ import sharkNinjaHqBg from "@/assets/images/sharkninja-hq.jpg";
           </div>
         </div>
       </article>
+      </div>
 
       <!-- SharkNinja Card -->
-      <article
-        class="rounded-xl overflow-hidden h-full flex flex-col fade-in fade-in--slow experience-card"
+      <div
+        class="experience-card fade-in fade-in--slow relative h-full overflow-hidden rounded-xl border border-white/[0.08] bg-[#112240]"
       >
+      <article class="flex h-full flex-col overflow-hidden rounded-[inherit]">
         <div class="experience-card__media">
           <Image
             src={sharkNinjaHqBg}
@@ -136,6 +141,7 @@ import sharkNinjaHqBg from "@/assets/images/sharkninja-hq.jpg";
           </div>
         </div>
       </article>
+      </div>
     </div>
   </div>
 </section>
@@ -145,16 +151,15 @@ import sharkNinjaHqBg from "@/assets/images/sharkninja-hq.jpg";
   .experience-card {
     container-type: inline-size;
     container-name: experience-card;
-    transform: translateY(0);
-    transition: transform 0.3s ease-out;
   }
 
   @media (hover: hover) and (pointer: fine) {
-    .experience-card:hover {
-      transform: translateY(-4px);
+    .experience-card__photo {
+      opacity: 0.85;
     }
 
     .experience-card:hover .experience-card__photo {
+      opacity: 1;
       transform: scale(1.04);
     }
   }
@@ -185,7 +190,9 @@ import sharkNinjaHqBg from "@/assets/images/sharkninja-hq.jpg";
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.45s ease-out;
+    transition:
+      opacity 0.45s ease-out,
+      transform 0.45s ease-out;
   }
 
   .experience-card__photo--bd {

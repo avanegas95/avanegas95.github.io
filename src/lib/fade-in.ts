@@ -18,9 +18,12 @@ export function initFadeInObserver(options: FadeInObserverOptions = {}): void {
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("visible");
-        }
+        if (!entry.isIntersecting) return;
+        const target = entry.target;
+        // One frame so opacity:0 paints before the transition to .visible.
+        requestAnimationFrame(() => {
+          target.classList.add("visible");
+        });
       });
     },
     { threshold, rootMargin },
