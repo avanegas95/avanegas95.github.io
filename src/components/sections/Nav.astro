@@ -3,34 +3,37 @@ import { navItems } from "@/data/nav";
 ---
 
 <!-- Desktop Navigation -->
-<div
-  class="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl mx-auto backdrop-blur-md z-50 hidden md:block"
+<header
+  id="site-nav"
+  class="fixed inset-x-0 top-0 z-50 hidden md:block border-b border-white/5 bg-[var(--background)]/70 backdrop-blur-md transition-[background-color,border-color,box-shadow] duration-300 data-[scrolled=true]:border-white/10 data-[scrolled=true]:bg-[var(--background)]/90 data-[scrolled=true]:shadow-lg data-[scrolled=true]:shadow-black/20"
 >
-  <nav class="flex items-center justify-between py-4 px-4 md:px-6 lg:px-8 min-h-[var(--nav-height)]">
+  <nav class="mx-auto flex w-full max-w-7xl items-center justify-between gap-6 px-6 lg:px-8 min-h-[var(--nav-height)]">
     <a
       href="#home"
-      class="text-[var(--sec)] font-bold text-2xl hover:opacity-80 transition-opacity duration-300"
+      class="shrink-0 text-[var(--sec)] font-bold text-2xl hover:opacity-80 transition-opacity duration-300"
       >AV</a
     >
 
-    <ul class="flex space-x-8">
+    <ul class="flex flex-wrap items-center justify-end gap-x-6 gap-y-2 lg:gap-x-8">
       {
         navItems.map((item) => (
           <li>
             <a
               href={item.href}
-              class="group flex items-center text-sm text-[var(--white-icon)] hover:text-[var(--sec)] transition-all duration-300 relative"
+              class="group relative inline-flex items-center py-1 text-sm text-[var(--white-icon)] hover:text-[var(--sec)] transition-colors duration-300"
             >
-              <span class="text-[var(--sec)] mr-1">{item.number}</span>
+              {item.number && (
+                <span class="text-[var(--sec)] mr-1">{item.number}</span>
+              )}
               {item.label}
-              <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-[var(--sec)] transition-all duration-300 group-hover:w-full" />
+              <span class="absolute -bottom-0.5 left-0 h-0.5 w-full origin-left scale-x-0 bg-[var(--sec)] transition-transform duration-300 group-hover:scale-x-100 group-[.active]:scale-x-100" />
             </a>
           </li>
         ))
       }
     </ul>
   </nav>
-</div>
+</header>
 
 <!-- Mobile Navigation -->
 <nav
@@ -57,6 +60,13 @@ import { navItems } from "@/data/nav";
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {
+    const header = document.getElementById("site-nav");
+    const updateScrolled = () => {
+      header?.setAttribute("data-scrolled", String(window.scrollY > 8));
+    };
+    updateScrolled();
+    window.addEventListener("scroll", updateScrolled, { passive: true });
+
     const sections = document.querySelectorAll("section[id]");
     const navLinks = document.querySelectorAll("nav a[href^='#']");
 
