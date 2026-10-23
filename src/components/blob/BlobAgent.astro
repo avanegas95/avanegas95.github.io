@@ -1,0 +1,102 @@
+---
+import "../../styles/blob-panel.css";
+import BlobFigure from "./BlobFigure.astro";
+import { COPY } from "../../scripts/blob/copy";
+
+interface Props {
+  // Sizes the hero Blob only; the component fills its container and has no page-level
+  // positioning, so any placement (P5-04c) can wrap it.
+  size?: "hero" | "compact";
+}
+const { size = "hero" } = Astro.props;
+
+// Provisional (pending Anderson): the no-JS resume link goes to LinkedIn, not the PDF.
+const RESUME_HREF = "https://www.linkedin.com/in/avanegas95";
+---
+
+<blob-agent>
+  <div class="ba-fallback">
+    <BlobFigure size={size} />
+    <!-- prettier-ignore -->
+    <p>{COPY.noJs.before}<a href={RESUME_HREF}>{COPY.noJs.resume}</a>{COPY.noJs.middle}<a href="#contact">{COPY.noJs.contact}</a>{COPY.noJs.after}</p>
+  </div>
+
+  <div class="ba-ui">
+    <div class="ba-stage">
+      <button
+        type="button"
+        class="ba-toggle"
+        data-ba="toggle"
+        aria-expanded="false"
+        aria-controls="blob-panel"
+        aria-label={COPY.toggleLabel}
+      >
+        <BlobFigure size={size} />
+      </button>
+      <p class="ba-bubble">{COPY.bubble}</p>
+    </div>
+
+    <button type="button" class="ba-ask" data-ba="ask">
+      {COPY.askPrompt}
+    </button>
+
+    <ul class="ba-chips">
+      {COPY.chips.map((chip) => (
+        <li>
+          <button type="button" class="ba-chip" data-ba="chip">
+            {chip}
+          </button>
+        </li>
+      ))}
+    </ul>
+
+    <div
+      class="ba-panel"
+      id="blob-panel"
+      data-ba="panel"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="blob-panel-title"
+      tabindex="-1"
+      hidden
+    >
+      <header class="ba-head">
+        <BlobFigure size="avatar" />
+        <p class="ba-title" id="blob-panel-title">
+          {COPY.panelTitle}
+        </p>
+        <button type="button" class="ba-close" data-ba="close">
+          {COPY.close}
+        </button>
+      </header>
+      <div class="ba-log" data-ba="log" role="log" aria-live="polite"></div>
+      <form class="ba-form" data-ba="form">
+        <label for="blob-input">{COPY.inputLabel}</label>
+        <div class="ba-row">
+          <input
+            id="blob-input"
+            data-ba="input"
+            type="text"
+            maxlength="500"
+            autocomplete="off"
+            placeholder={COPY.inputPlaceholder}
+          />
+          <button type="submit" class="ba-send">
+            {COPY.send}
+          </button>
+        </div>
+      </form>
+      <footer class="ba-foot">
+        <!-- prettier-ignore -->
+        <p>{COPY.disclaimer.before}<a href="#contact">{COPY.disclaimer.linkLabel}</a>{COPY.disclaimer.after}</p>
+        <button type="button" class="ba-clear" data-ba="clear">
+          {COPY.clear}
+        </button>
+      </footer>
+    </div>
+  </div>
+</blob-agent>
+
+<script>
+  import "../../scripts/blob/index";
+</script>

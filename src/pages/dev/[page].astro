@@ -1,0 +1,88 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import BlobAgent from "@/components/blob/BlobAgent.astro";
+import BlobFigure from "@/components/blob/BlobFigure.astro";
+import { devPreviewEnabled } from "@/lib/dev-pages";
+import { MOODS } from "@/lib/moods";
+import { MOOD_EMOJI } from "@/scripts/blob/motion";
+
+// Preview-only: built locally and on Vercel previews, never on production. Nothing links here.
+export function getStaticPaths() {
+  return devPreviewEnabled(process.env["VERCEL_ENV"])
+    ? [{ params: { page: "blob" } }]
+    : [];
+}
+---
+
+<Layout
+  title="Blob preview"
+  description="Design preview of Blob's moods and motion."
+>
+  <main id="main-content" class="blob-preview">
+    <h1>Blob preview</h1>
+    <p class="blob-preview-note">
+      Preview only (not built on production). One interactive Blob, then every
+      mood at both sizes.
+    </p>
+
+    <section aria-labelledby="live-h">
+      <h2 id="live-h" class="blob-preview-sub">
+        Blob, live
+      </h2>
+      <BlobAgent size="hero" />
+    </section>
+
+    <section id="contact" aria-labelledby="contact-h">
+      <h2 id="contact-h" class="blob-preview-sub">
+        Contact (stub)
+      </h2>
+      <p class="blob-preview-note">
+        Anchor target so Blob's in-panel contact links have somewhere to land on
+        this preview page.
+      </p>
+    </section>
+
+    <section aria-labelledby="stage-h" class="blob-preview-stage">
+      <h2 id="stage-h" class="blob-preview-sub">
+        Mood stage (eyes follow the cursor)
+      </h2>
+      <div id="stage">
+        <BlobFigure size="hero" />
+      </div>
+      <div class="blob-preview-controls" id="mood-buttons">
+        {MOODS.map((m) => (
+          <button type="button" data-fire={m}>
+            {m}
+          </button>
+        ))}
+        <button type="button" id="talking-toggle" aria-pressed="false">
+          Talking
+        </button>
+      </div>
+    </section>
+
+    <section aria-labelledby="all-h">
+      <h2 id="all-h" class="blob-preview-sub">
+        All moods
+      </h2>
+      <ul class="blob-preview-grid" id="grid">
+        {MOODS.map((m) => (
+          <li class="blob-preview-card">
+            <div class="row">
+              <BlobFigure size="hero" mood={m} />
+              <BlobFigure size="avatar" mood={m} />
+            </div>
+            <span>
+              {m} {MOOD_EMOJI[m] ?? ""}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  </main>
+</Layout>
+
+<script>
+  import "@/scripts/dev-blob-preview.ts";
+  import "@/scripts/botid-init.ts";
+</script>
