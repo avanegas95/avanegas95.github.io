@@ -25,7 +25,7 @@ Decided 2026-10-23 (Anderson): Blob and the chat backend move into the existing 
 | P5-02 | Vercel adapter, `vercel.json` (CSP, resume 302, BotID), Node 24, all deps/scripts, test configs | developer | sonnet | opus | P5-00 | 1 | merged |
 | P5-08 | `/blob-privacy/` note page | copywriter | sonnet | sonnet | P5-02 | 2 | merged |
 | P5-03a | Shared lib, KB, content collections, PII guard | developer | opus | opus | P5-02 | 2 | merged |
-| P5-03b | Chat server, controls, v1 anchors in allowlist, N-2 `waitUntil` | developer | opus | opus | P5-03a | 3 | review |
+| P5-03b | Chat server, controls, v1 anchors in allowlist, N-2 `waitUntil` | developer | opus | opus | P5-03a | 3 | merged |
 | P5-04a | Blob island port + v1 restyle on `/dev/blob` | designer | sonnet | opus | P5-03a | 3 | wip |
 | P5-05 | CI workflow, Blob bundle gate, legacy E2E, Lighthouse | test-engineer | sonnet | sonnet | P5-02, P5-03a | 3 | wip |
 | P5-07 | KB ↔ v1 site consistency, DISCREPANCIES, `site.md` | researcher | sonnet | sonnet | P5-03a | 3 | merged |
@@ -70,7 +70,7 @@ Scope: `docs/tasks/P5.5/_proposal.md`; table: `_proposed-plan.md`; Anderson's to
 | ID | Task | Model | Reviewer | Depends on | Batch | Status |
 |---|---|---|---|---|---|---|
 | P5.5-03 | Land `origin/feature/projects-section` | sonnet | sonnet | — | 0 | wip |
-| P5.5-08a | Land `origin/blog-posts` (published only) | sonnet | sonnet | H1 | 0 | blocked (human) |
+| P5.5-08a | Land `origin/blog-posts` (only "What this blog is about" published) | sonnet | sonnet | H1 ✓ | 0 | brief |
 | P5.5-15 | Rename Finance Forecast → Paychira | haiku | sonnet | P5-06, P5-07 | 1 | brief |
 | P5.5-13a | Shared KB schema, per-file golden prompt, `site-copy.md` template | opus | opus | P5 gate, 08a, 15 | 2 | brief |
 | P5.5-13c | Voice lock, `facts:check`, drift ratchet | sonnet | opus | 13a, H3 | 3 | brief |
@@ -79,7 +79,7 @@ Scope: `docs/tasks/P5.5/_proposal.md`; table: `_proposed-plan.md`; Anderson's to
 | P5.5-13b | Projects render from KB | sonnet | sonnet | 03, 13a, 13c, H4 | 4 | brief |
 | P5.5-04 | Hero + About from intake | sonnet | sonnet | 13a, 13c, H2, H4 | 4 | brief |
 | P5.5-08b | Nav fix | haiku | sonnet | 05, 08a | 5 | brief |
-| P5.5-13d | `/resume/` page from KB | sonnet | opus | 05, 13a, 13c, P5-05, H5 | 5 | brief |
+| P5.5-13d | Resume facts check vs KB (hand-made PDF; re-brief) | sonnet | opus | 05, 13a, 13c, P5-05, H5 | 5 | brief |
 
 ## P6: Production on Vercel and domain cutover (NOT planned; only on Anderson's explicit final approval)
 Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNAME`, the Pages workflow or Vercel domain settings, until Anderson approves in a message. Then:
@@ -103,6 +103,11 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 ## Decision log
 | Date | Decision | By |
 |---|---|---|
+| 2026-10-23 | H1: publish only "What this blog is about" (the one Anderson actually wrote); every other post on `blog-posts`, including "Lessons from wiring CI for mobile tests", stays draft/unpublished. | Anderson |
+| 2026-10-23 | D-14: current title is **Staff** SQA Engineer; the hero changes from "Senior" (in Anderson's words, via intake). | Anderson |
+| 2026-10-23 | H5: resume stays a **hand-made PDF** Anderson maintains (option ii). P5.5-13d becomes a facts check of the resume against the KB, not a generated `/resume/` page. Until Anderson supplies the new PDF, the resume URL keeps the 302 to LinkedIn (rule 7). | Anderson |
+| 2026-10-23 | H3: **all prose** is voice-locked (every KB body, summary, headline, lede, role bullet, project description). AI may only review: flag grammar/spelling and whether it sounds like Anderson; it never writes or rewrites. | Anderson |
+| 2026-10-23 | Blob reply-scrubber allowlist updated for v1 (P5-03b): `#home`, `#about`, `#experiences`, `#projects`, `#contact`, `/`, `/blog/`, `/orbithop/`, `/privacy/`, `/blob-privacy/`; `#experience`/`#skills` dropped. Supersedes the 2026-10-13 list. | orchestrator |
 | 2026-10-23 | D-15 resolved: Paychira is the current name of the KB's "Finance Forecast"; the KB and site use "Paychira". D-15 closed; the KB rename is a P5.5 task. | Anderson |
 | 2026-10-23 | Content answers: hero says "since 2019" (no year count); anything on the resume may go on the site; project cards from local branch `feature/projects-section` are approved to show (links OK publicly); a first blog post exists on `origin/blog-posts` and should be landed rather than hiding the Blog nav. | Anderson |
 | 2026-10-23 | Improvement plan approved (`docs/tasks/P5.5/_proposal.md`): O1 (meta/OG/JSON-LD) and O2 (footer: drop the Spotify iframe, add legacy-page links) join P5; P5.5 = O13 single source of truth + voice lock (absorbs O3/O5/O11), plus O4 hero/About copy, O5 experience, O6 contact, O8 nav/blog. Copy stays in Anderson's own words; AI structures and checks only. | Anderson |
@@ -138,3 +143,5 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 2026-10-23 · P5-08 · merged (sonnet APPROVE; round 2 fixed an axe flake from fade-in timing via reduced-motion emulation).
 2026-10-23 · P5-03a · merged (opus APPROVE; 470 tests). Dropped server-importing tests reassigned to P5-03b; /orbithop guard:pii hit assigned to O2.
 2026-10-23 · P5-07 · merged (sonnet APPROVE; 477 tests). New rows D-14 (title), D-15 (Paychira, resolved same day).
+
+2026-10-23 · P5-03b · merged (opus APPROVE; 1,554 tests). Follow-ups: bump PROMPT_VERSION before next eval run (P5-06); #about anchor arrives with P5-04c.

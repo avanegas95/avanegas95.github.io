@@ -18,19 +18,28 @@ How this is used:
 1. Favorite color?
 Blue
 3. Favorite food or cuisine? Any dish you're known for making?
+My mom's homecooking, chicken parmesean, Indian food specifically butter chicken and palak paneer, Mexican, Italian cuisine. Organge Chicken. In terms of what I can make well usually any food that involves grilling
 4. Favorite snack or guilty-pleasure food?
+Potato chips
 5. Coffee, tea, or neither? How do you take it?
+Coffee, always black. Or chamomille tea.
 6. Favorite movie(s)?
+Interstellar, Inception
 7. Favorite TV show(s) or anime?
+Paradise, Attack on Titan
 8. Favorite book(s), or what you're reading now?
 9. Favorite music: genres, artists, or a go-to coding playlist?
 10. Favorite video game(s) or console?
+Monster Hunter, Destiny 2, Fortnite, Pokemon. I'll usually play on my Nintendo Switch 2 or PS5.
 11. Favorite sport or team?
+I don't really watch sports, but always jump on the wagon for Boston sports teams.
 12. Favorite place you've traveled, or a dream destination?
 13. Favorite season or kind of weather?
+Love the fall. Winter is too cold. Summer is too hot. Spring gives me too many allergies
 14. Favorite animal? Any pets you're happy for Blob to mention (name optional)?
+My pet betta fish, No Name. 
 15. Favorite emoji? (Blob may use it.)
-
+🥺
 ## 2. Hobbies and life outside work
 15. What do you do on a free weekend?
 16. Any sports, fitness, or outdoor activities?
