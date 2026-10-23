@@ -9,14 +9,16 @@ export const PROMPT_VERSION = "p4-v3";
 // Same-site links Blob may emit besides the KB's own contact links. Shared with
 // the output scrubber (P2-06) so the prompt and the allowlist cannot drift.
 export const ALLOWED_SITE_PATHS = [
+  "#home",
   "#about",
-  "#experience",
+  "#experiences",
   "#projects",
-  "#skills",
   "#contact",
   "/",
+  "/blog/",
   "/orbithop/",
   "/privacy/",
+  "/blob-privacy/",
 ] as const;
 
 export const SYSTEM_BLOCK_TTL = "1h" as const;
