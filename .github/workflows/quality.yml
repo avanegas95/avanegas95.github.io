@@ -1,0 +1,86 @@
+name: quality
+
+# Internal PR gates for feat/blob (CLAUDE.md rules 5, 7, 8, 12). Nothing here deploys or
+# publishes: results are artifacts only, no secrets are referenced, and the real Anthropic API
+# is never called (E2E intercepts /api/chat; unit tests mock the SDK).
+on:
+  pull_request:
+  push:
+    branches: [feat/blob]
+
+concurrency:
+  group: quality-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: Quality pipeline
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium firefox webkit
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      # Build before unit tests: the CSP-hash and build-output tests skip without a build.
+      - name: Build
+        run: npm run build
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Client bundle check
+        run: npm run check:bundle
+
+      - name: PII guard
+        run: npm run guard:pii
+
+      - name: E2E (chromium, firefox, webkit; includes axe)
+        run: npm run test:e2e
+        env:
+          CI: "true"
+
+      - name: Lighthouse
+        run: |
+          export CHROME_PATH="$(node -e "console.log(require('@playwright/test').chromium.executablePath())")"
+          npm run lhci
+
+      - name: Lighthouse summary
+        if: always()
+        run: node scripts/ci/summary.mjs
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+
+      - name: Upload Lighthouse results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lhci-results
+          path: reports/lhci/
+          if-no-files-found: ignore

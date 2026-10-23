@@ -3,18 +3,11 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "src/*"
-      ],
-      "@components/*": [
-        "src/components/*"
-      ]
+      "@/*": ["src/*"],
+      "@components/*": ["src/components/*"]
     },
     "jsx": "react-jsx",
     "jsxImportSource": "react"
   },
-  "include": [
-    "src/**/*",
-    "astro.config.mjs"
-  ]
+  "include": ["src/**/*", "tests/**/*", "astro.config.mjs"]
 }

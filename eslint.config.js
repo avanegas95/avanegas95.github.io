@@ -19,9 +19,13 @@ export default [
       ".astro/",
       ".vercel/",
       ".agents/",
-      "node_modules/",
-      // eslint-plugin-astro parses the speculationrules JSON as JS; astro check still covers it.
+      ".claude/",
+      // TODO(P5): eslint-plugin-astro parses the speculationrules JSON block in Layout.astro as JS
+      // and a parse error cannot be disabled inline. Fix by emitting it via
+      // <script is:inline type="speculationrules" set:html={JSON.stringify(rules)} />, then
+      // drop this ignore so the root layout is linted again. astro check still covers it.
       "src/layouts/Layout.astro",
+      "node_modules/",
     ],
   },
   {
