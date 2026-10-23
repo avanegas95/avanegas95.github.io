@@ -87,6 +87,7 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 ## Decision log
 | Date | Decision | By |
 |---|---|---|
+| 2026-10-23 | D-15 resolved: Paychira is the current name of the KB's "Finance Forecast"; the KB and site use "Paychira". Close D-15 in DISCREPANCIES after P5-07 merges; the KB rename is a P5.5 task. | Anderson |
 | 2026-10-23 | Content answers: hero says "since 2019" (no year count); anything on the resume may go on the site; project cards from local branch `feature/projects-section` are approved to show (links OK publicly); a first blog post exists on `origin/blog-posts` and should be landed rather than hiding the Blog nav. | Anderson |
 | 2026-10-23 | Improvement plan approved (`docs/tasks/P5.5/_proposal.md`): O1 (meta/OG/JSON-LD) and O2 (footer: drop the Spotify iframe, add legacy-page links) join P5; P5.5 = O13 single source of truth + voice lock (absorbs O3/O5/O11), plus O4 hero/About copy, O5 experience, O6 contact, O8 nav/blog. Copy stays in Anderson's own words; AI structures and checks only. | Anderson |
 | 2026-10-23 | Blob placement: option A, hero side by side with About Me moved to `#about`; "Check out my work" CTA kept (P5-04c). | Anderson |
