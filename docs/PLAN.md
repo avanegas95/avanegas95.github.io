@@ -22,8 +22,8 @@ Decided 2026-10-23 (Anderson): Blob and the chat backend move into the existing 
 | ID | Task | Role | Model | Reviewer | Depends on | Batch | Status |
 |---|---|---|---|---|---|---|---|
 | P5-01 | Port audit | architect | opus | — | P5-00 | — | merged |
-| P5-02 | Vercel adapter, `vercel.json` (CSP, resume 302, BotID), Node 24, all deps/scripts, test configs | developer | sonnet | opus | P5-00 | 1 | wip |
-| P5-08 | `/blob-privacy/` note page | copywriter | sonnet | sonnet | P5-02 | 2 | brief |
+| P5-02 | Vercel adapter, `vercel.json` (CSP, resume 302, BotID), Node 24, all deps/scripts, test configs | developer | sonnet | opus | P5-00 | 1 | merged |
+| P5-08 | `/blob-privacy/` note page | copywriter | sonnet | sonnet | P5-02 | 2 | wip |
 | P5-03a | Shared lib, KB, content collections, PII guard | developer | opus | opus | P5-02 | 2 | brief |
 | P5-03b | Chat server, controls, v1 anchors in allowlist, N-2 `waitUntil` | developer | opus | opus | P5-03a | 3 | brief |
 | P5-04a | Blob island port + v1 restyle on `/dev/blob` | designer | sonnet | opus | P5-03a | 3 | brief |
@@ -72,6 +72,8 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 - enable the nightly eval cron (internal results only), behind a human gate.
 
 ## Backlog (needs Anderson's decision before planning)
+- **Updated resume (Anderson, 2026-10-23).** The resume needs a new version. Anderson has also updated site copy, so where the site, KB and Resume V5.0 disagree, P5-07 flags it in DISCREPANCIES for Anderson rather than picking a winner.
+- **Portfolio improvement pass (Anderson, 2026-10-23).** Use the port to improve the portfolio overall, not just add Blob. Scope to be agreed with Anderson (candidates: Lighthouse gaps from P5-01, copy, sections, design polish). Plan as its own phase after P5 or fold items into P5 tasks.
 - **Blob "about Anderson" content.** Questionnaire at `docs/review/blob-about-me-questions.md`. Answers become KB edits (`interests.md` etc.) after Anderson approves the diff. No PII beyond email, LinkedIn and GitHub.
 - **Blob 3D / roaming.** Not in any plan today: Blob is a 2D SVG in the hero only, and "Blob on other pages" is a v3.0 non-goal. Options:
   - (a) fake-3D in SVG/CSS (shading, squash and stretch, parallax), which fits the 25 KB budget;
@@ -110,3 +112,4 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 2026-10-23 · BOOTSTRAP · feat/blob created from main; agent docs copied from portfolio-v3 (public-safe subset). P0–P4 PASSED in portfolio-v3; launch model claude-haiku-5-5 low; G5 dropped.
 2026-10-23 · P5-00 · done: Vercel project avanegas95-github-io set up by Anderson and verified (12 env vars by name, Node 24, no custom domain, Vercel auth on deployments). Anderson confirmed BotID and the spend alert are on. Open for P6: a separate Preview Upstash DB.
 2026-10-23 · P5-01 · merged: port audit + P5 briefs (03 and 04 split into 03a/b, 04a/b/c). Placement options written; 04c pending Anderson.
+2026-10-23 · P5-02 · merged into feat/blob (opus APPROVE; lint/typecheck/build green, 22 tests). Four minor follow-ups added to the P5-05 brief.
