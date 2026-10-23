@@ -62,7 +62,7 @@ Anthropic Messages API (streaming, prompt caching)
 ### 4.1 Look
 - A soft, rounded blob body. It's an SVG path that slowly "breathes" (wobbles), via a CSS/SMIL morph or an animated `border-radius`. It has a single body color from the design tokens and a subtle highlight.
 - **Square eyes**: two rounded-corner rectangles (`rx` ≈ 15% of the size). Eyes **blink** at random 3–7 s intervals and **track the cursor** within a small radius on desktop. They change shape per mood (e.g. tall when surprised, flat lines when sleepy, `^ ^` arcs when happy).
-- **Emoji reactions**: an emoji pops out above Blob's head (scale + float + fade, about 1.2 s) when the mood changes. It also shows as a small badge on Blob's assistant messages.
+- **Emoji reactions** (REMOVED 2026-10-23, Anderson: no emojis on Blob; moods show through eyes, body and motion only): an emoji pops out above Blob's head (scale + float + fade, about 1.2 s) when the mood changes. It also shows as a small badge on Blob's assistant messages.
 - Size: about 120–160 px in the homepage hero, and about 56 px as the avatar in the chat panel.
 
 ### 4.2 Moods (fixed enum, shared server ↔ client)

@@ -4,7 +4,7 @@ Guidance for Claude Code in this repo. **`docs/SCOPE.md` is the source of truth*
 
 ## Architecture in one paragraph
 This is avanegas.com, the portfolio of Anderson Vanegas (Staff SQA Engineer). It's an Astro 7 site with Tailwind 4, TypeScript and React islands for its own sections. It currently deploys to GitHub Pages from `main`, and is moving to Vercel via `@astrojs/vercel` (PLAN P5/P6). Blob, the AI agent built and tested in the private repo portfolio-v3, is being ported in on branch `feat/blob`:
-- **Blob** is a framework-free `<blob-agent>` custom element with square eyes and emoji moods. Its replies appear in a speech bubble (SCOPE §4.3).
+- **Blob** is a framework-free `<blob-agent>` custom element with square eyes and moods shown through its expressions (no emojis; decision 2026-10-23). Its replies appear in a speech bubble (SCOPE §4.3).
 - **The chat endpoint** is the single on-demand route, `src/pages/api/chat.ts`. It streams answers from the Anthropic API over SSE using the official `@anthropic-ai/sdk`; the launch model is Claude Haiku 5.5 at low effort.
 - **Blob's knowledge** comes only from a curated knowledge base in `src/content/knowledge/`.
 - **Upstash Redis** backs rate limits and the daily spend kill switch.

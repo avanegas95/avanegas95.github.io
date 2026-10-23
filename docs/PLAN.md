@@ -103,6 +103,7 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 ## Decision log
 | Date | Decision | By |
 |---|---|---|
+| 2026-10-23 | **No emojis on Blob.** Remove the emoji reactions (the pop above his head and the badge on messages); moods show only through Blob's own expressions (eyes, body, motion). Amends SCOPE §2 G2 and §4 (emoji rows/reactions) and supersedes "emoji moods" in the 2026-10-12 row. Built in P5-04b. | Anderson |
 | 2026-10-23 | H1: publish only "What this blog is about" (the one Anderson actually wrote); every other post on `blog-posts`, including "Lessons from wiring CI for mobile tests", stays draft/unpublished. | Anderson |
 | 2026-10-23 | D-14: current title is **Staff** SQA Engineer; the hero changes from "Senior" (in Anderson's words, via intake). | Anderson |
 | 2026-10-23 | H5: resume stays a **hand-made PDF** Anderson maintains (option ii). P5.5-13d becomes a facts check of the resume against the KB, not a generated `/resume/` page. Until Anderson supplies the new PDF, the resume URL keeps the 302 to LinkedIn (rule 7). | Anderson |
