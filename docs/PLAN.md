@@ -23,12 +23,12 @@ Decided 2026-10-23 (Anderson): Blob and the chat backend move into the existing 
 |---|---|---|---|---|---|---|---|
 | P5-01 | Port audit | architect | opus | — | P5-00 | — | merged |
 | P5-02 | Vercel adapter, `vercel.json` (CSP, resume 302, BotID), Node 24, all deps/scripts, test configs | developer | sonnet | opus | P5-00 | 1 | merged |
-| P5-08 | `/blob-privacy/` note page | copywriter | sonnet | sonnet | P5-02 | 2 | wip |
-| P5-03a | Shared lib, KB, content collections, PII guard | developer | opus | opus | P5-02 | 2 | wip |
-| P5-03b | Chat server, controls, v1 anchors in allowlist, N-2 `waitUntil` | developer | opus | opus | P5-03a | 3 | brief |
-| P5-04a | Blob island port + v1 restyle on `/dev/blob` | designer | sonnet | opus | P5-03a | 3 | brief |
-| P5-05 | CI workflow, Blob bundle gate, legacy E2E, Lighthouse | test-engineer | sonnet | sonnet | P5-02, P5-03a | 3 | brief |
-| P5-07 | KB ↔ v1 site consistency, DISCREPANCIES, `site.md` | researcher | sonnet | sonnet | P5-03a | 3 | brief |
+| P5-08 | `/blob-privacy/` note page | copywriter | sonnet | sonnet | P5-02 | 2 | merged |
+| P5-03a | Shared lib, KB, content collections, PII guard | developer | opus | opus | P5-02 | 2 | merged |
+| P5-03b | Chat server, controls, v1 anchors in allowlist, N-2 `waitUntil` | developer | opus | opus | P5-03a | 3 | wip |
+| P5-04a | Blob island port + v1 restyle on `/dev/blob` | designer | sonnet | opus | P5-03a | 3 | wip |
+| P5-05 | CI workflow, Blob bundle gate, legacy E2E, Lighthouse | test-engineer | sonnet | sonnet | P5-02, P5-03a | 3 | wip |
+| P5-07 | KB ↔ v1 site consistency, DISCREPANCIES, `site.md` | researcher | sonnet | sonnet | P5-03a | 3 | wip |
 | P5-04b | Speech-bubble replies replace the panel | designer | sonnet | opus | P5-04a | 4 | brief |
 | P5-06 | Internal evals port (no publishing) | developer | sonnet | opus | P5-03b | 4 | brief |
 | P5-09 | RUNBOOK (public-safe) + header check (N-3) | developer | sonnet | opus | P5-03b, P5-05 | 4 | brief |
@@ -117,3 +117,5 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 2026-10-23 · P5-00 · done: Vercel project avanegas95-github-io set up by Anderson and verified (12 env vars by name, Node 24, no custom domain, Vercel auth on deployments). Anderson confirmed BotID and the spend alert are on. Open for P6: a separate Preview Upstash DB.
 2026-10-23 · P5-01 · merged: port audit + P5 briefs (03 and 04 split into 03a/b, 04a/b/c). Placement options written; 04c pending Anderson.
 2026-10-23 · P5-02 · merged into feat/blob (opus APPROVE; lint/typecheck/build green, 22 tests). Four minor follow-ups added to the P5-05 brief.
+2026-10-23 · P5-08 · merged (sonnet APPROVE; round 2 fixed an axe flake from fade-in timing via reduced-motion emulation).
+2026-10-23 · P5-03a · merged (opus APPROVE; 470 tests). Dropped server-importing tests reassigned to P5-03b; /orbithop guard:pii hit assigned to O2.
