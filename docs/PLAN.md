@@ -3,7 +3,7 @@
 > The live plan for porting Blob into this repo. Only the orchestrator edits this file. Product decisions are in `docs/SCOPE.md` (carried over from portfolio-v3; read it as applying to this repo). Agent rules are in `CLAUDE.md`. Briefs go in `docs/tasks/<phase>/<task-id>.md`.
 > History for P0–P4 (all PASSED) and the private review material (security review, red-team checklist, eval reports, research) are in the **private** sibling repo `../portfolio-v3` (local path `/Users/anderson/Github Projects/portfolio-v3`). Read them there and never copy them into this public repo.
 
-## ▶ Current phase: **P5: Port Blob into avanegas95.github.io, on Vercel** · Status: `in progress` (2026-10-23). P5-00 done (Vercel project, env, Upstash, BotID, spend alert). P5-01 audit + briefs merged; batch 1 (P5-02) dispatched. P5-04c waits on Anderson's placement pick.
+## ▶ Current phase: **P5: Port Blob into avanegas95.github.io, on Vercel** · Status: `in progress` (2026-10-23). P5-00 done (Vercel project, env, Upstash, BotID, spend alert). P5-01 audit + briefs merged; batch 1 (P5-02) dispatched. Placement A + teal Blob decided; resume-PDF fix on main in flight.
 
 **Status legend:** `todo` · `brief` · `wip` · `review` · `changes` · `merged` · `blocked`
 
@@ -32,7 +32,7 @@ Decided 2026-10-23 (Anderson): Blob and the chat backend move into the existing 
 | P5-04b | Speech-bubble replies replace the panel | designer | sonnet | opus | P5-04a | 4 | brief |
 | P5-06 | Internal evals port (no publishing) | developer | sonnet | opus | P5-03b | 4 | brief |
 | P5-09 | RUNBOOK (public-safe) + header check (N-3) | developer | sonnet | opus | P5-03b, P5-05 | 4 | brief |
-| P5-04c | Mount Blob on `/` in the chosen placement | designer | sonnet | opus | P5-04b, **Anderson's placement pick** | 5 | blocked (human) |
+| P5-04c | Mount Blob on `/` in the chosen placement | designer | sonnet | opus | P5-04b, placement A (decided) | 5 | brief |
 
 Task branches merge into `feat/blob` (the integration branch), not `main`.
 
@@ -82,6 +82,9 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 ## Decision log
 | Date | Decision | By |
 |---|---|---|
+| 2026-10-23 | Blob placement: option A, hero side by side with About Me moved to `#about`; "Check out my work" CTA kept (P5-04c). | Anderson |
+| 2026-10-23 | Blob recolours to **teal** (v1 `--sec` #64ffda); v1's palette stays. Supersedes the 2026-10-13 "blue" accent decision. | Anderson |
+| 2026-10-23 | Fix the old resume PDF on live `main` now, ahead of P6 (separate PR to `main`). | Anderson |
 | 2026-10-23 | Launch model: `claude-haiku-5-5` at `low` effort (P4 gate run: 50/52, privacy/injection/unknowns 100%, ≈$0.00026/question, total p50 ≈1.2 s). The P4-14 bake-off is deferred to the v1 repo, together with the MAX_TOKENS/effort question (tone-04 max_tokens). | Anderson |
 | 2026-10-23 | Blob replies render as a speech bubble from Blob, not a separate scrolling chat panel (SCOPE §4.3); built in P5-04 | Anderson |
 | 2026-10-23 | Blob ports into `avanegas95.github.io` (v1) and the whole site moves to Vercel; `portfolio-v3` becomes a read-only reference after P4-13a–c. Supersedes the 2026-10-12 "v3 is a new repo" decision for hosting purposes. | Anderson |
