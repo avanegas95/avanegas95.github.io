@@ -1,14 +1,14 @@
 ---
 topic: site
 title: About this site
-summary: How this single-page portfolio is built, how Blob answers only from its knowledge base, and the checks every change must pass.
-updated: 2026-10-13
+summary: How this portfolio site is built, how Blob answers only from its knowledge base, and the checks every change must pass.
+updated: 2026-10-23
 public: true
 ---
 
 ### How the site is built
 
-This portfolio is a single-page Astro site hosted on Vercel. It is designed to be minimalist and quick to read, with light and dark themes.
+This portfolio is an Astro site hosted on Vercel. It has a dark theme and is designed to be minimalist and quick to read. The home page has an introduction with an About part, then Experiences, Projects and Contact sections, and there is a separate blog at `/blog/`.
 
 ### How Blob works
 
@@ -28,6 +28,8 @@ A quality tester should show his work, so every change to the site runs through 
 ### Other pages
 
 Two older pages from an earlier version of the site still live here: `/orbithop`, a page about Anderson's Orbit Hop game, and `/privacy`, the privacy policy for the Orbit Hop game (it is not a policy for this site or for Blob).
+
+Blob has its own privacy note at `/blob-privacy/`. It explains what Blob keeps and what it does not.
 
 ### What Blob keeps
 
