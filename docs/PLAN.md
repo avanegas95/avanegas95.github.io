@@ -25,10 +25,10 @@ Decided 2026-10-23 (Anderson): Blob and the chat backend move into the existing 
 | P5-02 | Vercel adapter, `vercel.json` (CSP, resume 302, BotID), Node 24, all deps/scripts, test configs | developer | sonnet | opus | P5-00 | 1 | merged |
 | P5-08 | `/blob-privacy/` note page | copywriter | sonnet | sonnet | P5-02 | 2 | merged |
 | P5-03a | Shared lib, KB, content collections, PII guard | developer | opus | opus | P5-02 | 2 | merged |
-| P5-03b | Chat server, controls, v1 anchors in allowlist, N-2 `waitUntil` | developer | opus | opus | P5-03a | 3 | wip |
+| P5-03b | Chat server, controls, v1 anchors in allowlist, N-2 `waitUntil` | developer | opus | opus | P5-03a | 3 | review |
 | P5-04a | Blob island port + v1 restyle on `/dev/blob` | designer | sonnet | opus | P5-03a | 3 | wip |
 | P5-05 | CI workflow, Blob bundle gate, legacy E2E, Lighthouse | test-engineer | sonnet | sonnet | P5-02, P5-03a | 3 | wip |
-| P5-07 | KB ↔ v1 site consistency, DISCREPANCIES, `site.md` | researcher | sonnet | sonnet | P5-03a | 3 | wip |
+| P5-07 | KB ↔ v1 site consistency, DISCREPANCIES, `site.md` | researcher | sonnet | sonnet | P5-03a | 3 | merged |
 | P5-04b | Speech-bubble replies replace the panel | designer | sonnet | opus | P5-04a | 4 | brief |
 | P5-06 | Internal evals port (no publishing) | developer | sonnet | opus | P5-03b | 4 | brief |
 | P5-09 | RUNBOOK (public-safe) + header check (N-3) | developer | sonnet | opus | P5-03b, P5-05 | 4 | brief |
@@ -87,7 +87,7 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 ## Decision log
 | Date | Decision | By |
 |---|---|---|
-| 2026-10-23 | D-15 resolved: Paychira is the current name of the KB's "Finance Forecast"; the KB and site use "Paychira". Close D-15 in DISCREPANCIES after P5-07 merges; the KB rename is a P5.5 task. | Anderson |
+| 2026-10-23 | D-15 resolved: Paychira is the current name of the KB's "Finance Forecast"; the KB and site use "Paychira". D-15 closed; the KB rename is a P5.5 task. | Anderson |
 | 2026-10-23 | Content answers: hero says "since 2019" (no year count); anything on the resume may go on the site; project cards from local branch `feature/projects-section` are approved to show (links OK publicly); a first blog post exists on `origin/blog-posts` and should be landed rather than hiding the Blog nav. | Anderson |
 | 2026-10-23 | Improvement plan approved (`docs/tasks/P5.5/_proposal.md`): O1 (meta/OG/JSON-LD) and O2 (footer: drop the Spotify iframe, add legacy-page links) join P5; P5.5 = O13 single source of truth + voice lock (absorbs O3/O5/O11), plus O4 hero/About copy, O5 experience, O6 contact, O8 nav/blog. Copy stays in Anderson's own words; AI structures and checks only. | Anderson |
 | 2026-10-23 | Blob placement: option A, hero side by side with About Me moved to `#about`; "Check out my work" CTA kept (P5-04c). | Anderson |
@@ -121,3 +121,4 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 2026-10-23 · P5-02 · merged into feat/blob (opus APPROVE; lint/typecheck/build green, 22 tests). Four minor follow-ups added to the P5-05 brief.
 2026-10-23 · P5-08 · merged (sonnet APPROVE; round 2 fixed an axe flake from fade-in timing via reduced-motion emulation).
 2026-10-23 · P5-03a · merged (opus APPROVE; 470 tests). Dropped server-importing tests reassigned to P5-03b; /orbithop guard:pii hit assigned to O2.
+2026-10-23 · P5-07 · merged (sonnet APPROVE; 477 tests). New rows D-14 (title), D-15 (Paychira, resolved same day).
