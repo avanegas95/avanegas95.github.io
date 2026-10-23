@@ -32,7 +32,9 @@ Decided 2026-10-23 (Anderson): Blob and the chat backend move into the existing 
 | P5-04b | Speech-bubble replies replace the panel | designer | sonnet | opus | P5-04a | 4 | brief |
 | P5-06 | Internal evals port (no publishing) | developer | sonnet | opus | P5-03b | 4 | brief |
 | P5-09 | RUNBOOK (public-safe) + header check (N-3) | developer | sonnet | opus | P5-03b, P5-05 | 4 | brief |
-| P5-04c | Mount Blob on `/` in the chosen placement | designer | sonnet | opus | P5-04b, placement A (decided) | 5 | brief |
+| P5-11 | Footer: drop Spotify iframe, legacy/policy links, computed year, `/orbithop` email-spacing fix | designer | sonnet | sonnet | P5-02, P5-08 | 4 | wip |
+| P5-10 | Meta: real `og:image`, KB title/description, Person JSON-LD | developer | sonnet | sonnet | P5-05, P5-07 | 4 | brief |
+| P5-04c | Mount Blob on `/` in the chosen placement | designer | sonnet | opus | P5-04b, P5-10, P5-11, placement A (decided) | 5 | brief |
 
 Task branches merge into `feat/blob` (the integration branch), not `main`.
 
@@ -62,8 +64,22 @@ After setting them, verify on the Preview: `/api/chat` streams, the rate limit t
 
 **Gate:** the Vercel Preview of `feat/blob` serves the full v1 site with Blob. All legacy URLs return 200 and the resume rule holds. The chat works end to end. CI runs unit + E2E + axe green with no real API calls. Lighthouse ≥ 0.95 in all categories. The island is ≤ 25 KB gzip. RUNBOOK and spend alert are in place.
 
-## P5.5: Portfolio improvement (approved 2026-10-23; briefs pending)
-Scope and options in `docs/tasks/P5.5/_proposal.md`. Recommended set approved: O13 (a–d) backbone, then O4, O5, O6, O8. Anderson's content questions (hero years, Staff bullets, project cards, blog nav, D-11 tools, resume generate-vs-check, voice-locked fields) are answered during O13 intake, in his words.
+## P5.5: Portfolio improvement (approved 2026-10-23)
+Scope: `docs/tasks/P5.5/_proposal.md`; table: `_proposed-plan.md`; Anderson's to-do (H1–H5): `ANDERSON-TODO.md`. Voice rule: agents never write Anderson's prose; content PRs merge only after he runs `npm run voice:accept`.
+
+| ID | Task | Model | Reviewer | Depends on | Batch | Status |
+|---|---|---|---|---|---|---|
+| P5.5-03 | Land `origin/feature/projects-section` | sonnet | sonnet | — | 0 | wip |
+| P5.5-08a | Land `origin/blog-posts` (published only) | sonnet | sonnet | H1 | 0 | blocked (human) |
+| P5.5-15 | Rename Finance Forecast → Paychira | haiku | sonnet | P5-06, P5-07 | 1 | brief |
+| P5.5-13a | Shared KB schema, per-file golden prompt, `site-copy.md` template | opus | opus | P5 gate, 08a, 15 | 2 | brief |
+| P5.5-13c | Voice lock, `facts:check`, drift ratchet | sonnet | opus | 13a, H3 | 3 | brief |
+| P5.5-05 | Experience from KB roles | sonnet | sonnet | 13a, 13c, H2 | 4 | brief |
+| P5.5-06 | Contact polish + Formspree E2E | sonnet | sonnet | 13a, 13c | 4 | brief |
+| P5.5-13b | Projects render from KB | sonnet | sonnet | 03, 13a, 13c, H4 | 4 | brief |
+| P5.5-04 | Hero + About from intake | sonnet | sonnet | 13a, 13c, H2, H4 | 4 | brief |
+| P5.5-08b | Nav fix | haiku | sonnet | 05, 08a | 5 | brief |
+| P5.5-13d | `/resume/` page from KB | sonnet | opus | 05, 13a, 13c, P5-05, H5 | 5 | brief |
 
 ## P6: Production on Vercel and domain cutover (NOT planned; only on Anderson's explicit final approval)
 Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNAME`, the Pages workflow or Vercel domain settings, until Anderson approves in a message. Then:
