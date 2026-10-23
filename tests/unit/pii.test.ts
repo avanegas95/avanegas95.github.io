@@ -8,6 +8,7 @@ import {
   scanText,
   type PiiRule,
 } from "../../src/lib/pii.ts";
+import { scrub } from "../../src/lib/server/scrub.ts";
 
 // No literal phone numbers, addresses or markers live in the repo (CLAUDE.md
 // rule 2): every sample is assembled at runtime from fragments, using the
@@ -712,6 +713,7 @@ describe("line joins after an allowed profile URL (P4-07)", () => {
     it(`keeps a punctuated value before a digit line (#${n})`, () => {
       expect(scanText(text, "x.md")).toEqual([]);
       expect(piiSpans(text)).toEqual([]);
+      expect(scrub(text, { allowedUrls: [] })).toBe(text);
     });
   }
 
