@@ -1,39 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { existsSync } from "node:fs";
+import { LIMITS, parseChatRequest } from "../../src/lib/server/input";
 import {
   CLIENT_LIMITS,
   buildRequest,
   newSessionId,
   type Turn,
 } from "../../src/scripts/blob/history";
-
-// The server half (src/lib/server/input.ts) lands with P5-03b. Until it is merged, the
-// cross-checks against it are skipped and LIMITS falls back to the SCOPE section 6.1 values;
-// they switch on automatically once the module exists.
-const SERVER_INPUT = new URL("../../src/lib/server/input.ts", import.meta.url);
-type ServerInput = {
-  LIMITS: {
-    maxTurns: number;
-    maxUserChars: number;
-    maxAssistantChars: number;
-    maxBodyBytes: number;
-    maxSessionIdChars: number;
-  };
-  parseChatRequest: (r: Request) => Promise<unknown>;
-};
-const server = existsSync(SERVER_INPUT)
-  ? ((await import(/* @vite-ignore */ SERVER_INPUT.href)) as ServerInput)
-  : undefined;
-const LIMITS = server?.LIMITS ?? {
-  maxTurns: 10,
-  maxUserChars: 500,
-  maxAssistantChars: 1500,
-  maxBodyBytes: 8192,
-  maxSessionIdChars: 64,
-};
-const parseChatRequest = (r: Request): Promise<{ ok: boolean }> =>
-  server!.parseChatRequest(r) as Promise<{ ok: boolean }>;
-const itServer = it.skipIf(!server);
 
 const SID = "session_1234";
 const bytes = (s: string): number => new TextEncoder().encode(s).byteLength;
@@ -133,16 +105,13 @@ describe("buildRequest", () => {
     expect(r.turns.at(-1)!.role).toBe("user");
   });
 
-  itServer(
-    "10+ turns of 500 multibyte chars still form a valid request",
-    async () => {
-      const history = alternating(11, (i) => (i % 2 ? "é" : "日").repeat(500));
-      const r = buildRequest(history, SID)!;
-      expect(bytes(r.body)).toBeLessThanOrEqual(8192);
-      const parsed = await parseChatRequest(serverRequest(r.body));
-      expect(parsed.ok).toBe(true);
-    },
-  );
+  it("10+ turns of 500 multibyte chars still form a valid request", async () => {
+    const history = alternating(11, (i) => (i % 2 ? "é" : "日").repeat(500));
+    const r = buildRequest(history, SID)!;
+    expect(bytes(r.body)).toBeLessThanOrEqual(8192);
+    const parsed = await parseChatRequest(serverRequest(r.body));
+    expect(parsed.ok).toBe(true);
+  });
 
   it("drops a leading assistant turn", () => {
     const history: Turn[] = [
@@ -195,7 +164,7 @@ describe("buildRequest", () => {
     expect(r.turns[0]!.content).toBe("ü".repeat(500));
   });
 
-  itServer("cleans characters the server would reject", async () => {
+  it("cleans characters the server would reject", async () => {
     const history: Turn[] = [
       { role: "user", content: "a\r\nb\rc\u0000d\u007f\uD800e" },
     ];
@@ -251,49 +220,46 @@ describe("buildRequest × server parseChatRequest (randomised)", () => {
     "﻿",
   ];
 
-  itServer(
-    "every non-null body is accepted by the server, unchanged",
-    async () => {
-      const rand = rng(0xb10b);
-      const pick = <T>(xs: readonly T[]): T =>
-        xs[Math.floor(rand() * xs.length)]!;
-      let accepted = 0;
-      for (let n = 0; n < 400; n++) {
-        const len = Math.floor(rand() * 16);
-        const history: Turn[] = [];
-        for (let i = 0; i < len; i++) {
-          const alt = rand() < 0.9;
-          const role: Turn["role"] = alt
-            ? i % 2 === 0
-              ? "user"
-              : "assistant"
-            : pick(["user", "assistant"] as const);
-          const size = Math.floor(rand() * (rand() < 0.2 ? 2200 : 300));
-          let content = "";
-          for (let k = 0; k < size; k++) content += pick(ALPHABET);
-          history.push({ role, content });
-        }
-        if (rand() < 0.7) history.push({ role: "user", content: "hello?" });
-
-        const r = buildRequest(history, newSessionId());
-        if (r === null) continue;
-        accepted++;
-        expect(bytes(r.body)).toBeLessThanOrEqual(CLIENT_LIMITS.maxBodyBytes);
-        expect(r.turns.length).toBeLessThanOrEqual(CLIENT_LIMITS.maxTurns);
-        for (const t of r.turns) {
-          expect(cp(t.content)).toBeLessThanOrEqual(
-            t.role === "user"
-              ? CLIENT_LIMITS.maxUserChars
-              : CLIENT_LIMITS.maxAssistantChars,
-          );
-        }
-        const parsed = await parseChatRequest(serverRequest(r.body));
-        expect(parsed).toEqual({
-          ok: true,
-          value: { messages: r.turns, sessionId: JSON.parse(r.body).sessionId },
-        });
+  it("every non-null body is accepted by the server, unchanged", async () => {
+    const rand = rng(0xb10b);
+    const pick = <T>(xs: readonly T[]): T =>
+      xs[Math.floor(rand() * xs.length)]!;
+    let accepted = 0;
+    for (let n = 0; n < 400; n++) {
+      const len = Math.floor(rand() * 16);
+      const history: Turn[] = [];
+      for (let i = 0; i < len; i++) {
+        const alt = rand() < 0.9;
+        const role: Turn["role"] = alt
+          ? i % 2 === 0
+            ? "user"
+            : "assistant"
+          : pick(["user", "assistant"] as const);
+        const size = Math.floor(rand() * (rand() < 0.2 ? 2200 : 300));
+        let content = "";
+        for (let k = 0; k < size; k++) content += pick(ALPHABET);
+        history.push({ role, content });
       }
-      expect(accepted).toBeGreaterThan(150);
-    },
-  );
+      if (rand() < 0.7) history.push({ role: "user", content: "hello?" });
+
+      const r = buildRequest(history, newSessionId());
+      if (r === null) continue;
+      accepted++;
+      expect(bytes(r.body)).toBeLessThanOrEqual(CLIENT_LIMITS.maxBodyBytes);
+      expect(r.turns.length).toBeLessThanOrEqual(CLIENT_LIMITS.maxTurns);
+      for (const t of r.turns) {
+        expect(cp(t.content)).toBeLessThanOrEqual(
+          t.role === "user"
+            ? CLIENT_LIMITS.maxUserChars
+            : CLIENT_LIMITS.maxAssistantChars,
+        );
+      }
+      const parsed = await parseChatRequest(serverRequest(r.body));
+      expect(parsed).toEqual({
+        ok: true,
+        value: { messages: r.turns, sessionId: JSON.parse(r.body).sessionId },
+      });
+    }
+    expect(accepted).toBeGreaterThan(150);
+  });
 });

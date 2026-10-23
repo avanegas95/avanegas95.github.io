@@ -4,14 +4,16 @@
 // is a copy of ALLOWED_SITE_PATHS and a unit test keeps the two in lockstep.
 
 export const SITE_PATHS: readonly string[] = [
+  "#home",
   "#about",
-  "#experience",
+  "#experiences",
   "#projects",
-  "#skills",
   "#contact",
   "/",
+  "/blog/",
   "/orbithop/",
   "/privacy/",
+  "/blob-privacy/",
 ];
 
 export const LINK_HOSTS: readonly string[] = [

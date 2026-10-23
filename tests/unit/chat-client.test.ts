@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { SSE_HEADERS, encodeEvent } from "../../src/lib/server/sse";
 import type { ChatEvent } from "../../src/lib/chat-events";
 import {
   createSseParser,
@@ -8,7 +9,7 @@ import {
 } from "../../src/scripts/blob/chat-client";
 
 const enc = new TextEncoder();
-const SSE = { "content-type": "text/event-stream; charset=utf-8" };
+const SSE = SSE_HEADERS;
 
 type Call = [string, ...unknown[]];
 function recorder(): {
@@ -63,10 +64,6 @@ const sseResponse = (
   chunks: (string | Uint8Array)[],
   headers = SSE,
 ): Response => new Response(streamOf(chunks), { status: 200, headers });
-
-// Same framing as the server encoder (src/lib/server/sse.ts, P5-03b).
-const encodeEvent = (e: ChatEvent): string =>
-  `event: ${e.event}\ndata: ${JSON.stringify(e.data)}\n\n`;
 
 const frames = (...events: ChatEvent[]): string =>
   events.map(encodeEvent).join("");
