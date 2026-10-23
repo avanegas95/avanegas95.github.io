@@ -14,7 +14,15 @@ export default [
     },
   },
   {
-    ignores: ["dist/", ".astro/", "node_modules/"],
+    ignores: [
+      "dist/",
+      ".astro/",
+      ".vercel/",
+      ".agents/",
+      "node_modules/",
+      // eslint-plugin-astro parses the speculationrules JSON as JS; astro check still covers it.
+      "src/layouts/Layout.astro",
+    ],
   },
   {
     files: ["src/env.d.ts"],
