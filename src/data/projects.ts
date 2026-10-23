@@ -1,5 +1,5 @@
-import placeholder from "@/assets/images/placeholder.jpg";
-import type { Project } from "@/lib/types";
+import placeholder from "../assets/images/placeholder.jpg";
+import type { Project } from "../lib/types";
 
 /** Shared cover until per-project art is added. */
 const cover = placeholder;
@@ -31,8 +31,7 @@ export const projects: Project[] = [
     tech: ["React", "Vite", "HTML", "CSS"],
     image: cover,
     status: "handed-off",
-    external:
-      "https://www.hubspot.com/state-of-ecosystems-2026?wfuid=2b5046b038.1776051442&wfsid=1781122707-a002-9b78-cb41b2b945cd",
+    external: "https://www.hubspot.com/state-of-ecosystems-2026",
     featured: true,
   },
   {
