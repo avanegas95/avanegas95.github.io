@@ -24,7 +24,7 @@ Decided 2026-10-23 (Anderson): Blob and the chat backend move into the existing 
 | P5-01 | Port audit | architect | opus | — | P5-00 | — | merged |
 | P5-02 | Vercel adapter, `vercel.json` (CSP, resume 302, BotID), Node 24, all deps/scripts, test configs | developer | sonnet | opus | P5-00 | 1 | merged |
 | P5-08 | `/blob-privacy/` note page | copywriter | sonnet | sonnet | P5-02 | 2 | wip |
-| P5-03a | Shared lib, KB, content collections, PII guard | developer | opus | opus | P5-02 | 2 | brief |
+| P5-03a | Shared lib, KB, content collections, PII guard | developer | opus | opus | P5-02 | 2 | wip |
 | P5-03b | Chat server, controls, v1 anchors in allowlist, N-2 `waitUntil` | developer | opus | opus | P5-03a | 3 | brief |
 | P5-04a | Blob island port + v1 restyle on `/dev/blob` | designer | sonnet | opus | P5-03a | 3 | brief |
 | P5-05 | CI workflow, Blob bundle gate, legacy E2E, Lighthouse | test-engineer | sonnet | sonnet | P5-02, P5-03a | 3 | brief |
