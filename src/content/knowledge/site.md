@@ -1,0 +1,34 @@
+---
+topic: site
+title: About this site
+summary: How this single-page portfolio is built, how Blob answers only from its knowledge base, and the checks every change must pass.
+updated: 2026-10-13
+public: true
+---
+
+### How the site is built
+
+This portfolio is a single-page Astro site hosted on Vercel. It is designed to be minimalist and quick to read, with light and dark themes.
+
+### How Blob works
+
+Blob, the site's guide, is powered by Claude by Anthropic. It answers only from the knowledge base, a set of hand-written files that also feed the visible sections of the page. That way the page and Blob tell the same story. If something is not in the knowledge base, Blob says it does not know and suggests contacting Anderson.
+
+### How quality is checked
+
+A quality tester should show his work, so every change to the site runs through this pipeline:
+
+- lint, to keep the code tidy
+- typecheck, to catch mistakes before visitors do
+- unit tests
+- end-to-end tests in three browsers
+- axe, an accessibility checker
+- Lighthouse, a performance and best-practices audit
+
+### Other pages
+
+Two older pages from an earlier version of the site still live here: `/orbithop`, a page about Anderson's Orbit Hop game, and `/privacy`, the privacy policy for the Orbit Hop game (it is not a policy for this site or for Blob).
+
+### What Blob keeps
+
+By default, Blob does not log the text of visitors' questions. Only aggregate numbers, such as counts, reply speed and error codes, are kept.

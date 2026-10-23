@@ -22,4 +22,41 @@ const blog = defineCollection({
   }),
 });
 
-export const collections = { blog };
+const base = {
+  title: z.string().min(1),
+  summary: z.string().min(1).max(200),
+  updated: z.date(),
+  public: z.boolean(),
+};
+
+const knowledge = defineCollection({
+  loader: glob({ pattern: "*.md", base: "./src/content/knowledge" }),
+  schema: z
+    .object({
+      topic: z.enum([
+        "bio",
+        "experience",
+        "skills",
+        "education",
+        "interests",
+        "contact",
+        "faq",
+        "site",
+      ]),
+      ...base,
+    })
+    .strict(),
+});
+
+const projects = defineCollection({
+  loader: glob({ pattern: "*.md", base: "./src/content/knowledge/projects" }),
+  schema: z
+    .object({
+      topic: z.literal("project"),
+      ...base,
+      order: z.number().int().min(1),
+    })
+    .strict(),
+});
+
+export const collections = { blog, knowledge, projects };
