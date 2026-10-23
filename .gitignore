@@ -22,3 +22,10 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# local env and Vercel link (never commit)
+.env*.local
+.vercel
+
+# eval run output (local only)
+evals/results/
