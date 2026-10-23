@@ -69,7 +69,7 @@ Scope: `docs/tasks/P5.5/_proposal.md`; table: `_proposed-plan.md`; Anderson's to
 
 | ID | Task | Model | Reviewer | Depends on | Batch | Status |
 |---|---|---|---|---|---|---|
-| P5.5-03 | Land `origin/feature/projects-section` | sonnet | sonnet | — | 0 | wip |
+| P5.5-03 | Land `origin/feature/projects-section` | sonnet | sonnet | — | 0 | merged |
 | P5.5-08a | Land `origin/blog-posts` (only "What this blog is about" published) | sonnet | sonnet | H1 ✓ | 0 | brief |
 | P5.5-15 | Rename Finance Forecast → Paychira | haiku | sonnet | P5-06, P5-07 | 1 | brief |
 | P5.5-13a | Shared KB schema, per-file golden prompt, `site-copy.md` template | opus | opus | P5 gate, 08a, 15 | 2 | brief |
@@ -146,3 +146,4 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 2026-10-23 · P5-07 · merged (sonnet APPROVE; 477 tests). New rows D-14 (title), D-15 (Paychira, resolved same day).
 
 2026-10-23 · P5-03b · merged (opus APPROVE; 1,554 tests). Follow-ups: bump PROMPT_VERSION before next eval run (P5-06); #about anchor arrives with P5-04c.
+2026-10-23 · P5.5-03 · merged (sonnet APPROVE, voice check pass; 1,560 tests). P5-05 approved but held: merges after P5-04a (its tsconfig change typechecks botid.test, which needs 04a's botid-init.ts). P5-04a and P5-11 in changes.

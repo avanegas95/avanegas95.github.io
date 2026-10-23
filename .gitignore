@@ -32,3 +32,8 @@ evals/results/
 
 # Private content-intake drafts (never commit)
 docs/content-intake/private/
+test-results/
+playwright-report/
+coverage/
+reports/
+.lighthouseci/
