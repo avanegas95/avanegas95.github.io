@@ -1,4 +1,4 @@
-const minimum = "22.12.0";
+const minimum = "24.0.0";
 
 function parseVersion(version) {
   return version.split(".").map((part) => Number.parseInt(part, 10));
