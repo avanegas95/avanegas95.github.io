@@ -3,7 +3,7 @@
 > The live plan for porting Blob into this repo. Only the orchestrator edits this file. Product decisions are in `docs/SCOPE.md` (carried over from portfolio-v3; read it as applying to this repo). Agent rules are in `CLAUDE.md`. Briefs go in `docs/tasks/<phase>/<task-id>.md`.
 > History for P0–P4 (all PASSED) and the private review material (security review, red-team checklist, eval reports, research) are in the **private** sibling repo `../portfolio-v3` (local path `/Users/anderson/Github Projects/portfolio-v3`). Read them there and never copy them into this public repo.
 
-## ▶ Current phase: **P5: Port Blob into avanegas95.github.io, on Vercel** · Status: `in progress` (2026-10-23). Next: P5-00 remainder (confirm BotID and spend alert), then the P5-01 port audit by the architect.
+## ▶ Current phase: **P5: Port Blob into avanegas95.github.io, on Vercel** · Status: `in progress` (2026-10-23). P5-00 done (Vercel project, env, Upstash, BotID, spend alert). Next: the P5-01 port audit by the architect.
 
 **Status legend:** `todo` · `brief` · `wip` · `review` · `changes` · `merged` · `blocked`
 
@@ -101,3 +101,4 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 
 ## Run log (orchestrator appends one line per merge or gate)
 2026-10-23 · BOOTSTRAP · feat/blob created from main; agent docs copied from portfolio-v3 (public-safe subset). P0–P4 PASSED in portfolio-v3; launch model claude-haiku-5-5 low; G5 dropped.
+2026-10-23 · P5-00 · done: Vercel project avanegas95-github-io set up by Anderson and verified (12 env vars by name, Node 24, no custom domain, Vercel auth on deployments). Anderson confirmed BotID and the spend alert are on. Open for P6: a separate Preview Upstash DB.
