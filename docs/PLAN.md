@@ -62,6 +62,9 @@ After setting them, verify on the Preview: `/api/chat` streams, the rate limit t
 
 **Gate:** the Vercel Preview of `feat/blob` serves the full v1 site with Blob. All legacy URLs return 200 and the resume rule holds. The chat works end to end. CI runs unit + E2E + axe green with no real API calls. Lighthouse ≥ 0.95 in all categories. The island is ≤ 25 KB gzip. RUNBOOK and spend alert are in place.
 
+## P5.5: Portfolio improvement (approved 2026-10-23; briefs pending)
+Scope and options in `docs/tasks/P5.5/_proposal.md`. Recommended set approved: O13 (a–d) backbone, then O4, O5, O6, O8. Anderson's content questions (hero years, Staff bullets, project cards, blog nav, D-11 tools, resume generate-vs-check, voice-locked fields) are answered during O13 intake, in his words.
+
 ## P6: Production on Vercel and domain cutover (NOT planned; only on Anderson's explicit final approval)
 Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNAME`, the Pages workflow or Vercel domain settings, until Anderson approves in a message. Then:
 - write and review `docs/CUTOVER.md` (Vercel domain + DNS steps, pre/post checks, rollback to GitHub Pages);
@@ -74,7 +77,7 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 ## Backlog (needs Anderson's decision before planning)
 - **Updated resume (Anderson, 2026-10-23).** The resume needs a new version. Anderson has also updated site copy, so where the site, KB and Resume V5.0 disagree, P5-07 flags it in DISCREPANCIES for Anderson rather than picking a winner.
 - **Portfolio improvement pass (Anderson, 2026-10-23).** Use the port to improve the portfolio overall, not just add Blob. Scope to be agreed with Anderson (candidates: Lighthouse gaps from P5-01, copy, sections, design polish). Plan as its own phase after P5 or fold items into P5 tasks.
-- **Blob "about Anderson" content.** Questionnaire at `docs/review/blob-about-me-questions.md`. Answers become KB edits (`interests.md` etc.) after Anderson approves the diff. No PII beyond email, LinkedIn and GitHub.
+- **Blob "about Anderson" content.** Questionnaire moved to `docs/content-intake/about-me-questions.md` (private drafts in gitignored `docs/content-intake/private/`). Answers become KB edits (`interests.md` etc.) after Anderson approves the diff. No PII beyond email, LinkedIn and GitHub.
 - **Blob 3D / roaming.** Not in any plan today: Blob is a 2D SVG in the hero only, and "Blob on other pages" is a v3.0 non-goal. Options:
   - (a) fake-3D in SVG/CSS (shading, squash and stretch, parallax), which fits the 25 KB budget;
   - (b) Blob wanders the page or follows the scroll, which needs a motion and a11y spec (reduced motion, no covering content);
@@ -84,6 +87,7 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 ## Decision log
 | Date | Decision | By |
 |---|---|---|
+| 2026-10-23 | Improvement plan approved (`docs/tasks/P5.5/_proposal.md`): O1 (meta/OG/JSON-LD) and O2 (footer: drop the Spotify iframe, add legacy-page links) join P5; P5.5 = O13 single source of truth + voice lock (absorbs O3/O5/O11), plus O4 hero/About copy, O5 experience, O6 contact, O8 nav/blog. Copy stays in Anderson's own words; AI structures and checks only. | Anderson |
 | 2026-10-23 | Blob placement: option A, hero side by side with About Me moved to `#about`; "Check out my work" CTA kept (P5-04c). | Anderson |
 | 2026-10-23 | Blob recolours to **teal** (v1 `--sec` #64ffda); v1's palette stays. Supersedes the 2026-10-13 "blue" accent decision. | Anderson |
 | 2026-10-23 | Fix the old resume PDF on live `main` now, ahead of P6 (separate PR to `main`). | Anderson |

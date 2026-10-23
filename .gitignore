@@ -29,3 +29,6 @@ pnpm-debug.log*
 
 # eval run output (local only)
 evals/results/
+
+# Private content-intake drafts (never commit)
+docs/content-intake/private/
