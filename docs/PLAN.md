@@ -3,7 +3,7 @@
 > The live plan for porting Blob into this repo. Only the orchestrator edits this file. Product decisions are in `docs/SCOPE.md` (carried over from portfolio-v3; read it as applying to this repo). Agent rules are in `CLAUDE.md`. Briefs go in `docs/tasks/<phase>/<task-id>.md`.
 > History for P0–P4 (all PASSED) and the private review material (security review, red-team checklist, eval reports, research) are in the **private** sibling repo `../portfolio-v3` (local path `/Users/anderson/Github Projects/portfolio-v3`). Read them there and never copy them into this public repo.
 
-## ▶ Current phase: **P5: Port Blob into avanegas95.github.io, on Vercel** · Status: `in progress` (2026-10-23). P5-00 done (Vercel project, env, Upstash, BotID, spend alert). Next: the P5-01 port audit by the architect.
+## ▶ Current phase: **P5: Port Blob into avanegas95.github.io, on Vercel** · Status: `in progress` (2026-10-23). P5-00 done (Vercel project, env, Upstash, BotID, spend alert). P5-01 audit + briefs merged; batch 1 (P5-02) dispatched. P5-04c waits on Anderson's placement pick.
 
 **Status legend:** `todo` · `brief` · `wip` · `review` · `changes` · `merged` · `blocked`
 
@@ -18,19 +18,23 @@ Decided 2026-10-23 (Anderson): Blob and the chat backend move into the existing 
 - Orchestration moves with the code. P5-00 copies an adapted `CLAUDE.md`, the relevant SCOPE sections, `.claude/agents/` and the orchestrate-build skill into the v1 repo, and `/orchestrate-build` then runs from there.
 - The port is mostly copy-and-adapt. Blob stays a framework-free `<blob-agent>` island (≤ 25 KB gzip). v1 keeps React for its own sections; rule 8's "no React" applies to Blob only.
 
-**Candidate tasks (the architect briefs them at phase start)**
-| ID | Task | Notes |
-|---|---|---|
-| P5-00 | **Human:** create a Vercel project from the v1 repo (Preview only, no production domain). Set env vars (`ANTHROPIC_API_KEY` from a dedicated workspace per S-06, `CHAT_MODEL`, `CHAT_EFFORT`, `IP_HASH_SALT`, `DAILY_BUDGET_USD`). Add the Upstash integration with a separate Preview DB and eviction off (N-1). Enable BotID. Bootstrap the agent docs in v1. | human gate (billing, secrets) |
-| P5-01 | Port audit: map every v3 module to its v1 location; list conflicts (eslint/prettier configs, Node version, `content.config.ts`, design tokens, the KB vs v1's `src/data/*.ts` content) | architect, read-only |
-| P5-02 | Platform: add the `@astrojs/vercel` adapter (static output plus `prerender = false` on `/api/chat`), `vercel.json` (BotID rewrites, resume redirect), security headers | |
-| P5-03 | Server port: `src/lib/{moods,prompt,kb}`, `src/lib/server/*`, `src/pages/api/chat.ts`, the `knowledge` content collection, PII/placeholder guard, plus their Vitest suites. Carry over N-2 (`waitUntil` around `recordSpend`). | opus |
-| P5-04 | Blob UI port: `<blob-agent>` restyled to v1's tokens (one accent), placed in v1's Home hero, **replies shown in a speech bubble from Blob instead of the chat panel (SCOPE §4.3, 2026-10-23)**: the full latest answer with no inner scroll, earlier turns behind a "previous" control, full width on mobile; reduced motion, no-JS fallback | designer (opus review) |
-| P5-05 | Test infra and CI in v1: Vitest, Playwright (3 browsers) + axe, a PR workflow with `/api/chat` mocked, legacy-URL E2E (`/orbithop`, `/privacy`, `/app-ads.txt`, resume never the old PDF), Lighthouse ≥ 0.95 as an internal gate (not published) | test-engineer |
-| P5-06 | Internal evals: port `evals/` minus `--publish`, `evals.json` and `/quality` | |
-| P5-07 | KB ↔ site consistency: KB facts vs v1's `projects.ts`, experiences and contact; new conflicts go to DISCREPANCIES | |
-| P5-08 | Blob privacy note page (Q5) linked from the KB `site.md`; must exist before any public production deploy | copywriter |
-| P5-09 | Ops: `docs/RUNBOOK.md`, spend alert, N-3 header checks on the Preview | |
+**Tasks** (architect, 2026-10-23; briefs in `docs/tasks/P5/`, audit in `P5-01-port-audit.md`, placement options in `_blob-placement.md`)
+| ID | Task | Role | Model | Reviewer | Depends on | Batch | Status |
+|---|---|---|---|---|---|---|---|
+| P5-01 | Port audit | architect | opus | — | P5-00 | — | merged |
+| P5-02 | Vercel adapter, `vercel.json` (CSP, resume 302, BotID), Node 24, all deps/scripts, test configs | developer | sonnet | opus | P5-00 | 1 | wip |
+| P5-08 | `/blob-privacy/` note page | copywriter | sonnet | sonnet | P5-02 | 2 | brief |
+| P5-03a | Shared lib, KB, content collections, PII guard | developer | opus | opus | P5-02 | 2 | brief |
+| P5-03b | Chat server, controls, v1 anchors in allowlist, N-2 `waitUntil` | developer | opus | opus | P5-03a | 3 | brief |
+| P5-04a | Blob island port + v1 restyle on `/dev/blob` | designer | sonnet | opus | P5-03a | 3 | brief |
+| P5-05 | CI workflow, Blob bundle gate, legacy E2E, Lighthouse | test-engineer | sonnet | sonnet | P5-02, P5-03a | 3 | brief |
+| P5-07 | KB ↔ v1 site consistency, DISCREPANCIES, `site.md` | researcher | sonnet | sonnet | P5-03a | 3 | brief |
+| P5-04b | Speech-bubble replies replace the panel | designer | sonnet | opus | P5-04a | 4 | brief |
+| P5-06 | Internal evals port (no publishing) | developer | sonnet | opus | P5-03b | 4 | brief |
+| P5-09 | RUNBOOK (public-safe) + header check (N-3) | developer | sonnet | opus | P5-03b, P5-05 | 4 | brief |
+| P5-04c | Mount Blob on `/` in the chosen placement | designer | sonnet | opus | P5-04b, **Anderson's placement pick** | 5 | blocked (human) |
+
+Task branches merge into `feat/blob` (the integration branch), not `main`.
 
 **Vercel environment migration (P5-00 checklist; names only, never values)**
 Source: project `portfolio-v3`, checked with `vercel env ls` on 2026-10-23. Sensitive values can't be read back from Vercel, and `vercel env pull` only returns placeholders. So Anderson re-enters each secret from its original source in the new project's dashboard. Don't copy them through files or chat.
@@ -102,3 +106,4 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 ## Run log (orchestrator appends one line per merge or gate)
 2026-10-23 · BOOTSTRAP · feat/blob created from main; agent docs copied from portfolio-v3 (public-safe subset). P0–P4 PASSED in portfolio-v3; launch model claude-haiku-5-5 low; G5 dropped.
 2026-10-23 · P5-00 · done: Vercel project avanegas95-github-io set up by Anderson and verified (12 env vars by name, Node 24, no custom domain, Vercel auth on deployments). Anderson confirmed BotID and the spend alert are on. Open for P6: a separate Preview Upstash DB.
+2026-10-23 · P5-01 · merged: port audit + P5 briefs (03 and 04 split into 03a/b, 04a/b/c). Placement options written; 04c pending Anderson.
