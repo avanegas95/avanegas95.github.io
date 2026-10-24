@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
+import { join } from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
 
 interface Header {
@@ -271,29 +272,45 @@ describe("built output carries config", () => {
   });
 });
 
-// Every inline <script> in the built home page must be allowed by a sha256 in the CSP, and
-// every hash must belong to a real inline script (no stale hashes).
-const BUILT_INDEX = ".vercel/output/static/index.html";
-describe("CSP hashes match the built home page", () => {
-  it.skipIf(!existsSync(BUILT_INDEX))(
-    "each inline script hash is in script-src and vice versa",
+// Every inline <script> in EVERY built page must be allowed by a sha256 in the CSP, and every
+// hash must belong to a real inline script on some page (no stale hashes).
+const BUILT_STATIC = ".vercel/output/static";
+function builtHtmlFiles(dir: string): string[] {
+  return readdirSync(dir).flatMap((name) => {
+    const full = join(dir, name);
+    if (statSync(full).isDirectory()) return builtHtmlFiles(full);
+    return full.endsWith(".html") ? [full] : [];
+  });
+}
+describe("CSP hashes match the built pages", () => {
+  it.skipIf(!existsSync(BUILT_STATIC))(
+    "each inline script hash is in script-src and vice versa, across all pages",
     () => {
-      const html = readFileSync(BUILT_INDEX, "utf8");
-      const inline = [
-        ...html.matchAll(/<script(?![^>]*\ssrc=)[^>]*>([\s\S]*?)<\/script>/g),
-      ].map((m) => m[1] ?? "");
-      const actual = inline.map(
-        (body) =>
-          `'sha256-${createHash("sha256").update(body).digest("base64")}'`,
-      );
       const d = directivesOf(
         globalHeaders().get("Content-Security-Policy") ?? "",
       );
       const allowed = (d.get("script-src") ?? []).filter((v) =>
         v.startsWith("'sha256-"),
       );
-      expect(inline.length).toBeGreaterThan(0);
-      expect([...actual].sort()).toEqual([...allowed].sort());
+      const pages = builtHtmlFiles(BUILT_STATIC);
+      expect(pages.length).toBeGreaterThan(1);
+      const used = new Set<string>();
+      for (const page of pages) {
+        const html = readFileSync(page, "utf8");
+        const inline = [
+          ...html.matchAll(/<script(?![^>]*\ssrc=)[^>]*>([\s\S]*?)<\/script>/g),
+        ].map((m) => m[1] ?? "");
+        for (const body of inline) {
+          const hash = `'sha256-${createHash("sha256").update(body).digest("base64")}'`;
+          used.add(hash);
+          expect(
+            allowed,
+            `${page}: inline script not allowed by CSP`,
+          ).toContain(hash);
+        }
+      }
+      expect(used.size).toBeGreaterThan(0);
+      expect([...used].sort()).toEqual([...allowed].sort());
     },
   );
 });
