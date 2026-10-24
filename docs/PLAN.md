@@ -108,6 +108,7 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 ## Decision log
 | Date | Decision | By |
 |---|---|---|
+| 2026-10-24 | Phase gate may run the chat smoke test against the Vercel Preview with `--spend` (a few messages, under $0.01). Anderson provides the Preview bypass token via the shell as `VERCEL_AUTOMATION_BYPASS_SECRET`; it is never written to the repo or chat. | Anderson |
 | 2026-10-24 | Favicon: replace the gradient orb (unknown origin) with a small teal Blob favicon (P5-15). | Anderson |
 | 2026-10-24 | New OG image approved (with the site's monospace font bundled). LICENSE stays MIT with the holder changed to Anderson Vanegas; remove every reference to Oscar Hernandez (the inspiration site) from the repo and site (P5-14 round 2). | Anderson |
 | 2026-10-24 | The existing `og.image.png` is a leftover from the inspiration site (shows another person's name) and must never ship. Build a new 1200×630 preview image from the current site's look (P5-14), text limited to name, title and domain. Live `main` is unaffected (its og:image URL 404s today). | Anderson |
