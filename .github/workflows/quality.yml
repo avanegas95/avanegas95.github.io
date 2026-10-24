@@ -64,6 +64,19 @@ jobs:
           node scripts/ci/voice-lock-annotate.ts
           "${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}"
 
+      # Blocking: locked prose must match voice.lock.json. Red here is intended
+      # until Anderson accepts the change himself.
+      - name: Voice lock check
+        shell: bash
+        run: |
+          if ! npm run voice:check; then
+            {
+              echo '### voice:check failed'
+              echo 'Locked prose differs from voice.lock.json. Run `npm run voice:accept` in your own terminal, then commit voice.lock.json.'
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+
       # Non-blocking until P5.5-04/05/06 fix the known findings.
       - name: Facts check (report only)
         continue-on-error: true
