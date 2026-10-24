@@ -635,9 +635,9 @@ describe("kb content", () => {
 describe("content collections (v1)", () => {
   const config = readFileSync("src/content.config.ts", "utf8");
   // SHA-256 of v1's `const blog = defineCollection({...});` block before P5-03a, re-pinned in
-  // P5.5-08a for the one allowed change: `draft: z.boolean().default(false)`.
+  // P5.5-08a for the one allowed change: `draft` and cover `image()`.
   const V1_BLOG_SHA =
-    "913dd4af387d11df742de7568a554e52c9b595e644d585cdc3c29cf4cc3d539e";
+    "a393d2d1725b6adf082b2c9b14d7ea973ddb16606540653b3a3b54ea75a018cb";
 
   it("blog collection definition is unchanged from v1 apart from `draft`", () => {
     const block = /^const blog = defineCollection\(\{[\s\S]*?^\}\);$/m.exec(

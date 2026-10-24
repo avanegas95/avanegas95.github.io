@@ -5,7 +5,7 @@ pubDate: 2026-05-19
 tags: ["meta", "personal"]
 featured: true
 cover:
-  src: "/images/blog/what-this-blog-is-about-cover.png"
+  src: "../../assets/blog/what-this-blog-is-about-cover.png"
   alt: "A warm home desk with a laptop, notebook, and coffee beside creative hobby items"
 ---
 

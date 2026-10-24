@@ -6,7 +6,7 @@ tags: ["automation", "ci-cd"]
 featured: true
 draft: true
 cover:
-  src: "/images/blog-placeholder.jpg"
+  src: "../../assets/blog/placeholder.jpg"
   alt: "Placeholder cover — CI pipeline and mobile test automation"
 ---
 

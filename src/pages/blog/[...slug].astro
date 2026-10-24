@@ -2,6 +2,7 @@
 import BlogCoverImage from "@/components/blog/BlogCoverImage.astro";
 import TagPills from "@/components/blog/TagPills.astro";
 import BlogLayout from "@/layouts/BlogLayout.astro";
+import { getImage } from "astro:assets";
 import { render } from "astro:content";
 import { getPublishedPosts } from "@/lib/blog-posts";
 import type { CollectionEntry } from "astro:content";
@@ -23,9 +24,10 @@ const formattedDate = post.data.pubDate.toLocaleDateString("en-US", {
 });
 const canonicalPath = `/blog/${post.id}/`;
 const site = Astro.site ?? new URL("https://avanegas.com");
-const ogImage = post.data.cover
-  ? new URL(post.data.cover.src, site).href
+const ogSource = post.data.cover
+  ? await getImage({ src: post.data.cover.src, width: 1200, format: "jpg" })
   : undefined;
+const ogImage = ogSource ? new URL(ogSource.src, site).href : undefined;
 ---
 
 <BlogLayout
