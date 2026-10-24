@@ -84,11 +84,11 @@ Scope: `docs/tasks/P5.5/_proposal.md`; table: `_proposed-plan.md`; Anderson's to
 | P5.5-17 | Sync KB career facts (experience, skills, projects, education) to resume.md verbatim; resume wins; report what changed | sonnet | opus | P5.5-05 merged, P5.5-16b | 4 | todo |
 | P5.5-18 | Dependency upgrades on feat/blob: eslint 10 + eslint-plugin-astro 2 (flat config), @types/node matched to Node 24 | sonnet | sonnet | — | 4 | wip |
 | P5.5-13c | Voice lock, `facts:check`, drift ratchet | sonnet | opus | 13a, H3 ✓ | 3 | merged |
-| P5.5-05 | Experience from KB roles | sonnet | sonnet | 13a, 13c, H2 | 4 | brief |
+| P5.5-05 | Experience from KB roles | sonnet | sonnet | 13a, 13c, H2 | 4 | merged |
 | P5.5-06 | Contact polish + Formspree E2E | sonnet | sonnet | 13a, 13c | 4 | merged |
 | P5.5-13b | Projects render from KB | sonnet | sonnet | 03, 13a, 13c, H4 | 4 | brief |
 | P5.5-04 | Hero + About from intake | sonnet | sonnet | 13a, 13c, H2, H4 | 4 | brief |
-| P5.5-08b | Nav fix | haiku | sonnet | 05, 08a | 5 | brief |
+| P5.5-08b | Nav fix (also: switch nav.ts, prompt.ts, links.ts to `#experience`, then drop the `#experiences` alias span and its CSS) | haiku | sonnet | 05, 08a | 5 | brief |
 | P5.5-13d | Resume facts check vs KB (hand-made PDF; re-brief) | sonnet | opus | 05, 13a, 13c, P5-05, H5 | 5 | brief |
 
 ## P6: Production on Vercel and domain cutover (NOT planned; only on Anderson's explicit final approval)
@@ -192,3 +192,5 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 2026-10-24 · P5.5-16 · round 1 merged (opus review + Anderson approval in chat; only the interests golden changed; 2,559 tests). Sections 4–6: 11 spots flagged in docs/content-intake/about-me-flags.md, plus Q31/Q34 ready to import; round 2 after Anderson finishes. P5.5-13c must rebase and regenerate voice.lock.json so it includes interests.md.
 2026-10-24 · P5.5-13c · merged (opus APPROVE round 2; 2,636 tests). voice:check is a blocking CI step: red until Anderson runs `npm run voice:accept` for interests.md (body, summary) and commits voice.lock.json. Agents must never touch the lock. facts:check is non-blocking and reports 5 real mismatches (fixed by 04/05/06).
 2026-10-24 · P5.5-06 · merged (sonnet APPROVE; labels, solid Send, KB location; Formspree mocked; 2,636 tests). Placeholders reworded (UI microcopy, not Anderson's prose).
+2026-10-24 · main merged into feat/blob (PRs #143, #144; kept feat/blob's LICENSE and resume PDF).
+2026-10-24 · P5.5-05 · merged (sonnet APPROVE; Lighthouse / 0.98; 2,636 tests, chromium E2E 23/23). Removed the duplicate site-drift helper left by the 05/06 merge.
