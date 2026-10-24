@@ -23,6 +23,26 @@ If nothing changed, it says "Nothing to accept". It refuses to run when there is
 
 The site-drift allow files in `tests/fixtures/drift/allow/` list the hard-coded facts that still sit in section components. They may only shrink: delete a line when you move that fact to the KB.
 
+## Shortening Experience bullets for the site
+
+The full resume bullets stay in `src/content/knowledge/experience.md` under `bullets`. Blob (the chat prompt) always uses those. To show shorter text on the site cards, add an optional `siteBullets` list to a role. When present the card shows it instead of `bullets`; when absent the card shows the full `bullets`.
+
+```yaml
+roles:
+  - company: "Company name"
+    title: "Role title"
+    start: "2020-01"
+    end: null
+    showOnSite: true
+    siteBullets:
+      - "your short bullet here"
+      - "your second short bullet here"
+    bullets:
+      - "(the full resume bullets stay as they are)"
+```
+
+`siteBullets` is voice-locked like `bullets`: after editing, run `npm run voice:accept` yourself and commit `voice.lock.json`.
+
 ## Who may touch the lock
 
 - Only Anderson runs `voice:accept` and `voice:init`, in his own terminal. Agents must never run them and must never edit `voice.lock.json` by hand.

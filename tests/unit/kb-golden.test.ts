@@ -24,6 +24,22 @@ describe("KB prompt goldens", () => {
     },
   );
 
+  it("siteBullets never reach the prompt: Blob keeps the full bullets", () => {
+    const exp = sources.find((s) => s.path.endsWith("experience.md"));
+    if (!exp) throw new Error("experience.md not found");
+    const withSite = {
+      ...exp,
+      raw: exp.raw.replace(
+        "    showOnSite: true\n    bullets:\n",
+        '    showOnSite: true\n    siteBullets:\n      - "SITE-ONLY-MARKER"\n    bullets:\n',
+      ),
+    };
+    expect(withSite.raw).toContain("SITE-ONLY-MARKER");
+    const out = renderKbSection(withSite) ?? "";
+    expect(out).not.toContain("SITE-ONLY-MARKER");
+    expect(out).toBe(golden(exp.path));
+  });
+
   it("full KB equals the sorted concatenation of the goldens", () => {
     const parts = sources
       .map((s) => s.path)

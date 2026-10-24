@@ -48,14 +48,7 @@ const monthYear = (ym: string) => {
   return `${MONTHS[Number(m) - 1]} ${y}`;
 };
 
-const FIRST = 3;
 const roles = await getRoles();
-const companies: { company: string; roles: typeof roles }[] = [];
-for (const r of roles) {
-  const group = companies.find((c) => c.company === r.company);
-  if (group) group.roles.push(r);
-  else companies.push({ company: r.company, roles: [r] });
-}
 ---
 
 <section class="py-8 bg-[var(--background)]" id="experience">
@@ -66,9 +59,13 @@ for (const r of roles) {
       Experience
     </h2>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 auto-rows-fr">
-      {companies.map(({ company, roles: rs }) => {
-        const m = media[slug(company) as MediaKey];
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {roles.map((r) => {
+        // A role with no bullets (the intern stint) renders as a compact title-and-dates card.
+        // Site cards use the shorter siteBullets when present, else the full resume bullets.
+        const bullets = r.siteBullets ?? r.bullets;
+        const compact = bullets.length === 0;
+        const m = compact ? undefined : media[slug(r.company) as MediaKey];
         return (
           <div
             class="experience-card fade-in fade-in--slow relative h-full overflow-hidden rounded-xl border border-white/[0.08] bg-[var(--surface-card)]"
@@ -79,9 +76,9 @@ for (const r of roles) {
                 <div class="experience-card__media">
                   <Image
                     src={m.photo}
-                    alt={`${company} ${m.photoAlt}`}
+                    alt={`${r.company} ${m.photoAlt}`}
                     widths={[320, 480, 640, 768, 960]}
-                    sizes="(min-width: 768px) 50vw, 100vw"
+                    sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
                     class:list={["experience-card__photo", m.photoClass]}
                   />
                 </div>
@@ -91,7 +88,7 @@ for (const r of roles) {
                   <div class="experience-card__logo-wrap">
                     <Image
                       src={m.logo}
-                      alt={`${company} logo`}
+                      alt={`${r.company} logo`}
                       width={96}
                       height={96}
                       densities={[1, 2]}
@@ -99,50 +96,33 @@ for (const r of roles) {
                     />
                   </div>
                 )}
-                <div class="experience-card__content">
-                  <p class="experience-card__company">{company}</p>
-                  {rs.map((r) => (
-                    <div class="experience-card__role-block">
-                      <h3 class="experience-card__role">{r.title}</h3>
-                      <p class="experience-card__dates">
-                        {monthYear(r.start)} –{" "}
-                        {r.end ? monthYear(r.end) : "Present"}
-                      </p>
-                      {r.bullets.length > 0 && (
-                        <ul class="experience-card__highlights">
-                          {r.bullets.slice(0, FIRST).map((b) => (
-                            <li class="experience-card__item">
-                              <span
-                                class="experience-card__bullet"
-                                aria-hidden="true"
-                              >
-                                ▹
-                              </span>
-                              <span>{b}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                      {r.bullets.length > FIRST && (
-                        <details class="experience-card__more">
-                          <summary>Show more</summary>
-                          <ul class="experience-card__highlights">
-                            {r.bullets.slice(FIRST).map((b) => (
-                              <li class="experience-card__item">
-                                <span
-                                  class="experience-card__bullet"
-                                  aria-hidden="true"
-                                >
-                                  ▹
-                                </span>
-                                <span>{b}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </details>
-                      )}
-                    </div>
-                  ))}
+                <div
+                  class:list={[
+                    "experience-card__content",
+                    compact && "experience-card__content--compact",
+                  ]}
+                >
+                  <p class="experience-card__company">{r.company}</p>
+                  <h3 class="experience-card__role">{r.title}</h3>
+                  <p class="experience-card__dates">
+                    {monthYear(r.start)} –{" "}
+                    {r.end ? monthYear(r.end) : "Present"}
+                  </p>
+                  {bullets.length > 0 && (
+                    <ul class="experience-card__highlights">
+                      {bullets.map((b) => (
+                        <li class="experience-card__item">
+                          <span
+                            class="experience-card__bullet"
+                            aria-hidden="true"
+                          >
+                            ▹
+                          </span>
+                          <span>{b}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               </div>
             </article>
@@ -253,6 +233,10 @@ for (const r of roles) {
     margin-top: clamp(2.25rem, 10cqw, 3rem);
   }
 
+  .experience-card__content--compact {
+    margin-top: 0;
+  }
+
   .experience-card__company {
     margin: 0 0 clamp(1.25rem, 5cqw, 2rem);
     font-family:
@@ -301,37 +285,6 @@ for (const r of roles) {
 
   .experience-card__item + .experience-card__item {
     margin-top: 0.5rem;
-  }
-
-  .experience-card__role-block + .experience-card__role-block {
-    margin-top: clamp(1.5rem, 6cqw, 2rem);
-    padding-top: clamp(1.5rem, 6cqw, 2rem);
-    border-top: 1px solid var(--border-subtle);
-  }
-
-  .experience-card__more {
-    margin-top: 0.5rem;
-  }
-
-  .experience-card__more > summary {
-    display: inline-flex;
-    align-items: center;
-    min-height: 2rem;
-    padding: 0.25rem 0.5rem;
-    margin-left: -0.5rem;
-    border-radius: 0.375rem;
-    font-size: clamp(0.875rem, 0.8rem + 0.75cqw, 1.0625rem);
-    color: var(--sec);
-    cursor: pointer;
-  }
-
-  .experience-card__more > summary:focus-visible {
-    outline: 2px solid var(--sec);
-    outline-offset: 2px;
-  }
-
-  .experience-card__more[open] > summary {
-    margin-bottom: 0.5rem;
   }
 
   .experience-card__bullet {
