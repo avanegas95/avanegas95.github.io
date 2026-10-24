@@ -24,6 +24,10 @@
     "og:render": "node scripts/og/render.ts",
     "favicon:render": "node scripts/favicon/render.ts",
     "guard:pii": "node scripts/pii-guard.ts",
+    "voice:check": "node scripts/voice-lock.ts check",
+    "voice:accept": "node scripts/voice-lock.ts accept",
+    "voice:init": "node scripts/voice-lock.ts init",
+    "facts:check": "node scripts/facts-check.ts",
     "check:bundle": "node scripts/check-client-bundle.ts",
     "eval": "node evals/run.ts",
     "eval:dry": "node evals/run.ts --dry-run"
