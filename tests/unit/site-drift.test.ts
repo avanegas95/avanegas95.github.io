@@ -80,10 +80,13 @@ describe("site-drift ratchet (real section components)", () => {
 
   // Pinned so that adding an allow line next to a new hit fails here and is
   // seen in review. The ratchet only shrinks: lower a number, never raise it.
+  // A component with no hits has no allow file at all.
+  const readAllow = (path: string) =>
+    existsSync(path) ? readFileSync(path, "utf8") : "";
   const ALLOW_LINES = {
     Home: 2,
     About: 0,
-    Experiences: 19,
+    Experiences: 0,
     Projects: 0,
     Contact: 0,
   } as const;

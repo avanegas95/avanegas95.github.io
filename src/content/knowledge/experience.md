@@ -57,7 +57,7 @@ roles:
     employment: "full time"
     start: "2019-04"
     end: "2019-11"
-    showOnSite: false
+    showOnSite: true
     bullets: []
     note: "Anderson started at SharkNinja as a Product Development Intern, April to November 2019. Details beyond the title and dates are not available."
 ---
