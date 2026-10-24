@@ -12,9 +12,9 @@ roles:
     end: null
     showOnSite: true
     siteBullets:
-      - "Restructed a 700+ test case library into Smoke, Sanity, and Regression tiers."
-      - "Lead SQA automation strategy; automated 25% of Smoke tests to date."
-      - "Own the HIL CI/CD pipeline and nightly failure triage"
+      - "Restructured a 700+ test case library into Smoke, Sanity, and Regression tiers."
+      - "Led SQA automation strategy; automated 25% of Smoke tests to date."
+      - "Own the HIL CI/CD pipeline and nightly failure triage."
       - "Doubled Appium UI automation coverage from 16 to 33 tests." 
     bullets:
       - "Led reorganization of a 700+ test case library, defining Smoke, Sanity, and Regression with clear criteria and definitions. The redesign is targeted to cut the regression cycle from 3 months to 1 month, and strengthen quality through tiered testing."
