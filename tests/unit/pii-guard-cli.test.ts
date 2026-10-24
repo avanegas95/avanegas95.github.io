@@ -1,5 +1,6 @@
 import { spawnSync } from "node:child_process";
 import {
+  copyFileSync,
   mkdirSync,
   mkdtempSync,
   rmSync,
@@ -30,6 +31,31 @@ const SPAWN_TIMEOUT_MS = 45_000;
 vi.setConfig({ testTimeout: 60_000, hookTimeout: 60_000 });
 const COMPILE_CACHE = mkdtempSync(join(tmpdir(), "pii-guard-cache-"));
 afterAll(() => rmSync(COMPILE_CACHE, { recursive: true, force: true }));
+
+// Minimal one-page PDF with a single text run (built at runtime, never a committed fixture).
+function textPdf(text: string): Buffer {
+  const stream = `BT /F1 12 Tf 20 100 Td (${text}) Tj ET`;
+  const objs = [
+    "<< /Type /Catalog /Pages 2 0 R >>",
+    "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+    "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 400 200] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>",
+    `<< /Length ${stream.length} >>${BREAK}stream${BREAK}${stream}${BREAK}endstream`,
+    "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+  ];
+  let out = `%PDF-1.4${BREAK}`;
+  const offsets: number[] = [];
+  objs.forEach((o, i) => {
+    offsets.push(out.length);
+    out += `${i + 1} 0 obj${BREAK}${o}${BREAK}endobj${BREAK}`;
+  });
+  const xref = out.length;
+  out += `xref${BREAK}0 ${objs.length + 1}${BREAK}0000000000 65535 f ${BREAK}`;
+  for (const o of offsets) {
+    out += `${String(o).padStart(10, "0")} 00000 n ${BREAK}`;
+  }
+  out += `trailer${BREAK}<< /Size ${objs.length + 1} /Root 1 0 R >>${BREAK}startxref${BREAK}${xref}${BREAK}%%EOF${BREAK}`;
+  return Buffer.from(out, "latin1");
+}
 
 const dirs: string[] = [];
 function tmp(): string {
@@ -284,6 +310,50 @@ describe("pii-guard CLI", () => {
     const r = run(kbRoot({ "bio.md": kbFile("Clean.") }), { html });
     expect(r.code).toBe(0);
     expect(r.stdout).toContain("html=1 assets=1 ");
+  });
+
+  it("an unreadable pdf in the static output fails closed", () => {
+    const html = cleanHtml();
+    writeFileSync(join(html, "broken.pdf"), "not a pdf");
+    const r = run(kbRoot({ "bio.md": kbFile("Clean.") }), { html });
+    expect(r.code).toBe(1);
+    expect(r.out).toContain("broken.pdf pdf-unreadable");
+  });
+
+  it("a pdf whose text holds a phone number fails (masked in output)", () => {
+    const html = cleanHtml();
+    writeFileSync(join(html, "r.pdf"), textPdf(`Call ${PHONE} today`));
+    const r = run(kbRoot({ "bio.md": kbFile("Clean.") }), { html });
+    expect(r.code).toBe(1);
+    expect(r.out).toContain("r.pdf");
+    expect(r.out).toContain("phone");
+    expect(r.out).not.toContain(PHONE);
+  });
+
+  it("a pdf whose text holds a street address fails", () => {
+    const html = cleanHtml();
+    writeFileSync(join(html, "r.pdf"), textPdf(`Lives at ${STREET}, Boston`));
+    const r = run(kbRoot({ "bio.md": kbFile("Clean.") }), { html });
+    expect(r.code).toBe(1);
+    expect(r.out).toContain("street-address");
+  });
+
+  it("a pdf with clean text passes", () => {
+    const html = cleanHtml();
+    writeFileSync(join(html, "r.pdf"), textPdf("Boston Dynamics, Boston MA"));
+    const r = run(kbRoot({ "bio.md": kbFile("Clean.") }), { html });
+    expect(r.code).toBe(0);
+  });
+
+  it("the real public resume PDF passes", () => {
+    const html = cleanHtml();
+    copyFileSync(
+      "public/Anderson_Vanegas_Resume.pdf",
+      join(html, "Anderson_Vanegas_Resume.pdf"),
+    );
+    const r = run(kbRoot({ "bio.md": kbFile("Clean.") }), { html });
+    expect(r.code).toBe(0);
+    expect(r.out).not.toContain("pdf-");
   });
 
   it("a symlinked pdf in the static output fails", () => {

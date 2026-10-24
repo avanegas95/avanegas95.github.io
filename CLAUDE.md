@@ -23,7 +23,7 @@ This is avanegas.com, the portfolio of Anderson Vanegas (Staff SQA Engineer). It
    - Check `stop_reason` (including `refusal`) before using content, and use the SDK's typed error classes.
 7. **Legacy URLs are a contract** (SCOPE §2 G6):
    - `/orbithop`, `/privacy` and `/app-ads.txt` must keep returning 200, because the App Store and AdMob depend on them.
-   - `/Anderson_Vanegas_Resume.pdf` must never 404 and must never serve the old PII-bearing PDF. On `feat/blob` it 302s to LinkedIn until a clean PDF exists.
+   - `/Anderson_Vanegas_Resume.pdf` must never 404. It serves Anderson's current public-safe PDF (`public/Anderson_Vanegas_Resume.pdf`, 200 `application/pdf`), never the old PII-bearing one. The PDF may contain only email, LinkedIn, site and city: no phone number, street address or other PII. `guard:pii` extracts the text of every PDF in the build output and enforces this.
    - E2E tests guard all of this.
 8. **Performance and a11y budgets are gates**: Lighthouse ≥ 0.95 in all categories, axe clean, Blob island ≤ 25 KB gzip, and `prefers-reduced-motion` respected. Blob itself uses no UI framework; the site's existing React islands may stay.
 9. **The mood enum is shared**: `src/lib/moods.ts` is imported by both server and client. Change it in one place and update its tests.
