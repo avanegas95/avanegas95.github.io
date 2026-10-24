@@ -113,6 +113,7 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 ## Decision log
 | Date | Decision | By |
 |---|---|---|
+| 2026-10-24 | H4 changes: Anderson edits site copy directly where it renders (Home.astro hero, About.astro, src/data/projects.ts, and the KB for experience and contact), previewing with `npm run dev`. `docs/content-intake/site-copy.md` is retired. P5.5-04 and P5.5-13b move his edited text verbatim into the KB after he signals he's done. | Anderson |
 | 2026-10-24 | D-12: Anderson built Orbit Hop solo, with the assistance of AI. D-13: the site keeps its Formspree contact form, which emails him. Both go into the KB in his words (P5.5-16b). | Anderson |
 | 2026-10-24 | Dependabot PRs #136–#140 on `main` closed. #137 (astro) and #139 (prettier) were superseded by newer versions on feat/blob. The remaining major upgrades (eslint 10, eslint-plugin-astro 2, @types/node matched to Node 24) happen on feat/blob as P5.5-18. | Anderson (delegated) |
 | 2026-10-24 | Anderson's resume (`docs/content-intake/resume.md`, mirrored by the served PDF) is the source of truth for career facts: roles, titles, dates, bullets, skills, projects and education. Blob's KB experience, skills and projects are synced to it verbatim; where the KB and the resume differ, the resume wins (P5.5-17). | Anderson |
