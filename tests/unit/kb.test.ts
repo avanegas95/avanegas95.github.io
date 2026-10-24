@@ -20,12 +20,12 @@ const sources: KbSource[] = [
   },
   {
     path: "projects/a.md",
-    raw: "---\ntopic: project\ntitle: Orbit\nsummary: A game.\nupdated: 2026-02-02\npublic: true\norder: 1\n---\n\nFun game.\n",
+    raw: "---\ntopic: project\ntitle: Orbit\nsummary: A game.\nupdated: 2026-02-02\npublic: true\norder: 1\nstatus: live\nrole: Builder\ntech: [Swift]\n---\n\nFun game.\n",
   },
 ];
 
 const expected =
-  "## About\n\nWho he is.\n\nHello there.\n\n## Project: Orbit\n\nA game.\n\nFun game.\n";
+  "## About\n\nWho he is.\n\nHello there.\n\n## Project: Orbit\n\nA game.\n\n**Status:** live · **Role:** Builder · **Stack:** Swift\n\nFun game.\n";
 
 describe("buildKb", () => {
   it("golden", () => {
@@ -60,7 +60,7 @@ describe("buildKb", () => {
   });
 
   it("quoted summary with colon", () => {
-    const raw = `---\ntopic: bio\ntitle: 'It''s: me'\nsummary: "Skills: QA, \\"CI\\""\npublic: true\n---\nBody\n`;
+    const raw = `---\ntopic: bio\ntitle: 'It''s: me'\nsummary: "Skills: QA, \\"CI\\""\nupdated: 2026-01-01\npublic: true\n---\nBody\n`;
     expect(buildKb([{ path: "q.md", raw }])).toBe(
       `## It's: me\n\nSkills: QA, "CI"\n\nBody\n`,
     );
@@ -94,7 +94,7 @@ describe("buildKb", () => {
 
   it("throws with path on empty body", () => {
     const raw =
-      "---\ntopic: bio\ntitle: T\nsummary: S\npublic: true\n---\n\n  \n";
+      "---\ntopic: bio\ntitle: T\nsummary: S\nupdated: 2026-01-01\npublic: true\n---\n\n  \n";
     expect(() => buildKb([{ path: "e.md", raw }])).toThrow(/e\.md/);
   });
 
@@ -108,10 +108,10 @@ describe("buildKb", () => {
   it("sorts an unsorted input list by path", () => {
     const mk = (path: string, title: string): KbSource => ({
       path,
-      raw: `---\ntopic: bio\ntitle: ${title}\nsummary: S\npublic: true\n---\nB\n`,
+      raw: `---\ntopic: bio\ntitle: ${title}\nsummary: S\nupdated: 2026-01-01\npublic: true\n---\nB\n`,
     });
     const out = buildKb([
-      mk("projects/z.md", "third"),
+      mk("t.md", "third"),
       mk("m.md", "second"),
       mk("a.md", "first"),
     ]);
@@ -122,7 +122,7 @@ describe("buildKb", () => {
   it("sorts by code unit, not locale", () => {
     const mk = (path: string, title: string): KbSource => ({
       path,
-      raw: `---\ntopic: bio\ntitle: ${title}\nsummary: S\npublic: true\n---\nB\n`,
+      raw: `---\ntopic: bio\ntitle: ${title}\nsummary: S\nupdated: 2026-01-01\npublic: true\n---\nB\n`,
     });
     const out = buildKb([mk("a.md", "lower"), mk("B.md", "upper")]);
     expect(out.indexOf("## upper")).toBeLessThan(out.indexOf("## lower"));
@@ -132,7 +132,7 @@ describe("buildKb", () => {
 describe("frontmatter strictness", () => {
   const one = (summary: string): KbSource => ({
     path: "p/f.md",
-    raw: `---\ntopic: bio\ntitle: T\nsummary: ${summary}\npublic: true\n---\nB\n`,
+    raw: `---\ntopic: bio\ntitle: T\nsummary: ${summary}\nupdated: 2026-01-01\npublic: true\n---\nB\n`,
   });
 
   it("throws with path on unquoted value with a ' #' comment", () => {
@@ -143,11 +143,15 @@ describe("frontmatter strictness", () => {
     expect(buildKb([one("C# and F#")])).toContain("C# and F#");
   });
 
-  it("throws with path on block scalars and multi-line values", () => {
+  it("throws with path on empty block scalars and empty values", () => {
     expect(() => buildKb([one(">")])).toThrow(/p\/f\.md/);
     expect(() => buildKb([one("|")])).toThrow(/p\/f\.md/);
-    expect(() => buildKb([one("first\n  second")])).toThrow(/p\/f\.md/);
     expect(() => buildKb([one("")])).toThrow(/p\/f\.md/);
+  });
+
+  // Same YAML library and options as Astro, so a folded value cannot disagree.
+  it("folds a multi-line plain scalar like the collection loader", () => {
+    expect(buildKb([one("first\n  second")])).toContain("\nfirst second\n");
   });
 
   it("throws with path on a quoted value with trailing content", () => {
@@ -219,7 +223,7 @@ describe("fixture knowledge base", () => {
   it("golden output is unchanged", () => {
     const kb = buildKb(loadKbSources("tests/fixtures/kb"));
     expect(kb).toBe(
-      "## About Anderson\n\nA short bio.\n\nAnderson is a Staff SQA Engineer.\n\n## Contact\n\nHow to reach him.\n\nEmail, LinkedIn, GitHub.\n\n## Project: Blob\n\nThe site agent.\n\nBlob answers questions.\n\n## Project: Orbit Hop\n\nA mobile game.\n\nOrbit Hop is a game.\n\n## Skills\n\nTools: test automation.\n\n- Playwright\n- Python\n",
+      "## About Anderson\n\nA short bio.\n\nAnderson is a Staff SQA Engineer.\n\n## Contact\n\nHow to reach him.\n\nEmail, LinkedIn, GitHub.\n\n## Project: Blob\n\nThe site agent.\n\n**Status:** shipped · **Role:** Builder · **Stack:** Swift\n\nBlob answers questions.\n\n## Project: Orbit Hop\n\nA mobile game.\n\n**Status:** shipped · **Role:** Builder · **Stack:** Swift\n\nOrbit Hop is a game.\n\n## Skills\n\nTools: test automation.\n\n- Playwright\n- Python\n",
     );
     expect(kb).not.toContain("Underscore");
     expect(kb).not.toContain("Nested");

@@ -6,7 +6,7 @@ import {
   parseCasesYaml,
   type Category,
 } from "../../evals/lib/case-schema.ts";
-import { buildKb, loadKbSources } from "../../src/lib/kb.ts";
+import { buildKb, loadKbSources, renderKbSection } from "../../src/lib/kb.ts";
 import { buildSystemPrompt } from "../../src/lib/prompt.ts";
 import { piiSpans, scanMarkers } from "../../src/lib/pii.ts";
 
@@ -223,11 +223,13 @@ describe("evals/cases.yaml", () => {
         "src/content/knowledge/projects/orbit-hop.md",
         "utf8",
       );
-      expect(raw).toContain(
+      const section =
+        renderKbSection({ path: "projects/orbit-hop.md", raw }) ?? "";
+      expect(section).toContain(
         "**Role:** Built by Anderson; also the support contact",
       );
-      expect(raw).toContain("**Status:** to be confirmed");
-      expect(raw).toContain("(build stack to be confirmed)");
+      expect(section).toContain("**Status:** to be confirmed");
+      expect(section).toContain("(build stack to be confirmed)");
       expect(raw).toContain("updated: 2026-10-23");
       expect(raw).not.toMatch(/ai[- ]assisted/i);
     });

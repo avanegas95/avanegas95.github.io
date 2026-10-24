@@ -5,6 +5,7 @@ import {
   KB_ROOT,
   buildKb,
   loadKbSources,
+  renderKbSection,
   type KbSource,
 } from "../../src/lib/kb.ts";
 
@@ -337,7 +338,9 @@ const lines = (...l: string[]): string => l.join("\n");
 
 // ---------- tests ----------
 
-const experience = bodyOf(raw("experience.md"));
+// Roles live in frontmatter (P5.5-13a); check the rendered prompt section.
+const experience =
+  renderKbSection({ path: "experience.md", raw: raw("experience.md") }) ?? "";
 
 describe("kb content", () => {
   it("required files", () => {

@@ -5,9 +5,18 @@ summary: A full-stack sales-forecasting SaaS for small agencies, developed for D
 updated: 2026-10-13
 public: true
 order: 2
+status: "to be confirmed"
+role: "Designer and builder (developed for Datalily)"
+tech:
+  - "React 18"
+  - "Vite"
+  - "Tailwind"
+  - "FastAPI"
+  - "Pydantic"
+  - "Supabase"
+  - "Vercel"
+  - "Render"
 ---
-
-**Status:** to be confirmed · **Role:** Designer and builder (developed for Datalily) · **Stack:** React 18, Vite, Tailwind, FastAPI, Pydantic, Supabase, Vercel, Render
 
 ### What it does
 

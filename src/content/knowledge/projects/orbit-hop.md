@@ -5,9 +5,16 @@ summary: A one-tap arcade game for iPhone. Launch Andy from planet to planet, la
 updated: 2026-10-23
 public: true
 order: 3
+status: "to be confirmed"
+role: "Built by Anderson; also the support contact"
+techLabel: "Platform and services"
+tech:
+  - "iPhone"
+  - "Game Center"
+  - "iCloud"
+  - "Google AdMob"
+techNote: "build stack to be confirmed"
 ---
-
-**Status:** to be confirmed · **Role:** Built by Anderson; also the support contact · **Platform and services:** iPhone, Game Center, iCloud, Google AdMob (build stack to be confirmed)
 
 ### What it does
 
