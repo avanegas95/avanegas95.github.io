@@ -115,6 +115,7 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 ## Decision log
 | Date | Decision | By |
 |---|---|---|
+| 2026-10-24 | Experience returns to one card per role in the old site's style. Each role gets an optional `siteBullets` list in experience.md holding Anderson's own short bullets for the site, while Blob keeps the full resume `bullets`. Anderson writes siteBullets himself (P5.5-19 adds the field). | Anderson |
 | 2026-10-24 | Blob's FAQ states the contact form plainly: there is a contact form on the site (Formspree), and messages go to his email. | Anderson |
 | 2026-10-24 | H4 changes: Anderson edits site copy directly where it renders (Home.astro hero, About.astro, src/data/projects.ts, and the KB for experience and contact), previewing with `npm run dev`. `docs/content-intake/site-copy.md` is retired. P5.5-04 and P5.5-13b move his edited text verbatim into the KB after he signals he's done. | Anderson |
 | 2026-10-24 | D-12: Anderson built Orbit Hop solo, with the assistance of AI. D-13: the site keeps its Formspree contact form, which emails him. Both go into the KB in his words (P5.5-16b). | Anderson |
