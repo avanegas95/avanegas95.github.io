@@ -101,6 +101,7 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 - enable the nightly eval cron (internal results only), behind a human gate.
 
 ## Backlog (needs Anderson's decision before planning)
+- **"Ask Blob about Blob" (Anderson, Q47, 2026-10-24).** Visitors can ask Blob about himself: his own likes and dislikes, how he was made, his tooling and the process. The goal is to encourage people who are curious but intimidated by building something similar. Needs a Blob KB file written by Anderson (voice-locked) plus prompt rules. Plan after P5.5.
 - **Updated resume (Anderson, 2026-10-23).** The resume needs a new version. Anderson has also updated site copy, so where the site, KB and Resume V5.0 disagree, P5-07 flags it in DISCREPANCIES for Anderson rather than picking a winner.
 - **Portfolio improvement pass (Anderson, 2026-10-23).** Use the port to improve the portfolio overall, not just add Blob. Scope to be agreed with Anderson (candidates: Lighthouse gaps from P5-01, copy, sections, design polish). Plan as its own phase after P5 or fold items into P5 tasks.
 - **Blob "about Anderson" content.** Questionnaire moved to `docs/content-intake/about-me-questions.md` (private drafts in gitignored `docs/content-intake/private/`). Answers become KB edits (`interests.md` etc.) after Anderson approves the diff. No PII beyond email, LinkedIn and GitHub.
