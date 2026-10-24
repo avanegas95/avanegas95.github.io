@@ -9,7 +9,7 @@ name: "Anderson Vanegas."
 headline: "I help put quality into software."
 lede: "Staff SQA Engineer with 7 years of testing and 3 years of automation experience. At Boston Dynamics, I build Python tooling, Appium mobile tests, and nightly HIL CI pipelines that keep robots and software reliable."
 about:
-  - "I'm an SQA engineer who cares about shipping software that is makes sense, works, and meets customer expectations. I started my career in manually testing consumer home robotic products and have expanded into automation, CI/CD, and helping to create tooling to scale up testing, not just for myself, but for developers as well."
+  - "I'm an SQA engineer who cares about shipping software that makes sense, works, and meets customer expectations. I started my career in manually testing consumer home robotic products and have expanded into automation, CI/CD, and helping to create tooling to scale up testing, not just for myself, but for developers as well."
   - "More recently, I've been learning and keeping up with the latest agentic tools in order to expand my knowledge into new domains and accelerate my workflows."
   - "I hold a B.S. in Computer Engineering from Boston University and work day-to-day with:"
 tools:
