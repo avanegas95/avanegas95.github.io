@@ -107,6 +107,23 @@ describe("check-headers", () => {
     expect(bad.output).not.toContain(secret);
   });
 
+  it("reads the BotID path from vercel.json when not given", async () => {
+    const { run } = await load();
+    const cfg = JSON.parse(readFileSync("vercel.json", "utf8")) as {
+      rewrites: { source: string }[];
+    };
+    const src = cfg.rewrites.find((r) => r.source.endsWith("/:path*"));
+    const expected = src!.source.replace(/\/:path\*$/, "/");
+    const seen: { url: string; init?: RequestInit }[] = [];
+    await run(
+      ["https://example.test"],
+      {},
+      makeFetch((_p, h) => h, seen),
+    );
+    const paths = seen.map((s) => new URL(s.url).pathname);
+    expect(paths).toContain(expected);
+  });
+
   it("requires a URL", async () => {
     const { run } = await load();
     const r = await run(

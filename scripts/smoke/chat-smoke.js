@@ -7,6 +7,7 @@
 // outcome to report, not something to work around.
 import { fileURLToPath } from "node:url";
 
+const TIMEOUT_MS = 60_000;
 const DEFAULT_QUESTION = "What does Anderson do?";
 
 export async function run(argv, env, fetchImpl) {
@@ -27,9 +28,12 @@ export async function run(argv, env, fetchImpl) {
     headers["x-vercel-protection-bypass"] = env.VERCEL_AUTOMATION_BYPASS_SECRET;
   const sessionId = "smoke" + Math.random().toString(36).slice(2, 12);
   const t0 = Date.now();
+  // One deadline covers the request and the whole stream read.
+  const signal = AbortSignal.timeout(TIMEOUT_MS);
   const res = await fetchImpl(new URL("/api/chat", url).href, {
     method: "POST",
     headers,
+    signal,
     body: JSON.stringify({
       messages: [{ role: "user", content: question }],
       sessionId,

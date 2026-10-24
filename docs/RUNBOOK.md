@@ -23,7 +23,7 @@ Vercel only applies an env change to **new** deployments. After any edit below, 
 
 What it does (from `src/lib/server/budget.ts` and `tests/unit/budget.test.ts`): a budget of 0 makes the budget check fail before any model call, so every request that gets past input, env, BotID and rate-limit checks receives HTTP 503 with error code `budget`. No Anthropic call is made, so nothing is spent. Blob shows its "napping" message and points visitors to contact. The static site is unaffected. Rate-limit counters still tick for those requests; that is harmless.
 
-**Faster option for a real emergency:** revoke the key in the Anthropic Console (section 5). Every call then fails upstream (502, code `upstream`) with no redeploy needed, but the visitor message is less friendly.
+**Faster option for a real emergency:** revoke the key in the Anthropic Console (section 5). Every call then fails before the first token with HTTP 503 `unavailable` (a rejected key is treated as a broken configuration, not a transient error), with no redeploy needed. The visitor message is less friendly than the budget one.
 
 **On:** set `DAILY_BUDGET_USD` back to the normal value (the project default is 1, meaning one US dollar a day) and redeploy. The variable accepts 0 to 50. An unset variable falls back to 1, so removing it does not leave Blob off.
 
@@ -74,15 +74,15 @@ Useful reads:
 
 ## 7. What visitors see
 
-| Status             | Code           | Meaning                                                                          | What to do                                                                                       |
-| ------------------ | -------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| 405                | n/a            | Wrong method on `/api/chat`                                                      | Expected for GET and HEAD.                                                                       |
-| 429                | `rate_limited` | A rate limit was hit; response carries `retry-after` seconds                     | Normal for heavy use. Investigate only if global limit hits daily.                               |
-| 503                | `budget`       | Daily budget used up, or set to 0                                                | Wait for 00:00 UTC, or raise the budget (section 2).                                             |
-| 503                | `unavailable`  | Env missing or invalid, or the Redis store is unreachable (the app fails closed) | Check the env names in section 1 and the Upstash integration status.                             |
-| 502                | `upstream`     | Anthropic returned an error, or the stream stalled                               | Check Anthropic status; check the key and workspace cap.                                         |
-| 403                | `bot`          | BotID rejected the client                                                        | Normal for scripts. For a real browser, check the BotID setup and the rewrites in `vercel.json`. |
-| 400, 403, 413, 415 | `invalid`      | Input failed validation (length or shape limits)                                 | Normal for bad clients.                                                                          |
+| Status             | Code           | Meaning                                                                                                                                                                                                         | What to do                                                                                                        |
+| ------------------ | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| 405                | `invalid`      | Wrong method on `/api/chat` (the response carries `allow: POST`)                                                                                                                                                | Expected for GET and HEAD.                                                                                        |
+| 429                | `rate_limited` | A rate limit was hit; response carries `retry-after` seconds                                                                                                                                                    | Normal for heavy use. Investigate only if global limit hits daily.                                                |
+| 503                | `budget`       | Daily budget used up, or set to 0                                                                                                                                                                               | Wait for 00:00 UTC, or raise the budget (section 2).                                                              |
+| 503                | `unavailable`  | Env missing or invalid, BotID or the Redis store unreachable (the app fails closed), or Anthropic rejected us for a config reason: bad or revoked key, no permission, unknown model, or the workspace spend cap | Check the env names in section 1, the Upstash integration, the key and the workspace cap. Retrying will not help. |
+| 502                | `upstream`     | Transient Anthropic failure before the first token (connection, timeout, rate limit or server error). A failure or stall after streaming starts arrives as an SSE `error` event instead of a status             | Check Anthropic status; usually clears by itself.                                                                 |
+| 403                | `bot`          | BotID rejected the client                                                                                                                                                                                       | Normal for scripts. For a real browser, check the BotID setup and the rewrites in `vercel.json`.                  |
+| 400, 403, 413, 415 | `invalid`      | Input failed validation (length or shape limits)                                                                                                                                                                | Normal for bad clients.                                                                                           |
 
 ## 8. Scripts and evals
 
