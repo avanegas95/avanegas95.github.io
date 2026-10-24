@@ -22,6 +22,7 @@
     "test:e2e": "playwright test",
     "lhci": "lhci autorun",
     "og:render": "node scripts/og/render.ts",
+    "favicon:render": "node scripts/favicon/render.ts",
     "guard:pii": "node scripts/pii-guard.ts",
     "check:bundle": "node scripts/check-client-bundle.ts",
     "eval": "node evals/run.ts",
