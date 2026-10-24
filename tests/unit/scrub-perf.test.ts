@@ -11,8 +11,9 @@ import {
   type ScrubOptions,
 } from "../../src/lib/server/scrub.ts";
 import {
-  EmailRegExp,
-  TagRegExp,
+  EMAIL_PATTERN,
+  TAG_PATTERN,
+  allMatches,
   piiSpans,
   scanText,
 } from "../../src/lib/pii.ts";
@@ -221,21 +222,56 @@ function sampler(alphabet: readonly string[], seed: number) {
 
 const all = (re: RegExp, s: string) =>
   [...s.matchAll(re)].map((m) => [m.index, m[0]]);
+const linearAll = (re: RegExp, s: string) =>
+  [...allMatches(s, re)].map((m) => [m.index, m[0]]);
+// A fresh, unregistered copy: plain matchAll().
+const plain = (re: RegExp) => new RegExp(re.source, re.flags);
 const ROUNDS = 20_000;
 const BREAK = "\u0001";
 
 describe("linear forms match exactly like the regexes they replace", () => {
-  it("TagRegExp and <[^>]*>", () => {
+  it("the patterns stay plain RegExps (a subclass slows every regex)", () => {
+    for (const re of [EMAIL_PATTERN, TAG_PATTERN]) {
+      expect(Object.getPrototypeOf(re)).toBe(RegExp.prototype);
+    }
+  });
+
+  it("allMatches(TAG_PATTERN) and <[^>]*>", () => {
     const sample = sampler(["<", ">", "a", " ", "\n", "<b>"], 1);
     for (let k = 0; k < ROUNDS; k++) {
       const s = sample();
-      expect(all(new TagRegExp("<[^>]*>", "g"), s), s).toEqual(
-        all(/<[^>]*>/g, s),
-      );
-      expect(s.replace(new TagRegExp("<[^>]*>", "g"), "#"), s).toBe(
-        s.replace(/<[^>]*>/g, "#"),
+      expect(linearAll(TAG_PATTERN, s), s).toEqual(all(plain(TAG_PATTERN), s));
+    }
+  });
+
+  it("allMatches(EMAIL_PATTERN) and the plain email pattern", () => {
+    const sample = sampler([..."ab1._%+-@@.. x<"], 0x5eed);
+    for (let k = 0; k < ROUNDS; k++) {
+      const s = sample();
+      expect(linearAll(EMAIL_PATTERN, s), s).toEqual(
+        all(plain(EMAIL_PATTERN), s),
       );
     }
+    for (const s of [
+      j("a", "@b.com-x", "@c.com"),
+      j("a", "@b.com_x", "@c.com"),
+      j("a", "@b.co.uk.", "x@d.io"),
+      j("x", "@", "@a.bc"),
+      j("@a.bc", "d@e.fg"),
+      j("a.b-", "a.b-@ x", "y@z.ab"),
+      "",
+      "@",
+      j("a", "@b.c"),
+    ]) {
+      expect(linearAll(EMAIL_PATTERN, s), s).toEqual(
+        all(plain(EMAIL_PATTERN), s),
+      );
+    }
+  });
+
+  it("allMatches on an unregistered regex is matchAll", () => {
+    const s = "a1 b22 c333";
+    expect(linearAll(/\d+/g, s)).toEqual(all(/\d+/g, s));
   });
 
   it("hideMarkup and the tag, format and line-break regexes", () => {
@@ -280,60 +316,5 @@ describe("linear forms match exactly like the regexes they replace", () => {
         expect(all(linear, s), JSON.stringify(s)).toEqual(all(plain, s));
       }
     }
-  });
-});
-
-describe("EmailRegExp matches exactly like the plain pattern", () => {
-  const SRC =
-    "[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\\.[A-Za-z0-9-]+)*\\.[A-Za-z]{2,}";
-
-  it("on random strings", () => {
-    const sample = sampler([..."ab1._%+-@@.. x<"], 0x5eed);
-    for (let k = 0; k < ROUNDS; k++) {
-      const s = sample();
-      expect(all(new EmailRegExp(SRC, "g"), s), s).toEqual(
-        all(new RegExp(SRC, "g"), s),
-      );
-    }
-  });
-
-  it("on hand-picked edges", () => {
-    for (const s of [
-      j("a", "@b.com-x", "@c.com"),
-      j("a", "@b.com_x", "@c.com"),
-      j("a", "@b.co.uk.", "x@d.io"),
-      j("x", "@", "@a.bc"),
-      j("@a.bc", "d@e.fg"),
-      j("a.b-", "a.b-@ x", "y@z.ab"),
-      "",
-      "@",
-      j("a", "@b.c"),
-    ]) {
-      expect(all(new EmailRegExp(SRC, "g"), s), s).toEqual(
-        all(new RegExp(SRC, "g"), s),
-      );
-    }
-  });
-
-  it("keeps exec() semantics for lastIndex, sticky and non-global use", () => {
-    const s = j("zz a", "@b.cd e", "@f.gh");
-    const g = new EmailRegExp(SRC, "g");
-    const ref = new RegExp(SRC, "g");
-    for (const start of [0, 4, 6, 99]) {
-      g.lastIndex = start;
-      ref.lastIndex = start;
-      expect(g.exec(s)?.index).toBe(ref.exec(s)?.index);
-      expect(g.lastIndex).toBe(ref.lastIndex);
-    }
-    expect(new EmailRegExp(SRC).exec(s)?.[0]).toBe(
-      new RegExp(SRC).exec(s)?.[0],
-    );
-    const y = new EmailRegExp(SRC, "y");
-    y.lastIndex = 3;
-    expect(y.exec(s)?.index).toBe(3);
-    expect(new EmailRegExp(SRC, "g").test(s)).toBe(true);
-    expect(s.replace(new EmailRegExp(SRC, "g"), "#")).toBe(
-      s.replace(new RegExp(SRC, "g"), "#"),
-    );
   });
 });
