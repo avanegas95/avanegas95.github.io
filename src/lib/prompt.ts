@@ -4,7 +4,7 @@
 import { MODEL_MOODS } from "./moods.ts";
 
 // A version bump means one cache write on the next request after deploy; no other cache change.
-export const PROMPT_VERSION = "p4-v3";
+export const PROMPT_VERSION = "p5-v1";
 
 // Same-site links Blob may emit besides the KB's own contact links. Shared with
 // the output scrubber (P2-06) so the prompt and the allowlist cannot drift.
