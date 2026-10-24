@@ -16,7 +16,7 @@ tech:
 
 ### What it does
 
-This is an interactive website experience for HubSpot's State of Ecosystems partner report. Filtering on specific pages shows different content variants. Anderson built it with Figma MCP and then coordinated the handoff to HubSpot's web development team.
+This is an interactive website experience for HubSpot's State of Ecosystems partner report. Filtering on specific pages shows different content variants. The URL hash holds the filter state, so a filtered view can be shared. Anderson built it with Figma MCP and then coordinated the handoff to HubSpot's web development team.
 
 ### Highlights
 
