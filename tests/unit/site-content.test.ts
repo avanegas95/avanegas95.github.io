@@ -58,7 +58,7 @@ describe("site-content", () => {
 
   it("returns skill groups, contact and bio from the KB", async () => {
     const groups = await getSkillGroups();
-    expect(groups[0]?.name).toBe("Testing and automation");
+    expect(groups[0]?.name).toBe("Testing and Automation");
     expect(groups.flatMap((g) => g.items)).toContain("TestRail");
     const contact = await getContact();
     expect(contact?.links.linkedin).toBe(

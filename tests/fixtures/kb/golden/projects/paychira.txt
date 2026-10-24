@@ -10,12 +10,6 @@ Paychira is a sales-forecasting tool for small agencies. Anderson used AI tools 
 
 ### Highlights
 
-- A deal pipeline with probability-weighted revenue forecasts.
-- Org and team roles, and CSV import.
-- PandaDoc contract synchronization.
-- An AI chat over the pipeline data.
-- The front end is React 18, Vite and Tailwind on Vercel. The back end is FastAPI with a Pydantic REST API on Render. The database is Supabase.
-
-### QA angle
-
-Anderson automated the pull request process with Gemini Code Review and CodeRabbit. Deployment status from Vercel and Render is pulled in as a required check before merging. Those required checks must pass before merging.
+- Leveraged AI tools to design, build, and deploy a sales-forecasting tool for small agencies: features a deal pipeline, probability-weighted revenue forecasts, org/team roles, CSV import, PandaDoc contract synchronization, and AI chat, on the pipeline data.
+- Front end: React 18, Vite, Tailwind (Hosted on Vercel); Backend: FastAPI, Pydantic REST API (Hosted on Render); Database: Supabase
+- Automated PR process; Implemented Gemini Code Review and CodeRabbit in the repository to provide feedback and improve code quality. Pulled deployment status from Vercel and Render as checks to confirm success status, before merging.

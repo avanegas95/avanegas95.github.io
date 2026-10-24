@@ -1,16 +1,16 @@
 ---
 topic: education
 title: Education
-summary: "B.S. in Computer Engineering from Boston University, May 2017."
-updated: 2026-10-13
+summary: "Bachelor of Science in Computer Engineering from Boston University, May 2017."
+updated: 2026-10-24
 public: true
 ---
 
 ### Degree
 
-- Boston University, Boston, MA
-- B.S. in Computer Engineering
-- Graduated May 2017
+- Boston University, Boston MA
+- Bachelor of Science in Computer Engineering
+- May 2017
 
 ### After graduation
 
