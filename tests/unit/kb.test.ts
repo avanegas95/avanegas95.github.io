@@ -110,13 +110,16 @@ describe("buildKb", () => {
       path,
       raw: `---\ntopic: bio\ntitle: ${title}\nsummary: S\nupdated: 2026-01-01\npublic: true\n---\nB\n`,
     });
-    const out = buildKb([
-      mk("t.md", "third"),
-      mk("m.md", "second"),
-      mk("a.md", "first"),
-    ]);
+    // The nested projects/ path sorts after the root files ("p" > "m" > "a").
+    const project: KbSource = {
+      path: "projects/z.md",
+      raw: "---\ntopic: project\ntitle: third\nsummary: S\nupdated: 2026-01-01\npublic: true\norder: 1\nstatus: s\nrole: r\ntech: [x]\n---\nB\n",
+    };
+    const out = buildKb([project, mk("m.md", "second"), mk("a.md", "first")]);
     expect(out.indexOf("## first")).toBeLessThan(out.indexOf("## second"));
-    expect(out.indexOf("## second")).toBeLessThan(out.indexOf("## third"));
+    expect(out.indexOf("## second")).toBeLessThan(
+      out.indexOf("## Project: third"),
+    );
   });
 
   it("sorts by code unit, not locale", () => {

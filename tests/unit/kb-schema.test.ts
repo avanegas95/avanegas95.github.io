@@ -89,6 +89,23 @@ describe("kb-schema", () => {
     );
   });
 
+  it("a project card defaults featured to false, links to {} and techLabel to Stack", () => {
+    const p = ProjectSchema.parse({
+      topic: "project",
+      title: "T",
+      summary: "S",
+      updated: new Date("2026-01-01"),
+      public: true,
+      order: 1,
+      status: "s",
+      role: "r",
+      tech: ["x"],
+    });
+    expect(p.featured).toBe(false);
+    expect(p.links).toEqual({});
+    expect(p.techLabel).toBe("Stack");
+  });
+
   it("exports the voice field paths", () => {
     expect(VOICE_FIELDS).toContain("experience.roles[].bullets[]");
     expect(VOICE_FIELDS).toContain("bio.lede");
