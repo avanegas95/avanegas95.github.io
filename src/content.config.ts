@@ -1,6 +1,7 @@
 import { defineCollection } from "astro:content";
 import { glob } from "astro/loaders";
 import { z } from "astro/zod";
+import { KnowledgeSchema, ProjectSchema } from "./lib/kb-schema.ts";
 
 const blog = defineCollection({
   loader: glob({
@@ -24,41 +25,14 @@ const blog = defineCollection({
     }),
 });
 
-const base = {
-  title: z.string().min(1),
-  summary: z.string().min(1).max(200),
-  updated: z.date(),
-  public: z.boolean(),
-};
-
 const knowledge = defineCollection({
   loader: glob({ pattern: "*.md", base: "./src/content/knowledge" }),
-  schema: z
-    .object({
-      topic: z.enum([
-        "bio",
-        "experience",
-        "skills",
-        "education",
-        "interests",
-        "contact",
-        "faq",
-        "site",
-      ]),
-      ...base,
-    })
-    .strict(),
+  schema: KnowledgeSchema,
 });
 
 const projects = defineCollection({
   loader: glob({ pattern: "*.md", base: "./src/content/knowledge/projects" }),
-  schema: z
-    .object({
-      topic: z.literal("project"),
-      ...base,
-      order: z.number().int().min(1),
-    })
-    .strict(),
+  schema: ProjectSchema,
 });
 
 export const collections = { blog, knowledge, projects };

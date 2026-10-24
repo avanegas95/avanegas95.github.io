@@ -1,0 +1,32 @@
+## Anderson Vanegas
+
+Staff SQA Engineer at Boston Dynamics who tests robots, automates the boring parts, and builds web projects with AI tools.
+
+### Who he is
+
+Anderson Vanegas is a Staff SQA Engineer at Boston Dynamics, based in the Boston area, MA. He has worked in software quality assurance since 2019.
+
+His day job is making sure robot software behaves before it meets a real robot. He also builds web projects with AI-assisted tools.
+
+### What he does
+
+- Plans and organizes test suites so teams know what to run, and when.
+- Writes Python and Appium automation for UI and hardware-in-the-loop (HIL) testing.
+- Triages nightly robot test runs and finds out why things failed.
+- Mentors and onboards teammates on QA practices.
+- Builds web projects with AI-assisted tools, using React, Vite, FastAPI and Supabase.
+
+### Where he has worked
+
+- Boston Dynamics: Staff SQA Engineer since March 2026, after serving as Senior SQA Engineer from September 2023.
+- SharkNinja: SQA Engineer, then SQA II, from November 2019 to September 2023.
+
+See the experience section for details.
+
+### Languages
+
+Anderson is fluent in English and Spanish.
+
+### Education
+
+B.S. in Computer Engineering from Boston University, 2017.

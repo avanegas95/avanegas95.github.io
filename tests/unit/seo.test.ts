@@ -6,8 +6,14 @@ import {
   personJsonLd,
   serializeJsonLd,
 } from "../../src/lib/seo";
+import { renderKbSection } from "../../src/lib/kb.ts";
 
-const contact = readFileSync("src/content/knowledge/contact.md", "utf8");
+// The contact links live in frontmatter; kbLink reads the rendered section.
+const contact =
+  renderKbSection({
+    path: "contact.md",
+    raw: readFileSync("src/content/knowledge/contact.md", "utf8"),
+  }) ?? "";
 const bio = readFileSync("src/content/knowledge/bio.md", "utf8");
 
 describe("serializeJsonLd", () => {

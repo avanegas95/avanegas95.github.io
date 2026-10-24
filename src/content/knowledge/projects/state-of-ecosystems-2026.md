@@ -5,9 +5,14 @@ summary: An interactive React report experience for HubSpot's State of Ecosystem
 updated: 2026-10-13
 public: true
 order: 1
+status: "handed off"
+role: "Builder and handoff coordinator"
+tech:
+  - "React"
+  - "Vite 6"
+  - "Figma MCP"
+  - "JSON content layer"
 ---
-
-**Status:** handed off · **Role:** Builder and handoff coordinator · **Stack:** React, Vite 6, Figma MCP, JSON content layer
 
 ### What it does
 
