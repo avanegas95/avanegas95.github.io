@@ -429,75 +429,72 @@ function markEdits(text: string): Edit[] {
 // <[^<>]*> as the tag for `inner`, in one linear pass (P5-12).
 // The regexes rescan from every position: a "<" with no ">" after it scans
 // to the end, and so does each space of a run with no line break, so long
-// runs made them quadratic. Exported for the equivalence tests only.
+// runs made them quadratic. Plain text between those characters is copied
+// as whole slices, found with native regexes. Exported for tests only.
+const HIDE_NEXT = /[<\s\p{Cf}]/gu; // where any alternative could start
+const CF_AT = /\p{Cf}/uy;
+const WS_RUN = /\s+/y;
+const ANGLE = /[<>]/g;
+const CF_ALL = /\p{Cf}/gu;
+
 export function hideMarkup(n: string, inner: boolean): string {
   let out = "";
   let gt = n.indexOf(">");
-  for (let i = 0; i < n.length;) {
-    if (n.charCodeAt(i) === 0x3c) {
+  let i = 0;
+  while (i < n.length) {
+    HIDE_NEXT.lastIndex = i;
+    const hit = HIDE_NEXT.exec(n);
+    if (!hit) break;
+    const k = hit.index;
+    out += n.slice(i, k);
+    if (n.charCodeAt(k) === 0x3c) {
       // The tag alternative: to the first ">" (none after this "<" means
       // none after any later one), or for the inner reading only if a ">"
       // comes before the next "<".
       let close = -1;
       if (inner) {
-        let k = i + 1;
-        while (
-          k < n.length &&
-          n.charCodeAt(k) !== 0x3c &&
-          n.charCodeAt(k) !== 0x3e
-        )
-          k++;
-        if (n.charCodeAt(k) === 0x3e) close = k;
+        ANGLE.lastIndex = k + 1;
+        const a = ANGLE.exec(n);
+        if (a && a[0] === ">") close = a.index;
       } else {
-        if (gt !== -1 && gt < i) gt = n.indexOf(">", i);
+        if (gt !== -1 && gt < k) gt = n.indexOf(">", k);
         close = gt;
       }
       if (close >= 0) {
         i = close + 1;
-        continue;
+      } else {
+        out += "<";
+        i = k + 1;
       }
-      out += "<";
-      i++;
       continue;
     }
-    const cp = n.codePointAt(i) as number;
-    const ch = n.slice(i, i + (cp > 0xffff ? 2 : 1));
     // \p{Cf} comes before the line-break alternative, so U+FEFF (both a
     // format character and \s) is always dropped on its own.
-    if (FORMAT.test(ch)) {
-      i += ch.length;
+    CF_AT.lastIndex = k;
+    if (CF_AT.test(n)) {
+      i = CF_AT.lastIndex;
       continue;
     }
-    if (WS.test(ch)) {
-      // \s*\n\s* from a space matches the rest of its run when the run holds
-      // a line break, and fails at every position of it otherwise.
-      let r = i;
-      let nl = false;
-      while (r < n.length && WS.test(n.charAt(r))) {
-        if (n.charCodeAt(r) === 0x0a) nl = true;
-        r++;
-      }
-      if (!nl) {
-        for (let k = i; k < r; k++) {
-          if (!FORMAT.test(n.charAt(k))) out += n.charAt(k);
-        }
-      }
-      i = r;
-      continue;
-    }
-    out += ch;
-    i += ch.length;
+    // \s*\n\s* from a space matches the rest of its run when the run holds
+    // a line break, and fails at every position of it otherwise (where only
+    // a U+FEFF inside it is dropped, as a format character).
+    WS_RUN.lastIndex = k;
+    WS_RUN.test(n);
+    const r = WS_RUN.lastIndex;
+    const run = n.slice(k, r);
+    if (!run.includes("\n")) out += run.replace(CF_ALL, "");
+    i = r;
   }
-  return out;
+  return i < n.length ? out + n.slice(i) : out;
 }
 
 function mayHavePii(text: string): boolean {
   const n = text.normalize("NFKC");
-  return (
-    PII_HINT.test(n) ||
-    TEL.test(hideMarkup(n, false)) ||
-    TEL.test(hideMarkup(n, true))
-  );
+  if (PII_HINT.test(n)) return true;
+  // Taking characters out never adds one, so without a ":" there is no
+  // "tel:" in either hidden reading.
+  if (!n.includes(":")) return false;
+  return TEL.test(hideMarkup(n, false)) || TEL.test(hideMarkup(n, true));
 }
 
 const WS = /\s/;

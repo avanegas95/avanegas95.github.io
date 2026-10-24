@@ -27,51 +27,57 @@ const OPTS: ScrubOptions = { allowedUrls: [] };
 
 const KB = 1024;
 const SIZES = [4 * KB, 16 * KB, 32 * KB, 64 * KB];
-// Per run. The reported case must finish every size in 1 s (it took about 7
-// minutes at 32 KB before the fix). The other shapes do more work per unit
-// (many PII hits, many commit points), so they get 1 s or 60 ms per KB,
+// All times are this process's CPU time (process.cpuUsage), not wall clock:
+// on a loaded machine a run can be descheduled for minutes, which says
+// nothing about its cost. Each size keeps the fastest of 3 runs.
+//
+// Per run. The reported case must finish every size in 1 s of CPU (it took
+// about 7 minutes at 32 KB before the fix). The other shapes do more work per
+// unit (many PII hits, many commit points), so they get 1 s or 60 ms per KB,
 // whichever is more: still far below what a quadratic step costs at 64 KB.
 const REPORTED_BUDGET_MS = 1000;
 const budget = (n: number) => Math.max(1000, (n / KB) * 60);
-// time(64K) / time(16K): about 4 when linear, 16 when quadratic.
+// time(n) / time(n / 4): about 4 when linear, 16 when quadratic.
 const MAX_RATIO = 8;
-// Timer noise floor for the ratio's denominator.
-const FLOOR_MS = 5;
+// Noise floor for the ratio's denominator (CPU timer and GC jitter).
+const FLOOR_MS = 20;
 
-function median(xs: number[]): number {
-  const s = [...xs].sort((a, b) => a - b);
-  return s[Math.floor(s.length / 2)] as number;
+function cpuMs(f: () => void): number {
+  const t = process.cpuUsage();
+  f();
+  const d = process.cpuUsage(t);
+  return (d.user + d.system) / 1000;
 }
 
 function time(f: () => void, limit: number): number {
-  const runs: number[] = [];
+  let best = Infinity;
   for (let k = 0; k < 3; k++) {
-    const t = performance.now();
-    f();
-    const dt = performance.now() - t;
-    runs.push(dt);
+    const dt = cpuMs(f);
     expect(dt).toBeLessThan(limit);
+    best = Math.min(best, dt);
   }
-  return median(runs);
+  return best;
 }
 
-// Runs `run` on `make(n)` for each size, failing at the first size over
-// budget, then checks the growth from 16 KB to 64 KB.
+// Runs `run` on `make(n)` for each size, smallest first, failing at the
+// first size over budget, then checks the growth over the last factor of 4.
 function ladder(
   make: (n: number) => string,
   run: (text: string) => void,
   limit: (n: number) => number = budget,
+  sizes: readonly number[] = SIZES,
 ) {
   const t = new Map<number, number>();
-  for (const n of SIZES) {
+  for (const n of sizes) {
     const text = make(n);
     t.set(
       n,
       time(() => run(text), limit(n)),
     );
   }
+  const top = sizes[sizes.length - 1] as number;
   const ratio =
-    (t.get(64 * KB) as number) / Math.max(t.get(16 * KB) as number, FLOOR_MS);
+    (t.get(top) as number) / Math.max(t.get(top / 4) as number, FLOOR_MS);
   expect(ratio).toBeLessThan(MAX_RATIO);
 }
 
@@ -197,6 +203,66 @@ describe("PII scan stays near linear", () => {
   }
 });
 
+const BIG_SIZES = [8 * KB, 32 * KB, 128 * KB];
+const ZW = "​";
+
+describe("hideMarkup stays linear up to 128 KB", () => {
+  const inputs: Record<string, (n: number) => string> = {
+    "zero-width run": fill("tel", ZW, ":"),
+    "many stray <": fill("tel:", "< ", ""),
+    "inner tags never closed": fill("tel:", "<a ", ">"),
+    "long spaces with no line break": fill("tel:", " ", "x"),
+    "spaces and byte-order marks": fill("tel:", " ﻿", "x"),
+    "plain words": fill("tel: ", "word ", ""),
+  };
+  for (const [name, make] of Object.entries(inputs)) {
+    for (const inner of [false, true]) {
+      it(`${name} (${inner ? "inner" : "outer"} reading)`, () => {
+        // A linear pass takes a few ms here; a quadratic one, seconds.
+        ladder(
+          make,
+          (text) => hideMarkup(text, inner),
+          () => 250,
+          BIG_SIZES,
+        );
+      }, 60_000);
+    }
+  }
+});
+
+// The existing 1-char guards in scrub.test.ts, taken to 128 KB with an
+// absolute CPU bound too: a slow precheck is linear but still costs the
+// chat route (it once made these 25x slower).
+describe("1-char streaming stays linear up to 128 KB", () => {
+  const HEAD = "Anderson builds test suites that catch bugs early. ";
+  const inputs: Record<string, (n: number) => string> = {
+    "zero-width": fill(HEAD, ZW, " the end."),
+    punctuation: fill(HEAD, "! ? ", " the end."),
+    emoji: fill(HEAD, "\u{1F389}", " the end."),
+    "spaced emoji": fill(HEAD, "\u{1F389} ", " the end."),
+    "no digits, many stray < and a tel:": SHAPES[
+      "no digits, many stray < and a tel:"
+    ] as (n: number) => string,
+    "the reported case": REPORTED,
+  };
+  for (const [name, make] of Object.entries(inputs)) {
+    it(
+      name,
+      () => {
+        const text = make(8 * KB);
+        expect(streamed(text, 1)).toBe(scrub(text, OPTS));
+        ladder(
+          make,
+          (t) => streamed(t, 1),
+          () => 1500,
+          BIG_SIZES,
+        );
+      },
+      240_000,
+    );
+  }
+});
+
 // The linear forms must find exactly what the regexes they replace find.
 // Random strings over small alphabets hit the edge cases (runs, nesting,
 // matches that end where the next run starts) far more often than prose.
@@ -229,92 +295,100 @@ const plain = (re: RegExp) => new RegExp(re.source, re.flags);
 const ROUNDS = 20_000;
 const BREAK = "\u0001";
 
-describe("linear forms match exactly like the regexes they replace", () => {
-  it("the patterns stay plain RegExps (a subclass slows every regex)", () => {
-    for (const re of [EMAIL_PATTERN, TAG_PATTERN]) {
-      expect(Object.getPrototypeOf(re)).toBe(RegExp.prototype);
-    }
-  });
-
-  it("allMatches(TAG_PATTERN) and <[^>]*>", () => {
-    const sample = sampler(["<", ">", "a", " ", "\n", "<b>"], 1);
-    for (let k = 0; k < ROUNDS; k++) {
-      const s = sample();
-      expect(linearAll(TAG_PATTERN, s), s).toEqual(all(plain(TAG_PATTERN), s));
-    }
-  });
-
-  it("allMatches(EMAIL_PATTERN) and the plain email pattern", () => {
-    const sample = sampler([..."ab1._%+-@@.. x<"], 0x5eed);
-    for (let k = 0; k < ROUNDS; k++) {
-      const s = sample();
-      expect(linearAll(EMAIL_PATTERN, s), s).toEqual(
-        all(plain(EMAIL_PATTERN), s),
-      );
-    }
-    for (const s of [
-      j("a", "@b.com-x", "@c.com"),
-      j("a", "@b.com_x", "@c.com"),
-      j("a", "@b.co.uk.", "x@d.io"),
-      j("x", "@", "@a.bc"),
-      j("@a.bc", "d@e.fg"),
-      j("a.b-", "a.b-@ x", "y@z.ab"),
-      "",
-      "@",
-      j("a", "@b.c"),
-    ]) {
-      expect(linearAll(EMAIL_PATTERN, s), s).toEqual(
-        all(plain(EMAIL_PATTERN), s),
-      );
-    }
-  });
-
-  it("allMatches on an unregistered regex is matchAll", () => {
-    const s = "a1 b22 c333";
-    expect(linearAll(/\d+/g, s)).toEqual(all(/\d+/g, s));
-  });
-
-  it("hideMarkup and the tag, format and line-break regexes", () => {
-    const sample = sampler(
-      ["<", ">", "a", " ", "\t", "\n", "\r", "﻿", "​", "\u{E0041}", " "],
-      2,
-    );
-    const outer = /<[^>]*>|\p{Cf}|\s*\n\s*/gu;
-    const inner = /<[^<>]*>|\p{Cf}|\s*\n\s*/gu;
-    for (let k = 0; k < ROUNDS; k++) {
-      const s = sample();
-      expect(hideMarkup(s, false), JSON.stringify(s)).toBe(
-        s.replace(outer, ""),
-      );
-      expect(hideMarkup(s, true), JSON.stringify(s)).toBe(s.replace(inner, ""));
-    }
-  });
-
-  // The lookbehinds added to pii.ts's break and line-run patterns.
-  it("run-start lookbehinds change no match", () => {
-    const pairs: Array<[RegExp, RegExp]> = [
-      [/\s*\n\s*/g, /(?<!\s)\s*\n\s*/g],
-      [
-        new RegExp(`[^\\S\\n]*${BREAK}(?:[^\\S\\n]|${BREAK})*`, "g"),
-        new RegExp(
-          `(?<![^\\S\\n])[^\\S\\n]*${BREAK}(?:[^\\S\\n]|${BREAK})*`,
-          "g",
-        ),
-      ],
-      [
-        new RegExp(`[^\\S\\n]*${BREAK}(?:\\s*${BREAK})*[^\\S\\n]*`, "g"),
-        new RegExp(
-          `(?<![^\\S\\n])[^\\S\\n]*${BREAK}(?:\\s*${BREAK})*[^\\S\\n]*`,
-          "g",
-        ),
-      ],
-    ];
-    const sample = sampler([" ", "\t", "\n", BREAK, "a", "﻿"], 3);
-    for (let k = 0; k < ROUNDS; k++) {
-      const s = sample();
-      for (const [plain, linear] of pairs) {
-        expect(all(linear, s), JSON.stringify(s)).toEqual(all(plain, s));
+describe(
+  "linear forms match exactly like the regexes they replace",
+  { timeout: 120_000 },
+  () => {
+    it("the patterns stay plain RegExps (a subclass slows every regex)", () => {
+      for (const re of [EMAIL_PATTERN, TAG_PATTERN]) {
+        expect(Object.getPrototypeOf(re)).toBe(RegExp.prototype);
       }
-    }
-  });
-});
+    });
+
+    it("allMatches(TAG_PATTERN) and <[^>]*>", () => {
+      const sample = sampler(["<", ">", "a", " ", "\n", "<b>"], 1);
+      for (let k = 0; k < ROUNDS; k++) {
+        const s = sample();
+        expect(linearAll(TAG_PATTERN, s), s).toEqual(
+          all(plain(TAG_PATTERN), s),
+        );
+      }
+    });
+
+    it("allMatches(EMAIL_PATTERN) and the plain email pattern", () => {
+      const sample = sampler([..."ab1._%+-@@.. x<"], 0x5eed);
+      for (let k = 0; k < ROUNDS; k++) {
+        const s = sample();
+        expect(linearAll(EMAIL_PATTERN, s), s).toEqual(
+          all(plain(EMAIL_PATTERN), s),
+        );
+      }
+      for (const s of [
+        j("a", "@b.com-x", "@c.com"),
+        j("a", "@b.com_x", "@c.com"),
+        j("a", "@b.co.uk.", "x@d.io"),
+        j("x", "@", "@a.bc"),
+        j("@a.bc", "d@e.fg"),
+        j("a.b-", "a.b-@ x", "y@z.ab"),
+        "",
+        "@",
+        j("a", "@b.c"),
+      ]) {
+        expect(linearAll(EMAIL_PATTERN, s), s).toEqual(
+          all(plain(EMAIL_PATTERN), s),
+        );
+      }
+    });
+
+    it("allMatches on an unregistered regex is matchAll", () => {
+      const s = "a1 b22 c333";
+      expect(linearAll(/\d+/g, s)).toEqual(all(/\d+/g, s));
+    });
+
+    it("hideMarkup and the tag, format and line-break regexes", () => {
+      const sample = sampler(
+        ["<", ">", "a", " ", "\t", "\n", "\r", "﻿", "​", "\u{E0041}", " "],
+        2,
+      );
+      const outer = /<[^>]*>|\p{Cf}|\s*\n\s*/gu;
+      const inner = /<[^<>]*>|\p{Cf}|\s*\n\s*/gu;
+      for (let k = 0; k < ROUNDS; k++) {
+        const s = sample();
+        expect(hideMarkup(s, false), JSON.stringify(s)).toBe(
+          s.replace(outer, ""),
+        );
+        expect(hideMarkup(s, true), JSON.stringify(s)).toBe(
+          s.replace(inner, ""),
+        );
+      }
+    });
+
+    // The lookbehinds added to pii.ts's break and line-run patterns.
+    it("run-start lookbehinds change no match", () => {
+      const pairs: Array<[RegExp, RegExp]> = [
+        [/\s*\n\s*/g, /(?<!\s)\s*\n\s*/g],
+        [
+          new RegExp(`[^\\S\\n]*${BREAK}(?:[^\\S\\n]|${BREAK})*`, "g"),
+          new RegExp(
+            `(?<![^\\S\\n])[^\\S\\n]*${BREAK}(?:[^\\S\\n]|${BREAK})*`,
+            "g",
+          ),
+        ],
+        [
+          new RegExp(`[^\\S\\n]*${BREAK}(?:\\s*${BREAK})*[^\\S\\n]*`, "g"),
+          new RegExp(
+            `(?<![^\\S\\n])[^\\S\\n]*${BREAK}(?:\\s*${BREAK})*[^\\S\\n]*`,
+            "g",
+          ),
+        ],
+      ];
+      const sample = sampler([" ", "\t", "\n", BREAK, "a", "﻿"], 3);
+      for (let k = 0; k < ROUNDS; k++) {
+        const s = sample();
+        for (const [plain, linear] of pairs) {
+          expect(all(linear, s), JSON.stringify(s)).toEqual(all(plain, s));
+        }
+      }
+    });
+  },
+);
