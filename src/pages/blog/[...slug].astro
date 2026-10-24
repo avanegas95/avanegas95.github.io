@@ -2,11 +2,12 @@
 import BlogCoverImage from "@/components/blog/BlogCoverImage.astro";
 import TagPills from "@/components/blog/TagPills.astro";
 import BlogLayout from "@/layouts/BlogLayout.astro";
-import { getCollection, render } from "astro:content";
+import { render } from "astro:content";
+import { getPublishedPosts } from "@/lib/blog-posts";
 import type { CollectionEntry } from "astro:content";
 
 export async function getStaticPaths() {
-  const posts = await getCollection("blog");
+  const posts = await getPublishedPosts();
   return posts.map((post) => ({
     params: { slug: post.id },
     props: post,
