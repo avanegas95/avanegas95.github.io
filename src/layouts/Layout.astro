@@ -3,10 +3,10 @@ import "@/styles/global.css";
 import { getEntry } from "astro:content";
 import {
   currentRoleFromSummary,
-  kbLink,
   personJsonLd,
   serializeJsonLd,
 } from "@/lib/seo";
+import { getContact } from "@/lib/site-content";
 
 interface Props {
   title: string;
@@ -31,7 +31,7 @@ const {
 } = Astro.props;
 const site = Astro.site ?? new URL("https://avanegas.com");
 const bio = await getEntry("knowledge", "bio");
-const contact = await getEntry("knowledge", "contact");
+const contact = await getContact();
 const metaDescription = description ?? bio?.data.summary ?? "";
 const resolvedCanonical =
   canonicalUrl ?? new URL(Astro.url.pathname, site).href;
@@ -39,10 +39,9 @@ const socialImage = ogImage ?? DEFAULT_OG_IMAGE;
 
 // Person JSON-LD renders on the home page only, built from KB facts.
 const role = currentRoleFromSummary(bio?.data.summary ?? "");
-const contactBody = contact?.body ?? "";
-const linkedIn = kbLink(contactBody, "LinkedIn");
-const gitHub = kbLink(contactBody, "GitHub");
-const email = kbLink(contactBody, "Email")?.replace(/^mailto:/, "");
+const linkedIn = contact?.links.linkedin;
+const gitHub = contact?.links.github;
+const email = contact?.links.email;
 const personLd =
   Astro.url.pathname === "/" && role && email
     ? serializeJsonLd(
