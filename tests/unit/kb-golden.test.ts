@@ -56,7 +56,10 @@ describe("KB prompt goldens", () => {
     };
     // Every role, hidden ones included, is rendered separately by its own title.
     for (const r of roles) expect(out).toContain(`: ${r.title} (`);
+    expect(out).toContain("### SharkNinja: SQA Engineer II (");
+    expect(out).toContain("### SharkNinja: SQA Engineer (");
     expect(out).toContain("Product Development Intern");
+    expect(out).not.toContain("I/II");
     expect(out).not.toContain("sharkninja-sqa");
     for (const r of roles) {
       // A siteTitle that equals some role's own title proves nothing; any

@@ -22,7 +22,7 @@ Anderson's roles at Boston Dynamics (Staff and Senior SQA Engineer) and SharkNin
 - Facilitated communication between developers and testers to accelerate issue resolution.
 - Served as a project lead and primary QA point of contact for product refresh; oversaw progress and issue tracking with weekly leadership reporting on testing status and blockers.
 
-### SharkNinja: SQA Engineer I/II (full time), April 2022 to September 2023
+### SharkNinja: SQA Engineer II (full time), April 2022 to September 2023
 
 - Led and mentored junior SQA engineers and contractors during sprints; managed test execution, defect tracking, and daily standups.
 - Coordinated with cross-functional hardware/software teams to design test procedures and protocols.

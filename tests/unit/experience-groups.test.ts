@@ -124,19 +124,29 @@ describe("the real KB on the site", () => {
       "Senior SQA Engineer",
       "SQA Engineer I/II",
     ]);
-    // The site shows siteBullets ?? bullets per visible role.
+    // The site shows siteBullets ?? bullets per visible role; a group card
+    // concatenates its members newest first.
     const shown = data.roles.filter((r) => r.showOnSite);
-    expect(cards.map((c) => c.bullets)).toEqual(
-      shown.map((r) => r.siteBullets ?? r.bullets),
-    );
+    const siteOf = (r: Role) => r.siteBullets ?? r.bullets;
+    const sqaRoles = shown.filter((r) => r.siteGroup === "sharkninja-sqa");
+    expect(sqaRoles.map((r) => r.title)).toEqual([
+      "SQA Engineer II",
+      "SQA Engineer",
+    ]);
+    expect(cards.map((c) => c.bullets)).toEqual([
+      siteOf(shown[0] as Role),
+      siteOf(shown[1] as Role),
+      sqaRoles.flatMap(siteOf),
+    ]);
     const sqa = cards[2];
-    expect(sqa).toMatchObject({ company: "SharkNinja" });
-    // A group member hidden with showOnSite: false (and siteBullets: []) adds
-    // neither dates nor bullets to the merged card.
-    const groupShown = shown.filter((r) => r.siteGroup === "sharkninja-sqa");
-    expect(sqa?.start).toBe(
-      groupShown.map((r) => r.start).reduce((m, x) => (x < m ? x : m)),
-    );
+    expect(sqa).toMatchObject({
+      company: "SharkNinja",
+      start: "2019-11",
+      end: "2023-09",
+    });
+    // The older member has siteBullets: [] so it adds dates but no bullets.
+    expect(sqaRoles[1]?.siteBullets).toEqual([]);
+    expect(sqa?.bullets).toEqual(siteOf(sqaRoles[0] as Role));
     expect(sqa?.end).toBe("2023-09");
     expect(sqa?.bullets).toHaveLength(4);
   });
