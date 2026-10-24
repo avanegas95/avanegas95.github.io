@@ -31,6 +31,11 @@
   --white-icon: #8892b0;
   --white-icon-tr: rgba(136, 146, 176, 0.1);
   --nav-height: 5.5rem;
+  --surface-card: #112240;
+  --text-strong: #fff;
+  --text-body: #d1d5db;
+  --text-muted: #9ca3af;
+  --border-subtle: rgba(255, 255, 255, 0.08);
   --accent: 100, 255, 218;
   --accent-light: 204, 229, 250;
   --accent-dark: 10, 25, 47;

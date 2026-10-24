@@ -44,13 +44,14 @@ describe("site-content", () => {
     expect(getCollection).toHaveBeenCalledWith("projects");
   });
 
-  it("roles keep KB order and drop showOnSite: false", async () => {
+  it("roles keep KB order (intern included since D-02)", async () => {
     const roles = await getRoles();
     expect(roles.map((r) => `${r.company}|${r.title}|${r.start}`)).toEqual([
       "Boston Dynamics|Staff SQA Engineer|2026-03",
       "Boston Dynamics|Senior SQA Engineer|2023-09",
       "SharkNinja|SQA Engineer II|2022-04",
       "SharkNinja|SQA Engineer|2019-11",
+      "SharkNinja|Product Development Intern|2019-04",
     ]);
     expect(roles[0]?.end).toBeNull();
   });

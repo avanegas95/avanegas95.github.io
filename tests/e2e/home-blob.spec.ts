@@ -119,7 +119,7 @@ test("About Me lives under #about, in v1 order, with the other sections", async 
   const ids = await page.evaluate(() =>
     [...document.querySelectorAll("main > section")].map((s) => s.id),
   );
-  expect(ids).toEqual(["home", "about", "experiences", "projects", "contact"]);
+  expect(ids).toEqual(["home", "about", "experience", "projects", "contact"]);
   await expect(page.locator("#about")).toContainText("About Me");
   await expect(page.locator("#home")).not.toContainText("About Me");
   await expect(page.locator("#about")).toContainText(

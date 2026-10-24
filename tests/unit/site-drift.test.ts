@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { KB_ROOT, loadKbSources } from "../../src/lib/kb.ts";
 import {
@@ -75,10 +75,13 @@ describe("site-drift ratchet (real section components)", () => {
 
   // Pinned so that adding an allow line next to a new hit fails here and is
   // seen in review. The ratchet only shrinks: lower a number, never raise it.
+  // A component with no hits has no allow file at all.
+  const readAllow = (path: string) =>
+    existsSync(path) ? readFileSync(path, "utf8") : "";
   const ALLOW_LINES = {
     Home: 2,
     About: 0,
-    Experiences: 19,
+    Experiences: 0,
     Projects: 0,
     Contact: 0,
   } as const;
@@ -86,7 +89,7 @@ describe("site-drift ratchet (real section components)", () => {
   it.each(DRIFT_COMPONENTS)(
     "%s allow file has its pinned line count",
     (name) => {
-      const lines = readFileSync(`${ALLOW_DIR}/${name}.astro.txt`, "utf8")
+      const lines = readAllow(`${ALLOW_DIR}/${name}.astro.txt`)
         .split("\n")
         .filter((l) => l.trim() !== "");
       expect(lines).toHaveLength(ALLOW_LINES[name]);
@@ -101,7 +104,7 @@ describe("site-drift ratchet (real section components)", () => {
       const findings = checkDrift(
         comp,
         readFileSync(comp, "utf8"),
-        readFileSync(allow, "utf8"),
+        readAllow(allow),
         real,
         allow,
       );
