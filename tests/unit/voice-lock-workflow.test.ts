@@ -26,6 +26,16 @@ describe("quality.yml voice-lock steps", () => {
     );
   });
 
+  it("a red voice check does not skip E2E, Lighthouse or the annotations", () => {
+    for (const n of [
+      "Voice lock changes",
+      "E2E (chromium, firefox, webkit; includes axe)",
+      "Lighthouse",
+    ]) {
+      expect(step(n)).toContain("if: always()");
+    }
+  });
+
   it("facts:check stays non-blocking", () => {
     expect(step("Facts check (report only)")).toContain(
       "continue-on-error: true",

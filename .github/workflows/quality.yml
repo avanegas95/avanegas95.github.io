@@ -60,6 +60,7 @@ jobs:
       # Visibility, not the gate: any voice.lock.json change in the pushed range
       # or PR is printed as annotations and in the job summary.
       - name: Voice lock changes
+        if: always()
         run: >
           node scripts/ci/voice-lock-annotate.ts
           "${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}"
@@ -89,11 +90,13 @@ jobs:
           exit $code
 
       - name: E2E (chromium, firefox, webkit; includes axe)
+        if: always()
         run: npm run test:e2e
         env:
           CI: "true"
 
       - name: Lighthouse
+        if: always()
         run: |
           export CHROME_PATH="$(node -e "console.log(require('@playwright/test').chromium.executablePath())")"
           npm run lhci
