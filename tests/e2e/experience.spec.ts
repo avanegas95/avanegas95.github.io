@@ -36,7 +36,6 @@ const src = loadKbSources(KB_ROOT).find((s) =>
 if (!src) throw new Error("experience.md not found");
 const data = parseKbSource(src).data as unknown as { roles: KbRole[] };
 const roles = data.roles.filter((r) => r.showOnSite);
-const companies = [...new Set(roles.map((r) => r.company))];
 
 test("every KB role shows its title and date range, and the Staff card says March 2026", async ({
   page,
@@ -47,7 +46,7 @@ test("every KB role shows its title and date range, and the Staff card says Marc
     "Experience",
   );
   for (const r of roles) {
-    const block = section.locator(".experience-card__role-block").filter({
+    const block = section.getByTestId("experience-card").filter({
       has: page.getByRole("heading", {
         level: 3,
         name: r.title,
@@ -64,13 +63,9 @@ test("every KB role shows its title and date range, and the Staff card says Marc
   ).toHaveCount(1);
 });
 
-test("one card per company, roles in KB order, bullets verbatim", async ({
-  page,
-}) => {
+test("one card per role, in KB order, bullets verbatim", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByTestId("experience-card")).toHaveCount(
-    companies.length,
-  );
+  await expect(page.getByTestId("experience-card")).toHaveCount(roles.length);
   const titles = await page
     .locator("#experience h3.experience-card__role")
     .allTextContents();
@@ -81,24 +76,71 @@ test("one card per company, roles in KB order, bullets verbatim", async ({
   expect(rendered).toEqual(roles.flatMap((r) => r.bullets));
 });
 
-test("a role with more than 3 bullets keeps the rest in a closed details", async ({
+test("every bullet shows on its card: no Show more toggle, no hidden bullets", async ({
   page,
 }) => {
   await page.goto("/");
-  const long = roles.filter((r) => r.bullets.length > 3);
-  expect(long.length).toBeGreaterThan(0);
-  const details = page.locator("#experience details");
-  await expect(details).toHaveCount(long.length);
-  for (const [i, r] of long.entries()) {
-    const d = details.nth(i);
-    await expect(d).not.toHaveAttribute("open", "");
-    await expect(d.locator("summary")).toHaveText("Show more");
-    await expect(d.locator("li")).toHaveCount(r.bullets.length - 3);
+  await expect(page.locator("#experience details")).toHaveCount(0);
+  await expect(page.locator("#experience summary")).toHaveCount(0);
+  for (const r of roles) {
+    const card = page.getByTestId("experience-card").filter({
+      has: page.getByRole("heading", { level: 3, name: r.title, exact: true }),
+    });
+    await expect(card.locator("li")).toHaveCount(r.bullets.length);
+    for (const li of await card.locator("li").all()) {
+      await expect(li).toBeVisible();
+    }
+    await expect(card.locator("h3")).toHaveCount(1);
+    // Bullet-less roles are compact: title and dates only, no photo.
+    await expect(card.locator("img")).toHaveCount(r.bullets.length ? 2 : 0);
   }
-  // Opening works from the keyboard.
-  await details.first().locator("summary").focus();
-  await page.keyboard.press("Enter");
-  await expect(details.first()).toHaveAttribute("open", "");
+});
+
+test("cards sit in a 1, 2 then 3 column grid by viewport width", async ({
+  page,
+}) => {
+  const cols = async (width: number) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/");
+    return page
+      .locator("#experience .grid")
+      .evaluate(
+        (el) => getComputedStyle(el).gridTemplateColumns.split(" ").length,
+      );
+  };
+  expect(await cols(390)).toBe(1);
+  expect(await cols(800)).toBe(2);
+  expect(await cols(1280)).toBe(3);
+});
+
+test("a compact card sizes to its content, not the row height", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/");
+  const compact = roles.filter((r) => r.bullets.length === 0);
+  expect(compact.length).toBeGreaterThan(0);
+  const heightOf = async (title: string) =>
+    (
+      await page
+        .getByTestId("experience-card")
+        .filter({
+          has: page.getByRole("heading", {
+            level: 3,
+            name: title,
+            exact: true,
+          }),
+        })
+        .boundingBox()
+    )?.height ?? 0;
+  const full = Math.max(
+    ...(await Promise.all(
+      roles.filter((r) => r.bullets.length > 0).map((r) => heightOf(r.title)),
+    )),
+  );
+  for (const r of compact) {
+    expect(await heightOf(r.title)).toBeLessThan(full / 3);
+  }
 });
 
 test("#experience and the old #experiences alias both reach the section", async ({
@@ -149,7 +191,6 @@ for (const scheme of ["light", "dark"] as const) {
     await page.emulateMedia({ reducedMotion: "reduce", colorScheme: scheme });
     await page.goto("/");
     await page.waitForLoadState("networkidle");
-    await page.locator("#experience details summary").first().click();
     const results = await new AxeBuilder({ page })
       .include("#experience")
       .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])

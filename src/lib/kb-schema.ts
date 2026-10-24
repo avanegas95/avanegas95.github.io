@@ -20,6 +20,8 @@ export const RoleSchema = z
     end: yearMonth.nullable(),
     showOnSite: z.boolean(),
     bullets: z.array(text),
+    // Optional shorter bullets for the site card. Blob's prompt always uses the full `bullets`.
+    siteBullets: z.array(text).optional(),
     note: text.optional(),
   })
   .strict();
@@ -115,6 +117,7 @@ export const VOICE_FIELDS: readonly string[] = [
   "bio.headline",
   "bio.lede",
   "experience.roles[].bullets[]",
+  "experience.roles[].siteBullets[]",
   "experience.roles[].note",
   "projects.role",
   "projects.techNote",
