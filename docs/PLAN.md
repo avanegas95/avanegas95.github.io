@@ -37,6 +37,7 @@ Decided 2026-10-23 (Anderson): Blob and the chat backend move into the existing 
 | P5-12 | Fix super-linear `scrub()` on stray `<` + split PII (DoS risk on chat path); harden load-sensitive test timeouts | developer | opus | opus | P5-03b | 4 | merged |
 | P5-13 | Test follow-ups: scrubber test pinning digit-free obfuscated `tel:` removal (`t<b>e</b>l:abc`, `tel：abc`); decide/handle U+A789 as a colon (pre-existing gap); evals `spendAllowed` "ci" reason tests (CI=true/1 → ci, false/0 → ok) | developer | sonnet | opus | P5-12 | 4 | todo |
 | P5-14 | New OG preview image from the current site (replaces the inspiration-site leftover), reproducible `og:render` script, leftover scan | designer | sonnet | sonnet | P5-10 (branched from it) | 4 | wip |
+| P5-15 | Blob favicon (SVG + PNG/ICO fallbacks, reproducible render) | designer | sonnet | sonnet | P5-14 (branched from it) | 4 | wip |
 | P5-04c | Mount Blob on `/` in the chosen placement | designer | sonnet | opus | P5-04b, P5-10, P5-11, placement A (decided) | 5 | brief |
 
 Task branches merge into `feat/blob` (the integration branch), not `main`.
@@ -106,6 +107,7 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 ## Decision log
 | Date | Decision | By |
 |---|---|---|
+| 2026-10-24 | Favicon: replace the gradient orb (unknown origin) with a small teal Blob favicon (P5-15). | Anderson |
 | 2026-10-24 | New OG image approved (with the site's monospace font bundled). LICENSE stays MIT with the holder changed to Anderson Vanegas; remove every reference to Oscar Hernandez (the inspiration site) from the repo and site (P5-14 round 2). | Anderson |
 | 2026-10-24 | The existing `og.image.png` is a leftover from the inspiration site (shows another person's name) and must never ship. Build a new 1200×630 preview image from the current site's look (P5-14), text limited to name, title and domain. Live `main` is unaffected (its og:image URL 404s today). | Anderson |
 | 2026-10-23 | **No emojis on Blob.** Remove the emoji reactions (the pop above his head and the badge on messages); moods show only through Blob's own expressions (eyes, body, motion). Amends SCOPE §2 G2 and §4 (emoji rows/reactions) and supersedes "emoji moods" in the 2026-10-12 row. Built in P5-04b. | Anderson |
