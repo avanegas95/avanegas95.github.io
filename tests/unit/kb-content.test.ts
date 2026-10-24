@@ -281,7 +281,9 @@ function d10Violations(experience: string): string[] {
     .map((l) => `present tense: ${l.trim()}`);
 }
 
-const D11_RE = /\b(?:Jenkins|Buildkite|Node-RED|Zephyr)\b/i;
+// Jenkins, Buildkite and Zephyr are in the resume skills list (resume sync,
+// P5.5-17), so only Node-RED stays out.
+const D11_RE = /\bNode-RED\b/i;
 
 function d12Violations(builtKb: string, qaPulseExists: boolean): string[] {
   return !qaPulseExists && /QA Pulse/i.test(builtKb) ? ["QA Pulse"] : [];
@@ -585,7 +587,7 @@ describe("kb content", () => {
     expect(D11_RE.exec(built)).toBeNull();
   });
   it("D-11 (matcher self-test)", () => {
-    for (const w of ["Jenkins", "Buildkite", "Node-RED", "Zephyr"]) {
+    for (const w of ["Node-RED"]) {
       expect(D11_RE.test(`CI with ${w}.`), w).toBe(true);
     }
     expect(D11_RE.test("CI/CD pipelines")).toBe(false);

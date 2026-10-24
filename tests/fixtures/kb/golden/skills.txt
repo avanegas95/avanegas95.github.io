@@ -2,36 +2,43 @@
 
 Test automation (Pytest, Appium, Selenium), Python and TypeScript, AI-assisted development, and fluent English and Spanish.
 
-### Testing and automation
+### Testing and Automation
 
 - Pytest
 - Appium
 - Selenium
 - X-Ray
 - TestRail
+- Zephyr
+- Buildkite
+- Jenkins
 
-### Programming languages
+### Programming Languages
 
 - Python
 - TypeScript
-- C, C++ and C#
+- C
+- C++
+- C#
 - ASP.NET
-- HTML and CSS
+- HTML
+- CSS
+- Bash
 
-### Developer tools
+### Developer Tools
 
 - Git
-- VS Code
+- VSCode
 - Cursor
-- Android emulation
+- Android Emulation
 
 ### Programs
 
 - Jira
 - Confluence
-- Microsoft Office and Google tools
+- Microsoft Office/Google tools
 
-### AI-assisted development
+### AI-Assisted Development
 
 - Claude Code
 - Copilot
@@ -39,14 +46,14 @@ Test automation (Pytest, Appium, Selenium), Python and TypeScript, AI-assisted d
 - CodeRabbit
 - MCP tools
 
-### Operating systems
+### Operating Systems
 
 - Windows
 - Ubuntu
 - macOS
-- Android and iOS
+- Android/iOS
 
-### Spoken languages
+### Languages
 
-- English (fluent)
-- Spanish (fluent)
+- English (Fluent)
+- Spanish (Fluent)

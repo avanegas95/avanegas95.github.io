@@ -51,7 +51,7 @@ const run = async (args: string[], env: NodeJS.ProcessEnv = {}, tty = true) => {
 
 // Test edits touch a temp copy of the KB and only append markers; they never
 // author prose.
-const BULLET = "Owns triage for nightly Hardware-in-the-Loop";
+const BULLET = "Own triage for nightly Hardware-in-the-Loop";
 const edit = (file: string, from: string, to: string) => {
   const p = join(kb, file);
   const s = readFileSync(p, "utf8");
@@ -62,7 +62,7 @@ const edit = (file: string, from: string, to: string) => {
 describe("voice-lock hashFields", () => {
   it("covers bullets, summaries, bodies and project fields as file#path", () => {
     const keys = Object.keys(hashFields(kb));
-    expect(keys).toContain("experience.md#roles[0].bullets[2]");
+    expect(keys).toContain("experience.md#roles[0].bullets[4]");
     expect(keys).toContain("bio.md#summary");
     expect(keys).toContain("faq.md#body");
     expect(keys).toContain("projects/orbit-hop.md#role");
@@ -138,7 +138,7 @@ describe("voice-lock check / init", () => {
     edit("experience.md", BULLET, `${BULLET} (edited)`);
     const r = await run(["check"]);
     expect(r.code).toBe(1);
-    expect(r.err).toContain("experience.md#roles[0].bullets[2]");
+    expect(r.err).toContain("experience.md#roles[0].bullets[4]");
     expect(r.err.match(/^changed:/gm)).toHaveLength(1);
   });
 
