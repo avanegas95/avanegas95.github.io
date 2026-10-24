@@ -33,8 +33,10 @@ const COMPILE_CACHE = mkdtempSync(join(tmpdir(), "pii-guard-cache-"));
 afterAll(() => rmSync(COMPILE_CACHE, { recursive: true, force: true }));
 
 // Minimal one-page PDF with a single text run (built at runtime, never a committed fixture).
-function textPdf(text: string): Buffer {
-  const stream = `BT /F1 12 Tf 20 100 Td (${text}) Tj ET`;
+function textPdf(...lines: string[]): Buffer {
+  const stream = `BT /F1 12 Tf 14 TL 20 150 Td ${lines
+    .map((l) => `(${l}) Tj T*`)
+    .join(" ")} ET`;
   const objs = [
     "<< /Type /Catalog /Pages 2 0 R >>",
     "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
@@ -117,7 +119,7 @@ describe("pii-guard CLI", () => {
     const r = run(kbRoot({ "bio.md": kbFile("Builds test suites.") }));
     expect(r.code).toBe(0);
     expect(r.stdout).toMatch(
-      /^pii-guard OK files=1 html=1 assets=0 kbChars=\d+ kbEstTokens=\d+ kbSha256=[0-9a-f]{64}$/m,
+      /^pii-guard OK files=1 html=1 assets=0 pdfs=0 kbChars=\d+ kbEstTokens=\d+ kbSha256=[0-9a-f]{64}$/m,
     );
   });
 
@@ -336,6 +338,36 @@ describe("pii-guard CLI", () => {
     const r = run(kbRoot({ "bio.md": kbFile("Clean.") }), { html });
     expect(r.code).toBe(1);
     expect(r.out).toContain("street-address");
+  });
+
+  it.each([
+    ["phone split after a dash", [PHONE.slice(0, 8), PHONE.slice(8)]],
+    [
+      "phone split with area code",
+      [`(${PHONE.slice(0, 3)}) ${PHONE.slice(4, 7)}`, PHONE.slice(7)],
+    ],
+    ["street split from its suffix", [STREET.slice(0, 11), STREET.slice(11)]],
+  ])("a pdf with a %s across lines fails", (_n, lines) => {
+    const html = cleanHtml();
+    writeFileSync(join(html, "r.pdf"), textPdf(...lines));
+    const r = run(kbRoot({ "bio.md": kbFile("Clean.") }), { html });
+    expect(r.code).toBe(1);
+    expect(r.out).toContain("r.pdf");
+  });
+
+  it("a pdf over the byte cap fails closed", () => {
+    const html = cleanHtml();
+    writeFileSync(join(html, "big.pdf"), Buffer.alloc(6 * 1024 * 1024, 32));
+    const r = run(kbRoot({ "bio.md": kbFile("Clean.") }), { html });
+    expect(r.code).toBe(1);
+    expect(r.out).toContain("big.pdf pdf-unreadable");
+  });
+
+  it("the OK line counts pdfs", () => {
+    const html = cleanHtml();
+    writeFileSync(join(html, "r.pdf"), textPdf("Boston Dynamics"));
+    const r = run(kbRoot({ "bio.md": kbFile("Clean.") }), { html });
+    expect(r.stdout).toContain("pdfs=1 ");
   });
 
   it("a pdf with clean text passes", () => {

@@ -210,9 +210,19 @@ async function main(): Promise<number> {
   const pdfFailures: string[] = pdfLinks.map((f) => `${f} pdf-symlink`);
   for (const file of pdfs) {
     try {
-      findings.push(...scanText(await extractPdfText(file), file, HTML_RULES));
-    } catch {
-      pdfFailures.push(`${file} pdf-unreadable`);
+      const text = await extractPdfText(file);
+      // Blank-line joined text for the email rule (single breaks glue an address onto the
+      // line above), single-break text for the rest so values split across lines are joined.
+      findings.push(
+        ...scanText(text.replace(/\n/g, "\n\n"), file, HTML_RULES),
+        ...scanText(
+          text,
+          file,
+          HTML_RULES.filter((r) => r !== "email"),
+        ),
+      );
+    } catch (e) {
+      pdfFailures.push(`${file} pdf-unreadable (${errText(e)})`);
     }
   }
 
@@ -239,7 +249,7 @@ async function main(): Promise<number> {
     return 3;
   }
   console.log(
-    `pii-guard OK files=${sources.length} html=${html.length} assets=${assets.length} kbChars=${kb.length} kbEstTokens=${tokens} kbSha256=${kbSha256(kb)}`,
+    `pii-guard OK files=${sources.length} html=${html.length} assets=${assets.length} pdfs=${pdfs.length} kbChars=${kb.length} kbEstTokens=${tokens} kbSha256=${kbSha256(kb)}`,
   );
   return 0;
 }

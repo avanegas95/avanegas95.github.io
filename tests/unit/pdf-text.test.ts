@@ -16,4 +16,21 @@ describe("extractPdfText", () => {
       extractPdfText("docs/content-intake/resume.md"),
     ).rejects.toThrow();
   });
+
+  const REAL = "public/Anderson_Vanegas_Resume.pdf";
+  it("fails closed over the byte cap", async () => {
+    await expect(extractPdfText(REAL, { maxBytes: 10 })).rejects.toThrow(
+      /bytes/,
+    );
+  });
+
+  it("fails closed over the page cap", async () => {
+    await expect(extractPdfText(REAL, { maxPages: 1 })).rejects.toThrow(
+      /pages/,
+    );
+  });
+
+  it("fails closed on timeout", async () => {
+    await expect(extractPdfText(REAL, { timeoutMs: 0 })).rejects.toThrow(/ms/);
+  });
 });
