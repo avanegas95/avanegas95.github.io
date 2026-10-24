@@ -70,7 +70,7 @@ afterEach(() => {
 });
 
 const kbFile = (body: string, extra = "") =>
-  `---\ntopic: bio\ntitle: About\nsummary: Who he is.\nupdated: 2026-01-01\npublic: true\n${extra}---\n\n${body}\n`;
+  `---\ntopic: bio\ntitle: About\nsummary: Who he is.\nupdated: 2026-01-01\npublic: true\ngreeting: g\nname: n\nheadline: h\nlede: l\nabout: [a]\ntools: [[t]]\n${extra}---\n\n${body}\n`;
 
 function kbRoot(files: Record<string, string>): string {
   const root = tmp();

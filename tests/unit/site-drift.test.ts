@@ -90,7 +90,7 @@ describe("site-drift ratchet (real section components)", () => {
   // seen in review. The ratchet only shrinks: lower a number, never raise it.
   // A component with no hits has no allow file at all.
   const ALLOW_LINES = {
-    Home: 2,
+    Home: 0,
     About: 0,
     Experiences: 0,
     Projects: 0,
