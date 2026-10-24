@@ -29,7 +29,7 @@ Decided 2026-10-23 (Anderson): Blob and the chat backend move into the existing 
 | P5-04a | Blob island port + v1 restyle on `/dev/blob` | designer | sonnet | opus | P5-03a | 3 | wip |
 | P5-05 | CI workflow, Blob bundle gate, legacy E2E, Lighthouse | test-engineer | sonnet | sonnet | P5-02, P5-03a | 3 | wip |
 | P5-07 | KB ↔ v1 site consistency, DISCREPANCIES, `site.md` | researcher | sonnet | sonnet | P5-03a | 3 | merged |
-| P5-04b | Speech-bubble replies replace the panel | designer | sonnet | opus | P5-04a | 4 | wip |
+| P5-04b | Speech-bubble replies replace the panel | designer | sonnet | opus | P5-04a | 4 | merged |
 | P5-06 | Internal evals port (no publishing) | developer | sonnet | opus | P5-03b | 4 | merged |
 | P5-09 | RUNBOOK (public-safe) + header check (N-3) | developer | sonnet | opus | P5-03b, P5-05 | 4 | brief |
 | P5-11 | Footer: drop Spotify iframe, legacy/policy links, computed year, `/orbithop` email-spacing fix | designer | sonnet | sonnet | P5-02, P5-08 | 4 | merged |
@@ -37,8 +37,9 @@ Decided 2026-10-23 (Anderson): Blob and the chat backend move into the existing 
 | P5-12 | Fix super-linear `scrub()` on stray `<` + split PII (DoS risk on chat path); harden load-sensitive test timeouts | developer | opus | opus | P5-03b | 4 | merged |
 | P5-13 | Test follow-ups: scrubber test pinning digit-free obfuscated `tel:` removal (`t<b>e</b>l:abc`, `tel：abc`); decide/handle U+A789 as a colon (pre-existing gap); evals `spendAllowed` "ci" reason tests (CI=true/1 → ci, false/0 → ok); `markdown.test.ts` "linear-ish time" ratio test flakes under load: time CPU (process.cpuUsage) like scrub-perf | developer | sonnet | opus | P5-12 | 4 | todo |
 | P5-14 | New OG preview image from the current site (replaces the inspiration-site leftover), reproducible `og:render` script, leftover scan | designer | sonnet | sonnet | P5-10 (branched from it) | 4 | merged |
-| P5-15 | Blob favicon (SVG + PNG/ICO fallbacks, reproducible render) | designer | sonnet | sonnet | P5-14 (branched from it) | 4 | wip |
-| P5-04c | Mount Blob on `/` in the chosen placement | designer | sonnet | opus | P5-04b, P5-10, P5-11, placement A (decided) | 5 | brief |
+| P5-15 | Blob favicon (SVG + PNG/ICO fallbacks, reproducible render) | designer | sonnet | sonnet | P5-14 (branched from it) | 4 | merged |
+| P5-16 | Project-card tag contrast (#8892b0 on card bg 4.33:1 < 4.5:1; a11y-home axe red) | designer | sonnet | sonnet | P5.5-03 | 4 | wip |
+| P5-04c | Mount Blob on `/` in the chosen placement | designer | sonnet | opus | P5-04b, P5-10, P5-11, P5-16, placement A (decided) | 5 | brief |
 
 Task branches merge into `feat/blob` (the integration branch), not `main`.
 
@@ -159,3 +160,5 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 2026-10-24 · P5-12 · merged (opus APPROVE round 2; output byte-identical on 30k fuzz; scrubber now near-linear). Full unit suite green again: 2,078/2,078; closes the green-suite exception. v3 has the same bug (note for portfolio-v3 if it is ever redeployed). Follow-ups → P5-13.
 2026-10-24 · P5-06 · merged (opus APPROVE; 2,448 tests; eval:dry 52 cases, no API calls; PROMPT_VERSION p5-v1). P5-10 approved, held for P5-14.
 2026-10-24 · P5-10 + P5-14 · merged together (sonnet APPROVE each). New OG image, LICENSE holder Anderson Vanegas, inspiration-site leftovers removed. Unit 2,459/2,459 on rerun; first run had one load flake in markdown.test (→ P5-13). PR #144 fixes LICENSE on main.
+2026-10-24 · P5-15 · merged (sonnet APPROVE; 2,463 tests).
+2026-10-24 · P5-04b · merged (opus APPROVE). Unit 2,465/2,465; chromium E2E 83 pass, 2 fail: a11y-home axe color-contrast on project-card tags, which came in with P5.5-03 (not 04b) → P5-16. Review a11y follow-ups added to the P5-04c brief.
