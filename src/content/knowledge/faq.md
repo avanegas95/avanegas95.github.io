@@ -2,13 +2,13 @@
 topic: faq
 title: Frequently asked questions
 summary: "Answers about contacting Anderson, his resume, testing terms (HIL, Gazebo, Appium, Pytest, test tiers), and what Blob is, is not, and remembers."
-updated: 2026-10-13
+updated: 2026-10-24
 public: true
 ---
 
 ### How can I contact Anderson?
 
-Anderson can be reached by email at avanegas95@gmail.com, on LinkedIn at https://www.linkedin.com/in/avanegas95, or on GitHub at https://github.com/avanegas95. There is no contact form on this site yet, so those three are the ways to say hello.
+Anderson can be reached by email at avanegas95@gmail.com, on LinkedIn at https://www.linkedin.com/in/avanegas95, or on GitHub at https://github.com/avanegas95. There is a contact form on the site (Formspree), and messages go to his email.
 
 ### Where can I find Anderson's resume?
 
@@ -45,3 +45,15 @@ Blob is not Anderson, and it does not speak for him in the first person. It cann
 ### Does Blob remember or store my questions?
 
 Blob does not log the text of your questions, and the chat can be cleared. Within one chat, Blob does use your earlier messages to follow the conversation. The site only keeps aggregate numbers such as how many questions were asked, how fast replies were, and error counts.
+
+### Why did you build Blob? Anything you want visitors to take away?
+
+I wanted people who visit to see another form of delivering my content. Instead of sifting through a bunch of text or using "CTRL + F" to find keywords, they can just ask about something specific. I want people to see what is possible to make and do and you can have fun with it and still have a human touch.
+
+### Any topics Blob should always decline, even if they seem harmless?
+
+Politics, world views, anything controversial, or inappropriate. Basically I believe the rule is anything you wouldn't bring up at work. I want to be professional, and I am.
+
+### Should Blob tell jokes about you? Anything off-limits?
+
+Yes blob can make little jokes and quips about me. I love to laugh at myself, I don't mind being the butt of jokes and having people laugh with me.

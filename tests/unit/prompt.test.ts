@@ -41,7 +41,7 @@ describe("buildSystemPrompt", () => {
     expect(p).toContain("<mood>");
     expect(p).toContain("<knowledge_base>\n");
     expect(p).toContain("\n</knowledge_base>");
-    expect(PROMPT_VERSION).toBe("p5-v1");
+    expect(PROMPT_VERSION).toBe("p5-v2");
     expect(p).toContain("confused for off-topic or unknown questions");
     expect(p).toContain("curious for open-ended or clarifying questions");
     expect(p).not.toContain("when a question is unclear");
@@ -82,20 +82,19 @@ describe("buildSystemPrompt", () => {
   });
 });
 
-describe("p5-v1 behaviour rules", () => {
+describe("p5-v2 behaviour rules", () => {
   const behaviour = () =>
     buildSystemPrompt(realKb()).split("<knowledge_base>")[0]!;
 
-  it("is version p5-v1", () => {
-    expect(PROMPT_VERSION).toBe("p5-v1");
+  it("is version p5-v2", () => {
+    expect(PROMPT_VERSION).toBe("p5-v2");
   });
 
-  it("points to #contact and forbids the contact form", () => {
-    // Behaviour text only: the KB (faq.md) legitimately says "no contact form".
+  it("points to #contact and allows the contact form (D-13 resolved)", () => {
     const b = behaviour();
-    expect(b).not.toMatch(/contact form on this site|or the contact form/i);
     expect(b).toContain("#contact");
-    expect(b).toMatch(/never mention or offer a contact form/i);
+    expect(b).toMatch(/or the contact form in this page's contact section/i);
+    expect(b).not.toMatch(/never mention or offer a contact form/i);
   });
 
   it("has the no-echo rule", () => {
