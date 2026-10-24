@@ -82,7 +82,7 @@ Scope: `docs/tasks/P5.5/_proposal.md`; table: `_proposed-plan.md`; Anderson's to
 | P5.5-13a | Shared KB schema, per-file golden prompt, `site-copy.md` template | opus | opus | P5 gate, 08a, 15 | 2 | merged |
 | P5.5-16 | Import about-me answers (hybrid, see decision log): short answers become fact lists in Anderson's words, narrative answers are flagged for him to rewrite, `(private)` items skipped; Anderson approves the KB diff | sonnet | opus | 13a, Anderson's answers | 3 | merged (round 1) |
 | P5.5-17 | Sync KB career facts (experience, skills, projects, education) to resume.md verbatim; resume wins; report what changed | sonnet | opus | P5.5-05 merged, P5.5-16b | 4 | todo |
-| P5.5-18 | Dependency upgrades on feat/blob: eslint 10 + eslint-plugin-astro 2 (flat config), @types/node matched to Node 24 | sonnet | sonnet | — | 4 | wip |
+| P5.5-18 | Dependency upgrades on feat/blob: eslint 10 + eslint-plugin-astro 3 (flat config), @types/node matched to Node 24 | sonnet | sonnet | — | 4 | merged |
 | P5.5-13c | Voice lock, `facts:check`, drift ratchet | sonnet | opus | 13a, H3 ✓ | 3 | merged |
 | P5.5-05 | Experience from KB roles | sonnet | sonnet | 13a, 13c, H2 | 4 | merged |
 | P5.5-06 | Contact polish + Formspree E2E | sonnet | sonnet | 13a, 13c | 4 | merged |
@@ -113,6 +113,7 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 ## Decision log
 | Date | Decision | By |
 |---|---|---|
+| 2026-10-24 | Blob's FAQ states the contact form plainly: there is a contact form on the site (Formspree), and messages go to his email. | Anderson |
 | 2026-10-24 | H4 changes: Anderson edits site copy directly where it renders (Home.astro hero, About.astro, src/data/projects.ts, and the KB for experience and contact), previewing with `npm run dev`. `docs/content-intake/site-copy.md` is retired. P5.5-04 and P5.5-13b move his edited text verbatim into the KB after he signals he's done. | Anderson |
 | 2026-10-24 | D-12: Anderson built Orbit Hop solo, with the assistance of AI. D-13: the site keeps its Formspree contact form, which emails him. Both go into the KB in his words (P5.5-16b). | Anderson |
 | 2026-10-24 | Dependabot PRs #136–#140 on `main` closed. #137 (astro) and #139 (prettier) were superseded by newer versions on feat/blob. The remaining major upgrades (eslint 10, eslint-plugin-astro 2, @types/node matched to Node 24) happen on feat/blob as P5.5-18. | Anderson (delegated) |
@@ -195,3 +196,4 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 2026-10-24 · P5.5-06 · merged (sonnet APPROVE; labels, solid Send, KB location; Formspree mocked; 2,636 tests). Placeholders reworded (UI microcopy, not Anderson's prose).
 2026-10-24 · main merged into feat/blob (PRs #143, #144; kept feat/blob's LICENSE and resume PDF).
 2026-10-24 · P5.5-05 · merged (sonnet APPROVE; Lighthouse / 0.98; 2,636 tests, chromium E2E 23/23). Removed the duplicate site-drift helper left by the 05/06 merge.
+2026-10-24 · P5.5-18 · merged (sonnet APPROVE; lint still covers .astro and tests/ under ESLint 10; 2,636 tests). Orchestrator now merges in a separate worktree so Anderson's checkout and dev server aren't disturbed.
