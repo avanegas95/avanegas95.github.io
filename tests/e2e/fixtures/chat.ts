@@ -2,7 +2,7 @@
 // stream SSE incrementally, and guarantee no real third-party API is ever reached
 // (CLAUDE.md rules 4 and 5). Product code is untouched: nothing here bypasses BotID in src/.
 import { readFileSync } from "node:fs";
-import type { Page } from "@playwright/test";
+import type { BrowserContext, Page } from "@playwright/test";
 import type {
   ChatEvent,
   ErrorBody,
@@ -29,7 +29,7 @@ export function sse(events: SseFixture): string {
 
 // Serves the stand-in challenge script. The page's BotID client then resolves its challenge
 // without a network round trip to api.vercel.com. Call before navigating.
-export async function stubBotId(page: Page): Promise<void> {
+export async function stubBotId(page: Page | BrowserContext): Promise<void> {
   await page.route(BOTID_C_JS, (route) =>
     route.fulfill({
       status: 200,
