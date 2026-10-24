@@ -80,7 +80,7 @@ Scope: `docs/tasks/P5.5/_proposal.md`; table: `_proposed-plan.md`; Anderson's to
 | P5.5-08a | Land `origin/blog-posts` (only "What this blog is about" published) | sonnet | sonnet | H1 ✓ | 0 | merged |
 | P5.5-15 | Rename Finance Forecast → Paychira | haiku | sonnet | P5-06, P5-07 | 1 | merged |
 | P5.5-13a | Shared KB schema, per-file golden prompt, `site-copy.md` template | opus | opus | P5 gate, 08a, 15 | 2 | wip |
-| P5.5-16 | Import Anderson's about-me answers verbatim into the KB (interests/faq/bio), skip `(private)` items, flag gaps; Anderson approves the KB diff | sonnet | opus | 13a, Anderson's answers | 3 | todo |
+| P5.5-16 | Import about-me answers (hybrid, see decision log): short answers become fact lists in Anderson's words, narrative answers are flagged for him to rewrite, `(private)` items skipped; Anderson approves the KB diff | sonnet | opus | 13a, Anderson's answers | 3 | todo |
 | P5.5-13c | Voice lock, `facts:check`, drift ratchet | sonnet | opus | 13a, H3 | 3 | brief |
 | P5.5-05 | Experience from KB roles | sonnet | sonnet | 13a, 13c, H2 | 4 | brief |
 | P5.5-06 | Contact polish + Formspree E2E | sonnet | sonnet | 13a, 13c | 4 | brief |
@@ -111,6 +111,7 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 ## Decision log
 | Date | Decision | By |
 |---|---|---|
+| 2026-10-24 | About-me answers (P5.5-16) use a hybrid: short factual answers (favorites, hobbies, quick facts) become tidy fact lists built only from Anderson's own words, with no new phrasing. Longer narrative answers (career story, working with you, about Blob) are not imported; they are flagged by question number with what's unclear, for Anderson to rewrite. Anderson approves the KB diff. This is a scoped exception to the voice lock, limited to fact lists in Blob's KB. | Anderson |
 | 2026-10-24 | D-14 confirmed: title is Staff SQA Engineer. Hero/KB tool list follows the resume: drop "Linux" (Bash stays, under languages). H3 reaffirmed: every prose field is Anderson's and voice-locked unless he says otherwise for a specific field. | Anderson |
 | 2026-10-24 | The resume PDF stays indexable by search engines (no noindex / X-Robots-Tag). | Anderson |
 | 2026-10-24 | Serve Anderson's updated, public-safe resume PDF at the existing resume URL instead of the LinkedIn 302, once he supplies the final export. Amend CLAUDE.md rule 7 and D-06, and extend guard:pii to extract and scan PDF text so no phone or street address can ship (task P5-17). | Anderson |
