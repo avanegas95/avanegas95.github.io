@@ -68,3 +68,13 @@ Patient and understanding. There's a human aspect to it. We are all people and e
 ### How do you like to collaborate with developers and product folks?
 
 I love to learn a little bit about them and genuinely get interested in their interests and chat with them about that when I see them. However when it comes to work I directly reach out to them, with the question in the same "Hey! I had a question about..." so as to not beat around the bush and eat up their time. I have a problem, they have a solution but sometimes not a bunch of time.
+
+### What was your first tech job or first program you wrote?
+
+First tech job was there at SharkNinja in my SQA Engineer role. I did a lot of work in terms of running, executing scripts, working with devs to make test methods with all the different sensors.
+
+At Boston Dynamics is where I wrote my first script from scratch to be used in work and testing: Monitor the robots memory while running. It was so cool to see it evolve over time: grab the info and show it to the user, now save it all to CSV, now add more processes. And then being able to share it with the team to help debug issues.
+
+### Who or what inspired you professionally?
+
+At SharkNinja I met a really great coworker. He was one of the hardest working people I ever met. He was always quick to help, super intelligent, and always pushed me to become a better version of myself both inside and outside of work. He knew when to be serious and work, but also when to be silly and genuinely wanted to see you improve. He's someone I try and emulate and I aim to be that for others.

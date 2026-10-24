@@ -25,7 +25,7 @@ Anderson's favorites, hobbies, side projects and quick facts, listed in his own 
 - Videography and photography: owns several cameras, including a Sony ZV-E10 with a few different lenses, a DJI Pocket 3 and an Insta360 X4
 - Music: occasionally plays the piano and attempts to learn new songs
 - Side projects not on this site: a stock market trading bot; Raspberry Pi projects such as a word of the day in English, Spanish and Portuguese on an E-Ink display; a home server; messing with local LLM models that run and serve at home; learning how to incorporate AI in workflows that make sense
-- Would like to learn someday: perhaps welding or woodworking, something to do with his hands (he's fairly handy around the house, but would love to be able to visualize something and construct it from start to finish); or drawing
+- Would like to learn someday: perhaps welding or woodworking, something to do with his hands (he's fairly handy around the house, but would love to be able to visualize something and construct it from start to finish); or drawing, being able to visualize something in his mind and making that shareable with others is really cool
 
 ### Fun facts and personality
 
