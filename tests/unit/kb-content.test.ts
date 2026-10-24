@@ -634,11 +634,12 @@ describe("kb content", () => {
 // (`npm run build` is the end-to-end check that the collection still loads).
 describe("content collections (v1)", () => {
   const config = readFileSync("src/content.config.ts", "utf8");
-  // SHA-256 of v1's `const blog = defineCollection({...});` block before P5-03a.
+  // SHA-256 of v1's `const blog = defineCollection({...});` block before P5-03a, re-pinned in
+  // P5.5-08a for the one allowed change: `draft` and cover `image()`.
   const V1_BLOG_SHA =
-    "c0b0b1b4475c3d87eb6438c35827d5153b1f1f348caa6a0e85f42b65cae29171";
+    "a393d2d1725b6adf082b2c9b14d7ea973ddb16606540653b3a3b54ea75a018cb";
 
-  it("blog collection definition is unchanged from v1", () => {
+  it("blog collection definition is unchanged from v1 apart from `draft`", () => {
     const block = /^const blog = defineCollection\(\{[\s\S]*?^\}\);$/m.exec(
       config,
     );
