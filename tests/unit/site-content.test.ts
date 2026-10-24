@@ -51,7 +51,7 @@ describe("site-content", () => {
     ).toEqual([
       "Boston Dynamics|Staff SQA Engineer|2026-03|null",
       "Boston Dynamics|Senior SQA Engineer|2023-09|2026-03",
-      "SharkNinja|SQA Engineer I/II|2019-11|2023-09",
+      "SharkNinja|SQA Engineer I/II|2022-04|2023-09",
     ]);
   });
 

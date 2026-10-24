@@ -58,7 +58,7 @@ test("every site card shows its title and date range, and the Staff card says Ma
   ).toHaveCount(1);
 });
 
-test("SharkNinja SQA I and II are one card: SQA Engineer I/II, November 2019 – September 2023, one photo and logo", async ({
+test("SharkNinja SQA I and II are one card: SQA Engineer I/II with the KB dates, one photo and logo", async ({
   page,
 }) => {
   await page.goto("/");
@@ -71,9 +71,13 @@ test("SharkNinja SQA I and II are one card: SQA Engineer I/II, November 2019 –
     }),
   });
   await expect(card).toHaveCount(1);
+  const sqa = roles.find((r) => r.title === "SQA Engineer I/II");
+  if (!sqa?.end) throw new Error("SQA I/II card missing from the KB");
+  // Dates come from the visible roles of the group (a hidden member adds none).
   await expect(card.locator(".experience-card__dates")).toHaveText(
-    "November 2019 – September 2023",
+    `${monthYear(sqa.start)} – ${monthYear(sqa.end)}`,
   );
+  await expect(card.locator("li")).toHaveCount(sqa.bullets.length);
   await expect(card.locator(".experience-card__company")).toHaveText(
     "SharkNinja",
   );
