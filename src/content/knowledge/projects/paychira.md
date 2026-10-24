@@ -1,6 +1,6 @@
 ---
 topic: project
-title: Finance Forecast
+title: Paychira
 summary: A full-stack sales-forecasting SaaS for small agencies, developed for Datalily with AI tools and deployed on Vercel, Render and Supabase.
 updated: 2026-10-13
 public: true
@@ -11,7 +11,7 @@ order: 2
 
 ### What it does
 
-Finance Forecast is a sales-forecasting tool for small agencies. Anderson used AI tools to design, build and deploy it. It tracks deals and turns them into revenue forecasts, so agencies can see what the pipeline is likely to bring in.
+Paychira is a sales-forecasting tool for small agencies. Anderson used AI tools to design, build and deploy it. It tracks deals and turns them into revenue forecasts, so agencies can see what the pipeline is likely to bring in.
 
 ### Highlights
 
