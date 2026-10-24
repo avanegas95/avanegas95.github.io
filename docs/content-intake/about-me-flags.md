@@ -9,14 +9,6 @@ These answers are clear and not flagged:
 - Q31: What do you love most about QA?
 - Q34: A testing hot take or opinion you'll defend
 
-## Names to check
-
-Blob repeats names as written. The spelling of these may be off (for example Noah Kahan, Orbiter):
-
-- "Oribter by Noah Khan"
-- "Capaz by Alleh"
-- "Don't Matter by Akon"
-
 ## Q29: How did you get into QA and testing?
 
 1. "started off in Shark as a Product Developer": the resume and KB list the first SharkNinja role as Product Development Intern (April to November 2019). It is unclear whether "Product Developer" is the same role.
