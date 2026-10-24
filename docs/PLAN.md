@@ -40,6 +40,7 @@ Decided 2026-10-23 (Anderson): Blob and the chat backend move into the existing 
 | P5-15 | Blob favicon (SVG + PNG/ICO fallbacks, reproducible render) | designer | sonnet | sonnet | P5-14 (branched from it) | 4 | merged |
 | P5-16 | Project-card tag contrast (#8892b0 on card bg 4.33:1 < 4.5:1; a11y-home axe red) | designer | sonnet | sonnet | P5.5-03 | 4 | merged |
 | P5-17 | Serve the new public-safe resume PDF at the resume URL; guard:pii scans PDF text; amend rule 7 / D-06; update resume E2E | developer | sonnet | opus | Anderson's final PDF ✓ | 4 | wip |
+| P5-18 | Gate fixes: check-headers handles the proxied BotID path (only HSTS applies there); stop docs-only pushes cancelling CI runs | developer | sonnet | sonnet | P5-09 | 4 | wip |
 | P5-04c | Mount Blob on `/` in the chosen placement | designer | sonnet | opus | P5-04b, P5-10, P5-11, P5-16, placement A (decided) | 5 | merged |
 
 Task branches merge into `feat/blob` (the integration branch), not `main`.
@@ -170,3 +171,4 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 2026-10-24 · P5-13 · merged (opus APPROVE; U+A789 left as-is, sound: tel: links never render). Minor: markdown fence-path unit sits on the CPU floor; comment/reps tweak optional.
 2026-10-24 · P5-09 · merged (opus APPROVE round 2; RUNBOOK error table verified against code). Still to do at the gate: run check-headers against the Preview (needs the Preview bypass token in the shell).
 2026-10-24 · P5-04c · merged (opus APPROVE round 2; unit 2,495, chromium E2E 94/94; Blob island 8.5 KB gz; LCP +0.13 s accepted). All P5 tasks merged → phase gate.
+2026-10-24 · P5 GATE run 1 (opus test-engineer, feat/blob @ 02f5959): 7/8 PASS. Preview Ready and serves the full site with Blob; legacy URLs 200; live chat smoke 200 SSE (~$0.0013); CI green on 4f8a2cb (unit 2,495, E2E 282 across 3 browsers, Lighthouse asserts); local Lighthouse mobile ≥0.98, desktop 1.0; island 8.5 KB gz; RUNBOOK + spend alert in place. FAIL: check-headers on the BotID path (proxied to Vercel, only HSTS applied) → P5-18. Re-run criteria 2–3 after P5-17 and P5-18. Notes: Preview Lighthouse BP 0.93 from Vercel toolbar vs CSP (Preview-only); Preview shares the prod Upstash DB (P6).
