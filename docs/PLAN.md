@@ -110,6 +110,7 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 ## Decision log
 | Date | Decision | By |
 |---|---|---|
+| 2026-10-24 | The resume PDF stays indexable by search engines (no noindex / X-Robots-Tag). | Anderson |
 | 2026-10-24 | Serve Anderson's updated, public-safe resume PDF at the existing resume URL instead of the LinkedIn 302, once he supplies the final export. Amend CLAUDE.md rule 7 and D-06, and extend guard:pii to extract and scan PDF text so no phone or street address can ship (task P5-17). | Anderson |
 | 2026-10-24 | Anderson's updated resume (kept outside the repo) now has no street address or phone, says Paychira and Staff, and lists Zephyr, Buildkite, Jenkins and Bash. That settles D-11: the hero's tool list matches the resume. | Anderson |
 | 2026-10-24 | Phase gate may run the chat smoke test against the Vercel Preview with `--spend` (a few messages, under $0.01). Anderson provides the Preview bypass token via the shell as `VERCEL_AUTOMATION_BYPASS_SECRET`; it is never written to the repo or chat. | Anderson |
