@@ -33,10 +33,10 @@ Decided 2026-10-23 (Anderson): Blob and the chat backend move into the existing 
 | P5-06 | Internal evals port (no publishing) | developer | sonnet | opus | P5-03b | 4 | merged |
 | P5-09 | RUNBOOK (public-safe) + header check (N-3) | developer | sonnet | opus | P5-03b, P5-05 | 4 | brief |
 | P5-11 | Footer: drop Spotify iframe, legacy/policy links, computed year, `/orbithop` email-spacing fix | designer | sonnet | sonnet | P5-02, P5-08 | 4 | merged |
-| P5-10 | Meta: real `og:image`, KB title/description, Person JSON-LD | developer | sonnet | sonnet | P5-05, P5-07 | 4 | review (merge only together with P5-14) |
+| P5-10 | Meta: real `og:image`, KB title/description, Person JSON-LD | developer | sonnet | sonnet | P5-05, P5-07 | 4 | merged |
 | P5-12 | Fix super-linear `scrub()` on stray `<` + split PII (DoS risk on chat path); harden load-sensitive test timeouts | developer | opus | opus | P5-03b | 4 | merged |
-| P5-13 | Test follow-ups: scrubber test pinning digit-free obfuscated `tel:` removal (`t<b>e</b>l:abc`, `tel：abc`); decide/handle U+A789 as a colon (pre-existing gap); evals `spendAllowed` "ci" reason tests (CI=true/1 → ci, false/0 → ok) | developer | sonnet | opus | P5-12 | 4 | todo |
-| P5-14 | New OG preview image from the current site (replaces the inspiration-site leftover), reproducible `og:render` script, leftover scan | designer | sonnet | sonnet | P5-10 (branched from it) | 4 | wip |
+| P5-13 | Test follow-ups: scrubber test pinning digit-free obfuscated `tel:` removal (`t<b>e</b>l:abc`, `tel：abc`); decide/handle U+A789 as a colon (pre-existing gap); evals `spendAllowed` "ci" reason tests (CI=true/1 → ci, false/0 → ok); `markdown.test.ts` "linear-ish time" ratio test flakes under load: time CPU (process.cpuUsage) like scrub-perf | developer | sonnet | opus | P5-12 | 4 | todo |
+| P5-14 | New OG preview image from the current site (replaces the inspiration-site leftover), reproducible `og:render` script, leftover scan | designer | sonnet | sonnet | P5-10 (branched from it) | 4 | merged |
 | P5-15 | Blob favicon (SVG + PNG/ICO fallbacks, reproducible render) | designer | sonnet | sonnet | P5-14 (branched from it) | 4 | wip |
 | P5-04c | Mount Blob on `/` in the chosen placement | designer | sonnet | opus | P5-04b, P5-10, P5-11, placement A (decided) | 5 | brief |
 
@@ -158,3 +158,4 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 2026-10-24 · P5-04a, P5-05, P5-11 · merged together (opus/sonnet/sonnet APPROVE). Lint, build, bundle gate, guard:pii green; unit 1998/2001, the 3 failures are timeouts only in scrub.test/pii-guard-cli.test, also failing on the base and owned by open P5-12 (load avg 65–110). Exception to the green-suite rule approved by Anderson; P5-12 must restore green.
 2026-10-24 · P5-12 · merged (opus APPROVE round 2; output byte-identical on 30k fuzz; scrubber now near-linear). Full unit suite green again: 2,078/2,078; closes the green-suite exception. v3 has the same bug (note for portfolio-v3 if it is ever redeployed). Follow-ups → P5-13.
 2026-10-24 · P5-06 · merged (opus APPROVE; 2,448 tests; eval:dry 52 cases, no API calls; PROMPT_VERSION p5-v1). P5-10 approved, held for P5-14.
+2026-10-24 · P5-10 + P5-14 · merged together (sonnet APPROVE each). New OG image, LICENSE holder Anderson Vanegas, inspiration-site leftovers removed. Unit 2,459/2,459 on rerun; first run had one load flake in markdown.test (→ P5-13). PR #144 fixes LICENSE on main.
