@@ -80,7 +80,7 @@ Scope: `docs/tasks/P5.5/_proposal.md`; table: `_proposed-plan.md`; Anderson's to
 | P5.5-08a | Land `origin/blog-posts` (only "What this blog is about" published) | sonnet | sonnet | H1 ✓ | 0 | merged |
 | P5.5-15 | Rename Finance Forecast → Paychira | haiku | sonnet | P5-06, P5-07 | 1 | merged |
 | P5.5-13a | Shared KB schema, per-file golden prompt, `site-copy.md` template | opus | opus | P5 gate, 08a, 15 | 2 | merged |
-| P5.5-16 | Import about-me answers (hybrid, see decision log): short answers become fact lists in Anderson's words, narrative answers are flagged for him to rewrite, `(private)` items skipped; Anderson approves the KB diff | sonnet | opus | 13a, Anderson's answers | 3 | wip |
+| P5.5-16 | Import about-me answers (hybrid, see decision log): short answers become fact lists in Anderson's words, narrative answers are flagged for him to rewrite, `(private)` items skipped; Anderson approves the KB diff | sonnet | opus | 13a, Anderson's answers | 3 | merged (round 1) |
 | P5.5-13c | Voice lock, `facts:check`, drift ratchet | sonnet | opus | 13a, H3 ✓ | 3 | wip |
 | P5.5-05 | Experience from KB roles | sonnet | sonnet | 13a, 13c, H2 | 4 | brief |
 | P5.5-06 | Contact polish + Formspree E2E | sonnet | sonnet | 13a, 13c | 4 | brief |
@@ -184,3 +184,4 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 2026-10-24 · P5.5-08a · merged (sonnet APPROVE round 2): only "What this blog is about" published; covers via astro:assets (AVIF/WebP); no draft content or images shipped; blog Lighthouse mobile 1.0. Unit 2,520, chromium E2E 102/102. P5.5-13a dispatched.
 2026-10-24 · P5-14 · Anderson approved the merged OG image (public/images/og.image.png).
 2026-10-24 · P5.5-13a · merged (opus APPROVE; system prompt byte-identical on base vs branch, sha edf0b9e4…; 2,559 tests). Review follow-ups added to the 13b and 13c briefs. 13c and P5.5-16 dispatched.
+2026-10-24 · P5.5-16 · round 1 merged (opus review + Anderson approval in chat; only the interests golden changed; 2,559 tests). Sections 4–6: 11 spots flagged in docs/content-intake/about-me-flags.md, plus Q31/Q34 ready to import; round 2 after Anderson finishes. P5.5-13c must rebase and regenerate voice.lock.json so it includes interests.md.
