@@ -1,4 +1,4 @@
-import { readFileSync, readdirSync, statSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { extname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
@@ -69,6 +69,14 @@ describe("og image", () => {
         if (/oscar|hernandez/i.test(readFileSync(file, "utf8")))
           hits.push(file);
       }
+    }
+    for (const rel of ["LICENSE", "README.md", "package.json"]) {
+      const file = join(root, rel);
+      if (
+        existsSync(file) &&
+        /oscar|hernandez/i.test(readFileSync(file, "utf8"))
+      )
+        hits.push(file);
     }
     expect(hits).toEqual([]);
   });
