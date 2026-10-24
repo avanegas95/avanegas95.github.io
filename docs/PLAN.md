@@ -111,6 +111,7 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 ## Decision log
 | Date | Decision | By |
 |---|---|---|
+| 2026-10-24 | Blob's KB may mention Anderson's wife, family (mom, his wife's family, kids), side projects (trading bot, home server, local LLMs) and an age hint. The privacy rule now bans only family members' *names* (plus phone, street address, exact birthday). Personality framing he wrote (e.g. "cute, adorable") is kept, so Blob doesn't sound robotic. Song and artist names stay as he wrote them. Anderson approves the P5.5-16 interests facts with these restored. | Anderson |
 | 2026-10-24 | About-me answers (P5.5-16) use a hybrid: short factual answers (favorites, hobbies, quick facts) become tidy fact lists built only from Anderson's own words, with no new phrasing. Longer narrative answers (career story, working with you, about Blob) are not imported; they are flagged by question number with what's unclear, for Anderson to rewrite. Anderson approves the KB diff. This is a scoped exception to the voice lock, limited to fact lists in Blob's KB. | Anderson |
 | 2026-10-24 | D-14 confirmed: title is Staff SQA Engineer. Hero/KB tool list follows the resume: drop "Linux" (Bash stays, under languages). H3 reaffirmed: every prose field is Anderson's and voice-locked unless he says otherwise for a specific field. | Anderson |
 | 2026-10-24 | The resume PDF stays indexable by search engines (no noindex / X-Robots-Tag). | Anderson |
