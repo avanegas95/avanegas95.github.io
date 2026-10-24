@@ -1,6 +1,13 @@
 ---
 import "@/styles/global.css";
 import favicon from "@/assets/images/favicon.png";
+import { getEntry } from "astro:content";
+import {
+  currentRoleFromSummary,
+  kbLink,
+  personJsonLd,
+  serializeJsonLd,
+} from "@/lib/seo";
 
 interface Props {
   title: string;
@@ -11,15 +18,45 @@ interface Props {
 }
 
 const DEFAULT_OG_IMAGE = "https://avanegas.com/images/og.image.png";
+// Real pixel size of public/images/og.image.png.
+const OG_IMAGE_WIDTH = 1200;
+const OG_IMAGE_HEIGHT = 630;
+const SITE_NAME = "Anderson Vanegas";
 
-const { title, description, canonicalUrl, ogType = "website", ogImage } =
-  Astro.props;
+const {
+  title,
+  description,
+  canonicalUrl,
+  ogType = "website",
+  ogImage,
+} = Astro.props;
 const site = Astro.site ?? new URL("https://avanegas.com");
-const metaDescription =
-  description ?? "Anderson Vanegas - SQA Engineer | Automation Engineer";
+const bio = await getEntry("knowledge", "bio");
+const contact = await getEntry("knowledge", "contact");
+const metaDescription = description ?? bio?.data.summary ?? "";
 const resolvedCanonical =
   canonicalUrl ?? new URL(Astro.url.pathname, site).href;
 const socialImage = ogImage ?? DEFAULT_OG_IMAGE;
+
+// Person JSON-LD renders on the home page only, built from KB facts.
+const role = currentRoleFromSummary(bio?.data.summary ?? "");
+const contactBody = contact?.body ?? "";
+const linkedIn = kbLink(contactBody, "LinkedIn");
+const gitHub = kbLink(contactBody, "GitHub");
+const email = kbLink(contactBody, "Email")?.replace(/^mailto:/, "");
+const personLd =
+  Astro.url.pathname === "/" && role && email
+    ? serializeJsonLd(
+        personJsonLd({
+          name: SITE_NAME,
+          jobTitle: role.title,
+          worksFor: role.employer,
+          url: new URL("/", site).href,
+          email,
+          sameAs: [linkedIn, gitHub].filter((v): v is string => !!v),
+        }),
+      )
+    : null;
 ---
 
 <!doctype html>
@@ -33,6 +70,9 @@ const socialImage = ogImage ?? DEFAULT_OG_IMAGE;
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <meta property="og:image" content={socialImage} />
+    <meta property="og:image:width" content={String(OG_IMAGE_WIDTH)} />
+    <meta property="og:image:height" content={String(OG_IMAGE_HEIGHT)} />
+    <meta property="og:site_name" content={SITE_NAME} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={metaDescription} />
     <meta property="og:url" content={resolvedCanonical} />
@@ -42,12 +82,15 @@ const socialImage = ogImage ?? DEFAULT_OG_IMAGE;
     <meta name="twitter:description" content={metaDescription} />
     <meta name="twitter:image" content={socialImage} />
 
+    {personLd && (
+      <script type="application/ld+json" is:inline set:html={personLd} />
+    )}
+
     <script is:inline>
       if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
         document.documentElement.classList.add("has-fade-in");
       }
     </script>
-
     <script is:inline type="speculationrules">
       {
         "prerender": [
@@ -70,10 +113,10 @@ const socialImage = ogImage ?? DEFAULT_OG_IMAGE;
       }
     </script>
   </head>
-  <body
-    class="bg-[var(--background)] px-4 sm:px-6 md:px-8 lg:px-12 xl:px-24 pb-20 md:pb-0"
-  >
-    <a href="#main-content" class="skip-link">Skip to main content</a>
+  <body class="bg-[var(--background)] px-4 sm:px-6 md:px-8 lg:px-12 xl:px-24 pb-20 md:pb-0">
+    <a href="#main-content" class="skip-link">
+      Skip to main content
+    </a>
     <slot />
   </body>
 </html>

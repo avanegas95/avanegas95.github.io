@@ -1,5 +1,7 @@
 ---
+import { getEntry } from "astro:content";
 import Layout from "@/layouts/Layout.astro";
+import { currentRoleFromSummary } from "@/lib/seo";
 import Nav from "@/components/sections/Nav.astro";
 import Home from "@/components/sections/Home.astro";
 import Experiences from "@/components/sections/Experiences.astro";
@@ -9,9 +11,12 @@ import Footer from "@/components/sections/Footer.astro";
 
 const site = Astro.site ?? new URL("https://avanegas.com");
 const canonicalUrl = new URL("/", site).href;
+const bio = await getEntry("knowledge", "bio");
+const role = currentRoleFromSummary(bio?.data.summary ?? "");
+const title = role ? `Anderson Vanegas | ${role.title}` : "Anderson Vanegas";
 ---
 
-<Layout title="Anderson Vanegas" canonicalUrl={canonicalUrl}>
+<Layout {title} canonicalUrl={canonicalUrl}>
   <Nav />
   <main id="main-content">
     <Home />

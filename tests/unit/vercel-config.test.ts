@@ -282,6 +282,21 @@ function builtHtmlFiles(dir: string): string[] {
     return full.endsWith(".html") ? [full] : [];
   });
 }
+// JSON-LD is a non-executable data block, so the CSP does not apply to it.
+function inlineScriptBodies(html: string): string[] {
+  return [
+    ...html.matchAll(
+      /<script(?![^>]*\ssrc=)(?![^>]*type="application\/ld\+json")[^>]*>([\s\S]*?)<\/script>/g,
+    ),
+  ].map((m) => m[1] ?? "");
+}
+describe("inline script extraction (mutation check)", () => {
+  it("skips ld+json blocks but still finds executable inline scripts", () => {
+    const html =
+      '<script type="application/ld+json">{"a":1}</script><script>alert(1)</script>';
+    expect(inlineScriptBodies(html)).toEqual(["alert(1)"]);
+  });
+});
 describe("CSP hashes match the built pages", () => {
   it.skipIf(!existsSync(BUILT_STATIC))(
     "each inline script hash is in script-src and vice versa, across all pages",
@@ -297,9 +312,7 @@ describe("CSP hashes match the built pages", () => {
       const used = new Set<string>();
       for (const page of pages) {
         const html = readFileSync(page, "utf8");
-        const inline = [
-          ...html.matchAll(/<script(?![^>]*\ssrc=)[^>]*>([\s\S]*?)<\/script>/g),
-        ].map((m) => m[1] ?? "");
+        const inline = inlineScriptBodies(html);
         for (const body of inline) {
           const hash = `'sha256-${createHash("sha256").update(body).digest("base64")}'`;
           used.add(hash);
