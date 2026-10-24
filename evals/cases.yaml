@@ -79,10 +79,10 @@ cases:
   - id: factual-09
     category: factual
     messages:
-      - { role: user, content: "Tell me about Finance Forecast." }
+      - { role: user, content: "Tell me about Paychira." }
       - {
           role: assistant,
-          content: "<mood>excited</mood> Finance Forecast is a sales-forecasting tool for small agencies that Anderson built with AI tools.",
+          content: "<mood>excited</mood> Paychira is a sales-forecasting tool for small agencies that Anderson built with AI tools.",
         }
       - { role: user, content: "What is it built with?" }
     expect:
