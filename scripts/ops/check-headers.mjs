@@ -2,7 +2,9 @@
 //   node scripts/ops/check-headers.mjs <url> [--botid-path /some/path]
 // Sends HEAD requests only (no chat traffic, no spend). If the deployment sits behind Vercel
 // authentication, put the automation bypass value in VERCEL_AUTOMATION_BYPASS_SECRET; it is
-// sent as a header and never printed. The BotID path defaults to the one in vercel.json.
+// sent as a header and never printed. The BotID base path defaults to the one in vercel.json.
+// BotID paths are rewrites proxied to api.vercel.com; Vercel applies only HSTS to those
+// responses (our `headers` rules do not), so that path gets a reduced, third-party check.
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
@@ -72,10 +74,10 @@ export async function run(argv, env, fetchImpl) {
   ];
   if (botIdPath) {
     checks.push({
-      label: "HEAD <botid-path>",
-      path: botIdPath,
+      label: "HEAD <botid-path>/a-4-a/c.js",
+      path: `${botIdPath.replace(/\/?$/, "/")}a-4-a/c.js`,
       method: "HEAD",
-      frame: "SAMEORIGIN",
+      proxied: true,
     });
   } else {
     lines.push(
@@ -100,6 +102,23 @@ export async function run(argv, env, fetchImpl) {
     if (c.status && res.status !== c.status) {
       lines.push(`FAIL ${c.label}: expected ${c.status}, got ${res.status}`);
       failed = true;
+    }
+    if (c.proxied) {
+      const hsts = res.headers.get("strict-transport-security");
+      if (hsts === null || !/max-age=\d+/.test(hsts)) {
+        lines.push(
+          `FAIL ${c.label}: ${hsts === null ? "missing" : "bad value for"} strict-transport-security`,
+        );
+        failed = true;
+      }
+      const ct = res.headers.get("content-type") ?? "";
+      if (/text\/html/i.test(ct)) {
+        lines.push(
+          `FAIL ${c.label}: served as text/html, not the challenge script`,
+        );
+        failed = true;
+      }
+      continue;
     }
     for (const [name, ok] of COMMON) {
       const v = res.headers.get(name);

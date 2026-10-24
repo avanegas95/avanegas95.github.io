@@ -86,7 +86,7 @@ Useful reads:
 
 ## 8. Scripts and evals
 
-**Header check (free, safe any time):** `node scripts/ops/check-headers.mjs <preview-url>` sends HEAD/GET requests to `/`, `/api/chat` (expects 405) and the BotID path, and checks CSP, HSTS, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`, `Cross-Origin-Opener-Policy` and `X-Frame-Options` (`DENY`, or `SAMEORIGIN` on the BotID path). Exit 0 means pass. If the Preview is behind Vercel authentication, export the project's automation bypass value as `VERCEL_AUTOMATION_BYPASS_SECRET` first; the script sends it as a header and never prints it.
+**Header check (free, safe any time):** `node scripts/ops/check-headers.mjs <preview-url>` sends HEAD/GET requests to `/`, `/api/chat` (expects 405) and the BotID challenge script (`<botid-path>/a-4-a/c.js`), and checks CSP, HSTS, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`, `Cross-Origin-Opener-Policy` and `X-Frame-Options` (`DENY`). The BotID path is a rewrite proxied to api.vercel.com, where Vercel applies only HSTS and not our `headers` rules (observed on the Preview), so there the script requires HSTS and a non-`text/html` response and checks nothing else. Exit 0 means pass. If the Preview is behind Vercel authentication, export the project's automation bypass value as `VERCEL_AUTOMATION_BYPASS_SECRET` first; the script sends it as a header and never prints it.
 
 **Live chat smoke (spends real money, tiny):** `node scripts/smoke/chat-smoke.js <preview-url> --spend`. It refuses without `--spend` and refuses when `CI` is set. It prints event names, sizes and timings only. A `bot` result is possible, since a script is not a browser; that is a valid outcome, not a bug to bypass. Run it by hand, never from CI.
 
