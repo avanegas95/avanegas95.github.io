@@ -1,6 +1,21 @@
 # About-me answers: spots flagged for Anderson
 
-Narrative answers (sections 4-6) are not imported into the knowledge base; Blob summarises at reply time. Only specific unclear spots are listed here. Questions with no answer are not listed.
+The narrative answers (sections 4-6) are not in Blob's knowledge yet. The knowledge base is Blob's only source, so until they are imported Blob knows nothing from them. Once Anderson clears the flagged spots, the answers go into the knowledge base as he wrote them, and Blob condenses them when replying. Only specific unclear spots are listed here. Questions with no answer are not listed.
+
+## Ready to import once you confirm
+
+These answers are clear and not flagged:
+
+- Q31: What do you love most about QA?
+- Q34: A testing hot take or opinion you'll defend
+
+## Names to check
+
+Blob repeats names as written. The spelling of these may be off (for example Noah Kahan, Orbiter):
+
+- "Oribter by Noah Khan"
+- "Capaz by Alleh"
+- "Don't Matter by Akon"
 
 ## Q29: How did you get into QA and testing?
 
@@ -18,7 +33,6 @@ Narrative answers (sections 4-6) are not imported into the knowledge base; Blob 
 ## Q32: A bug you're proud of finding
 
 1. "it could dirt detect when meeting a certain threshold": the threshold is not named, so it is unclear what condition triggers dirt detect.
-2. "the code and devs kept saying it should do it multiple times per room": unclear whether the finding was that the robot did it only once (a bug) or that the devs' expectation was wrong.
-3. "a house cleaning robot vacuum": no company or period is given; unclear whether this was at SharkNinja.
-4. "an issues lots of people were seeing which are connection issues": the second bug has no product, company or period; unclear which employer it was at.
-5. "made a Major ticket": unclear whether "Major" is a severity level.
+2. "a house cleaning robot vacuum": no company or period is given; unclear whether this was at SharkNinja.
+3. "an issues lots of people were seeing which are connection issues": the second bug has no product, company or period; unclear which employer it was at.
+4. "made a Major ticket": unclear whether "Major" is a severity level.
