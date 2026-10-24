@@ -44,7 +44,7 @@ roles:
       - "Facilitated communication between developers and testers to accelerate issue resolution."
       - "Served as a project lead and primary QA point of contact for product refresh; oversaw progress and issue tracking with weekly leadership reporting on testing status and blockers."
   - company: "SharkNinja"
-    title: "SQA Engineer I/II"
+    title: "SQA Engineer II"
     employment: "full time"
     start: "2022-04"
     end: "2023-09"
@@ -65,7 +65,7 @@ roles:
     employment: "full time"
     start: "2019-11"
     end: "2022-04"
-    showOnSite: false
+    showOnSite: true
     siteGroup: "sharkninja-sqa"
     siteBullets: []
     bullets:

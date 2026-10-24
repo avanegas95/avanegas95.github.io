@@ -12,6 +12,7 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { KB_ROOT, loadKbSources } from "../../src/lib/kb.ts";
+import { withRoleFields, withSiteBullet } from "./kb-inject.ts";
 import {
   RENDER_LABELS_KEY,
   acceptFlow,
@@ -52,6 +53,10 @@ const run = async (args: string[], env: NodeJS.ProcessEnv = {}, tty = true) => {
 // Test edits touch a temp copy of the KB and only append markers; they never
 // author prose.
 const BULLET = "Own triage for nightly Hardware-in-the-Loop";
+const rewrite = (file: string, f: (raw: string) => string) => {
+  const p = join(kb, file);
+  writeFileSync(p, f(readFileSync(p, "utf8")));
+};
 const edit = (file: string, from: string, to: string) => {
   const p = join(kb, file);
   const s = readFileSync(p, "utf8");
@@ -89,10 +94,8 @@ describe("voice-lock hashFields", () => {
 
   it("locks siteBullets like other prose, and a change is reported", () => {
     // Placeholder marker text only; no site copy is authored here.
-    edit(
-      "experience.md",
-      "    showOnSite: true\n    bullets:\n",
-      '    showOnSite: true\n    siteBullets:\n      - "placeholder short bullet"\n    bullets:\n',
+    rewrite("experience.md", (raw) =>
+      withSiteBullet(raw, "placeholder short bullet"),
     );
     const before = hashFields(kb);
     expect(Object.keys(before)).toContain(
@@ -106,10 +109,8 @@ describe("voice-lock hashFields", () => {
 
   it("locks siteTitle like other prose, and a change is reported", () => {
     // Placeholder marker text only; no site copy is authored here.
-    edit(
-      "experience.md",
-      "    showOnSite: true\n    bullets:\n",
-      '    showOnSite: true\n    siteTitle: "placeholder title"\n    bullets:\n',
+    rewrite("experience.md", (raw) =>
+      withRoleFields(raw, { siteTitle: "placeholder title" }),
     );
     const before = hashFields(kb);
     expect(Object.keys(before)).toContain("experience.md#roles[0].siteTitle");

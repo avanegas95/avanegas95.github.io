@@ -53,6 +53,33 @@ describe("groupRoles", () => {
     });
   });
 
+  it("a group member with siteBullets: [] contributes no bullets to the merged card", () => {
+    const [card, ...rest] = groupRoles([
+      role({
+        title: "New",
+        siteGroup: "g",
+        siteTitle: "X",
+        siteBullets: ["a"],
+      }),
+      role({
+        title: "Old",
+        start: "2018-01",
+        end: "2020-01",
+        siteGroup: "g",
+        bullets: ["full"],
+        siteBullets: [],
+      }),
+    ]);
+    expect(rest).toEqual([]);
+    expect(card?.bullets).toEqual(["a"]);
+    expect(card?.start).toBe("2018-01");
+  });
+
+  it("a lone role with siteBullets: [] shows no bullets (empty is not a fallback to the full bullets)", () => {
+    const [card] = groupRoles([role({ bullets: ["full"], siteBullets: [] })]);
+    expect(card?.bullets).toEqual([]);
+  });
+
   it("a present role keeps the merged card open-ended", () => {
     const [card] = groupRoles([
       role({ title: "Now", end: null, siteGroup: "g", siteTitle: "X" }),
@@ -91,11 +118,25 @@ describe("the real KB on the site", () => {
   const data = parseKbSource(src).data as unknown as { roles: Role[] };
   const cards = groupRoles(data.roles.filter((r) => r.showOnSite));
 
-  it("shows Staff, Senior and one SQA Engineer I/II card (Nov 2019 to Sep 2023)", () => {
+  it("shows Staff, Senior and one SQA Engineer I/II card built from the visible roles' site bullets", () => {
     expect(cards.map((c) => c.title)).toEqual([
       "Staff SQA Engineer",
       "Senior SQA Engineer",
       "SQA Engineer I/II",
+    ]);
+    // The site shows siteBullets ?? bullets per visible role; a group card
+    // concatenates its members newest first.
+    const shown = data.roles.filter((r) => r.showOnSite);
+    const siteOf = (r: Role) => r.siteBullets ?? r.bullets;
+    const sqaRoles = shown.filter((r) => r.siteGroup === "sharkninja-sqa");
+    expect(sqaRoles.map((r) => r.title)).toEqual([
+      "SQA Engineer II",
+      "SQA Engineer",
+    ]);
+    expect(cards.map((c) => c.bullets)).toEqual([
+      siteOf(shown[0] as Role),
+      siteOf(shown[1] as Role),
+      sqaRoles.flatMap(siteOf),
     ]);
     const sqa = cards[2];
     expect(sqa).toMatchObject({
@@ -103,10 +144,11 @@ describe("the real KB on the site", () => {
       start: "2019-11",
       end: "2023-09",
     });
-    const sqaII = data.roles.find((r) => r.title === "SQA Engineer II");
-    expect(sqa?.bullets.slice(0, sqaII?.bullets.length)).toEqual(
-      sqaII?.bullets,
-    );
+    // The older member has siteBullets: [] so it adds dates but no bullets.
+    expect(sqaRoles[1]?.siteBullets).toEqual([]);
+    expect(sqa?.bullets).toEqual(siteOf(sqaRoles[0] as Role));
+    expect(sqa?.end).toBe("2023-09");
+    expect(sqa?.bullets).toHaveLength(4);
   });
 
   it("hides the Product Development Intern but the KB still has it", () => {
