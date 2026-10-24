@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { KB_ROOT, loadKbSources } from "../../src/lib/kb.ts";
 import {
@@ -65,6 +65,11 @@ describe("site-drift ratchet (fixtures)", () => {
   });
 });
 
+// A fully cleaned component has no allow file at all (Contact, P5.5-06): that reads as empty.
+function readAllow(path: string): string {
+  return existsSync(path) ? readFileSync(path, "utf8") : "";
+}
+
 describe("site-drift ratchet (real section components)", () => {
   const real = driftConfigFromKb(loadKbSources(KB_ROOT));
 
@@ -86,7 +91,7 @@ describe("site-drift ratchet (real section components)", () => {
   it.each(DRIFT_COMPONENTS)(
     "%s allow file has its pinned line count",
     (name) => {
-      const lines = readFileSync(`${ALLOW_DIR}/${name}.astro.txt`, "utf8")
+      const lines = readAllow(`${ALLOW_DIR}/${name}.astro.txt`)
         .split("\n")
         .filter((l) => l.trim() !== "");
       expect(lines).toHaveLength(ALLOW_LINES[name]);
@@ -101,7 +106,7 @@ describe("site-drift ratchet (real section components)", () => {
       const findings = checkDrift(
         comp,
         readFileSync(comp, "utf8"),
-        readFileSync(allow, "utf8"),
+        readAllow(allow),
         real,
         allow,
       );
