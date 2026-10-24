@@ -39,7 +39,7 @@ Decided 2026-10-23 (Anderson): Blob and the chat backend move into the existing 
 | P5-14 | New OG preview image from the current site (replaces the inspiration-site leftover), reproducible `og:render` script, leftover scan | designer | sonnet | sonnet | P5-10 (branched from it) | 4 | merged |
 | P5-15 | Blob favicon (SVG + PNG/ICO fallbacks, reproducible render) | designer | sonnet | sonnet | P5-14 (branched from it) | 4 | merged |
 | P5-16 | Project-card tag contrast (#8892b0 on card bg 4.33:1 < 4.5:1; a11y-home axe red) | designer | sonnet | sonnet | P5.5-03 | 4 | merged |
-| P5-17 | Serve the new public-safe resume PDF at the resume URL; guard:pii scans PDF text; amend rule 7 / D-06; update resume E2E | developer | sonnet | opus | Anderson's final PDF | 4 | blocked (human: final PDF) |
+| P5-17 | Serve the new public-safe resume PDF at the resume URL; guard:pii scans PDF text; amend rule 7 / D-06; update resume E2E | developer | sonnet | opus | Anderson's final PDF ✓ | 4 | wip |
 | P5-04c | Mount Blob on `/` in the chosen placement | designer | sonnet | opus | P5-04b, P5-10, P5-11, P5-16, placement A (decided) | 5 | merged |
 
 Task branches merge into `feat/blob` (the integration branch), not `main`.
