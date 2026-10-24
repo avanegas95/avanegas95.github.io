@@ -80,7 +80,7 @@ Scope: `docs/tasks/P5.5/_proposal.md`; table: `_proposed-plan.md`; Anderson's to
 | P5.5-08a | Land `origin/blog-posts` (only "What this blog is about" published) | sonnet | sonnet | H1 ✓ | 0 | merged |
 | P5.5-15 | Rename Finance Forecast → Paychira | haiku | sonnet | P5-06, P5-07 | 1 | merged |
 | P5.5-13a | Shared KB schema, per-file golden prompt, `site-copy.md` template | opus | opus | P5 gate, 08a, 15 | 2 | merged |
-| P5.5-16 | Import about-me answers (hybrid, see decision log): short answers become fact lists in Anderson's words, narrative answers are flagged for him to rewrite, `(private)` items skipped; Anderson approves the KB diff | sonnet | opus | 13a, Anderson's answers | 3 | merged (rounds 1–2) |
+| P5.5-16 | Import about-me answers (hybrid, see decision log): short answers become fact lists in Anderson's words, narrative answers are flagged for him to rewrite, `(private)` items skipped; Anderson approves the KB diff | sonnet | opus | 13a, Anderson's answers | 3 | merged (rounds 1–3) |
 | P5.5-17 | Sync KB career facts (experience, skills, projects, education) to resume.md verbatim; resume wins; report what changed | sonnet | opus | P5.5-05 merged, P5.5-16b | 4 | wip |
 | P5.5-18 | Dependency upgrades on feat/blob: eslint 10 + eslint-plugin-astro 3 (flat config), @types/node matched to Node 24 | sonnet | sonnet | — | 4 | merged |
 | P5.5-13c | Voice lock, `facts:check`, drift ratchet | sonnet | opus | 13a, H3 ✓ | 3 | merged |
@@ -199,3 +199,4 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 2026-10-24 · P5.5-05 · merged (sonnet APPROVE; Lighthouse / 0.98; 2,636 tests, chromium E2E 23/23). Removed the duplicate site-drift helper left by the 05/06 merge.
 2026-10-24 · P5.5-18 · merged (sonnet APPROVE; lint still covers .astro and tests/ under ESLint 10; 2,636 tests). Orchestrator now merges in a separate worktree so Anderson's checkout and dev server aren't disturbed.
 2026-10-24 · P5.5-16b · merged (opus review + sonnet re-review APPROVE): bio/faq answers, D-12 Orbit Hop role, D-13 contact form stated plainly, PROMPT_VERSION p5-v2. Q30, Q36 and Q47 still flagged. voice:check red on 5 fields until Anderson runs voice:accept.
+2026-10-24 · P5.5-16c · merged (sonnet APPROVE). All questionnaire flags resolved; Q20/Q30/Q36/Q47 in KB. Optional: retitle faq Q47 heading (Anderson's call).
