@@ -226,7 +226,7 @@ describe("evals/cases.yaml", () => {
       const section =
         renderKbSection({ path: "projects/orbit-hop.md", raw }) ?? "";
       expect(section).toContain(
-        "**Role:** He built it solo, with the assistance of AI. Together they designed, coded, implemented, tested and published it. He is also the support contact.",
+        "**Role:** He built it solo, with the assistance of AI. Together they designed, coded, implemented, tested, and published. He is also the support contact.",
       );
       expect(section).toContain("**Status:** to be confirmed");
       expect(section).toContain("(build stack to be confirmed)");

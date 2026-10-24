@@ -8,7 +8,7 @@ public: true
 
 ### How can I contact Anderson?
 
-Anderson can be reached by email at avanegas95@gmail.com, on LinkedIn at https://www.linkedin.com/in/avanegas95, or on GitHub at https://github.com/avanegas95. There is a contact form on the site, using Formspree, and he gets the messages by email.
+Anderson can be reached by email at avanegas95@gmail.com, on LinkedIn at https://www.linkedin.com/in/avanegas95, or on GitHub at https://github.com/avanegas95. There is a contact form on the site (Formspree), and messages go to his email.
 
 ### Where can I find Anderson's resume?
 

@@ -35,11 +35,15 @@ Anderson is fluent in English and Spanish.
 
 B.S. in Computer Engineering from Boston University, 2017.
 
+### How did you get into QA and testing?
+
+I started off in SharkNinja as a Product Development Intern and worked very closely with the SQA team there. After continuously getting my contract extended a few times, I asked to join the SQA team as they had an open role. Since they knew my work ethic, I had a quick informal interview and joined shortly after!
+
 ### What do you love most about QA? What's the most underrated part of it?
 
 What I love most is improving the end product. You know that you helped build and have input that helped push the product in a way that helps the customer and is easier and more intuitive to use. You help make sure it isn't annoying to use, it doesn't cause friction. It all just works and makes lives easier. You're their voice and you advocate for them.
 
-### A bug you're proud of finding (keep it non-confidential)?
+### A bug you're proud of finding?
 
 There's two. One was a behavior on a Shark robot vacuum. It had a sensor that when it reached an 80% threshold of particulates picked up, would initiate a spot clean and go over that area, in a corn-row pattern a few times. However it only did it once per room, but the code and devs kept saying it should do it multiple times per room. It was tough to test as it took a lot of setup, time, and hope. Through a lot of persistence, videos, and having a dev run through it with me, they caught the issue and were able to fix the logic.
 

@@ -6,7 +6,7 @@ updated: 2026-10-24
 public: true
 order: 3
 status: "to be confirmed"
-role: "He built it solo, with the assistance of AI. Together they designed, coded, implemented, tested and published it. He is also the support contact."
+role: "He built it solo, with the assistance of AI. Together they designed, coded, implemented, tested, and published. He is also the support contact."
 techLabel: "Platform and services"
 tech:
   - "iPhone"
