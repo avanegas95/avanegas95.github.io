@@ -2,6 +2,7 @@ import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import {
   cpSync,
+  existsSync,
   mkdtempSync,
   readFileSync,
   rmSync,
@@ -19,6 +20,7 @@ import {
   hashFields,
   inSiteCopy,
   main,
+  makeMeta,
 } from "../../scripts/voice-lock.ts";
 
 vi.setConfig({ testTimeout: 60_000 });
@@ -34,11 +36,7 @@ beforeEach(() => {
 });
 afterEach(() => rmSync(dir, { recursive: true, force: true }));
 
-const run = async (
-  args: string[],
-  env: NodeJS.ProcessEnv = {},
-  tty = false,
-) => {
+const run = async (args: string[], env: NodeJS.ProcessEnv = {}, tty = true) => {
   const out: string[] = [];
   const err: string[] = [];
   const code = await main(
@@ -167,6 +165,41 @@ describe("voice-lock check / init", () => {
     expect((await run(["check"])).err).toContain("faq.md#body");
   });
 
+  it.each([
+    ["no TTY", {}, false],
+    ["CI set", { CI: "true" }, true],
+  ])(
+    "init refuses with %s: exit 2 and no lock is written",
+    async (_n, env, tty) => {
+      const r = await run(["init"], env, tty);
+      expect(r.code).toBe(2);
+      expect(r.err).toContain("interactive terminal");
+      expect(existsSync(lock)).toBe(false);
+    },
+  );
+
+  it("init stamps the lock with metadata", async () => {
+    await run(["init"]);
+    const j = JSON.parse(readFileSync(lock, "utf8"));
+    expect(j.meta.action).toBe("init");
+    expect(Date.parse(j.meta.acceptedAt)).not.toBeNaN();
+    expect(j.meta.changed).toEqual([]);
+  });
+
+  it("makeMeta for accept lists changed, added and removed fields", () => {
+    const m = makeMeta(
+      "accept",
+      { a: "1", b: "1", c: "1" },
+      { a: "2", b: "1", d: "1" },
+      new Date(0),
+    );
+    expect(m).toEqual({
+      action: "accept",
+      acceptedAt: "1970-01-01T00:00:00.000Z",
+      changed: ["a", "d", "c"],
+    });
+  });
+
   it("init refuses to overwrite an existing lock", async () => {
     await run(["init"]);
     const before = readFileSync(lock, "utf8");
@@ -267,6 +300,22 @@ describe("voice-lock accept", () => {
     });
     expect(ok.result).toBe("accepted");
     expect(Object.keys(ok.fields ?? {}).sort()).toEqual(["a.md#x", "a.md#y"]);
+  });
+
+  it("shows old text only when it hashes to the lock value", async () => {
+    const out: string[] = [];
+    const data = input({ "a.md#x": "new" }, { "a.md#x": "old" });
+    // oldValues from a different commit than the lock was made at.
+    await acceptFlow(
+      { ...data, oldValues: { "a.md#x": "some other text" } },
+      { ask: async () => "no", out: (s) => out.push(s) },
+    );
+    const shown = out.join("\n");
+    expect(shown).toContain("old: unavailable (lock commit not in history)");
+    expect(shown).not.toContain("some other text");
+    const ok: string[] = [];
+    await acceptFlow(data, { ask: async () => "no", out: (s) => ok.push(s) });
+    expect(ok.join("\n")).toContain("old: old\n");
   });
 
   it("flags text that is not in site-copy.md", async () => {

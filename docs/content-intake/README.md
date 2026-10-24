@@ -22,3 +22,9 @@ Steps when the prose changed on purpose:
 If nothing changed, it says "Nothing to accept". It refuses to run when there is no interactive terminal or `CI` is set, so an agent or a pipeline cannot accept for you.
 
 The site-drift allow files in `tests/fixtures/drift/allow/` list the hard-coded facts that still sit in section components. They may only shrink: delete a line when you move that fact to the KB.
+
+## Who may touch the lock
+
+- Only Anderson runs `voice:accept` and `voice:init`, in his own terminal. Agents must never run them and must never edit `voice.lock.json` by hand.
+- Both commands refuse non-interactive shells (no TTY, or `CI` set), and stamp the lock with `meta` (when, and which fields changed).
+- The TTY check is a speed bump, not a security boundary: a hand-edited lock still passes `voice:check`. The real gate is review of the visible lock diff. CI prints every changed field as a GitHub annotation and in the job summary (the "Voice lock changes" step), so a lock change is always visible on the PR.

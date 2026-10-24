@@ -270,7 +270,8 @@ export function driftConfigFromKb(kb: readonly KbSource[]): DriftConfig {
   return { employers: [...employers].sort(), titles: [...titles].sort() };
 }
 
-const YEAR_RANGE = /\b(?:19|20)\d{2}\s*[–—-]\s*(?:(?:19|20)\d{2}|Present)\b/i;
+const YEAR_RANGE =
+  /\b(?:19|20)\d{2}\s*[–—-]\s*(?:(?:(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+)?(?:19|20)\d{2}|Present)\b/i;
 const YEARS = /\b\d+\+?\s+years\b|years of experience/i;
 const TITLE = /\bSQA Engineer\b/;
 

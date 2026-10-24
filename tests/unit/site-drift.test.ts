@@ -27,6 +27,8 @@ describe("site-drift ratchet (fixtures)", () => {
   it.each([
     ["a year range", "<p>2019 - Present</p>"],
     ["years of experience", "<p>lots of years of experience</p>"],
+    ["a month-to-month range", "<p>November 2019 – September 2023</p>"],
+    ["a month-to-year range", "<p>September 2023 – 2026</p>"],
     ["a year count", "<p>7+ years</p>"],
     ["a generic job title", "<h3>Senior SQA Engineer</h3>"],
     ["a KB job title", "<h3>Staff Tester</h3>"],
@@ -70,6 +72,26 @@ describe("site-drift ratchet (real section components)", () => {
     expect(real.employers).toContain("Boston Dynamics");
     expect(real.titles).toContain("Staff SQA Engineer");
   });
+
+  // Pinned so that adding an allow line next to a new hit fails here and is
+  // seen in review. The ratchet only shrinks: lower a number, never raise it.
+  const ALLOW_LINES = {
+    Home: 2,
+    About: 0,
+    Experiences: 19,
+    Projects: 0,
+    Contact: 0,
+  } as const;
+
+  it.each(DRIFT_COMPONENTS)(
+    "%s allow file has its pinned line count",
+    (name) => {
+      const lines = readFileSync(`${ALLOW_DIR}/${name}.astro.txt`, "utf8")
+        .split("\n")
+        .filter((l) => l.trim() !== "");
+      expect(lines).toHaveLength(ALLOW_LINES[name]);
+    },
+  );
 
   it.each(DRIFT_COMPONENTS)(
     "%s.astro matches its allow file exactly",

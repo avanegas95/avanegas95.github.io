@@ -16,3 +16,4 @@ alt="SharkNinja global headquarters exterior with SharkNinja signage, Needham, M
 alt="SharkNinja Logo"
 <p class="experience-card__company">SharkNinja</p>
 <h3 class="experience-card__role">SQA Engineer I/II</h3>
+<p class="experience-card__dates">November 2019 – September 2023</p>

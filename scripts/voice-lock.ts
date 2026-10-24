@@ -36,7 +36,12 @@ export const RENDER_LABELS_KEY = "kb.ts#render-labels";
 
 export type Hashes = Record<string, string>;
 export type Diff = { changed: string[]; added: string[]; removed: string[] };
-export type Lock = { version: 1; fields: Hashes };
+export type LockMeta = {
+  action: "init" | "accept";
+  acceptedAt: string;
+  changed: string[];
+};
+export type Lock = { version: 1; meta?: LockMeta; fields: Hashes };
 
 const sha256 = (s: string): string =>
   createHash("sha256").update(s.normalize("NFC"), "utf8").digest("hex");
@@ -177,6 +182,21 @@ export function diffLock(lock: Hashes, current: Hashes): Diff {
 export const isClean = (d: Diff): boolean =>
   d.changed.length + d.added.length + d.removed.length === 0;
 
+/** Audit stamp written by init/accept: when, and which fields changed. */
+export function makeMeta(
+  action: LockMeta["action"],
+  before: Hashes,
+  after: Hashes,
+  now: Date = new Date(),
+): LockMeta {
+  const d = diffLock(before, after);
+  return {
+    action,
+    acceptedAt: now.toISOString(),
+    changed: action === "init" ? [] : [...d.changed, ...d.added, ...d.removed],
+  };
+}
+
 function readLock(path: string): Lock {
   const j = JSON.parse(readFileSync(path, "utf8")) as Lock;
   if (j.version !== 1 || typeof j.fields !== "object") {
@@ -185,12 +205,12 @@ function readLock(path: string): Lock {
   return j;
 }
 
-function writeLock(path: string, fields: Hashes): void {
+function writeLock(path: string, fields: Hashes, meta: LockMeta): void {
   const sorted: Hashes = {};
   for (const k of Object.keys(fields).sort()) sorted[k] = fields[k] as string;
   writeFileSync(
     path,
-    `${JSON.stringify({ version: 1, fields: sorted }, null, 2)}\n`,
+    `${JSON.stringify({ version: 1, meta, fields: sorted }, null, 2)}\n`,
   );
 }
 
@@ -215,6 +235,13 @@ export type AcceptInput = {
   siteCopy: string;
 };
 
+function provenOld(inp: AcceptInput, k: string): string {
+  const o = inp.oldValues?.[k];
+  return o !== undefined && sha256(o) === inp.lock[k]
+    ? o
+    : "unavailable (lock commit not in history)";
+}
+
 /** Shows every diff old -> new; returns the new hashes only if `accept` is typed. */
 export async function acceptFlow(
   inp: AcceptInput,
@@ -235,9 +262,8 @@ export async function acceptFlow(
   io.out(`${total} locked field(s) differ from voice.lock.json:\n`);
   for (const k of d.changed) {
     const next = inp.currentValues[k] as string;
-    const old =
-      inp.oldValues?.[k] ??
-      `(text unavailable; lock hash ${(inp.lock[k] as string).slice(0, 12)})`;
+    // Show the old text only if it is provably what the lock hashed.
+    const old = provenOld(inp, k);
     io.out(`CHANGED ${k}\n  old: ${old}\n  new: ${next}\n${verbatim(next)}`);
   }
   for (const k of d.added) {
@@ -245,9 +271,7 @@ export async function acceptFlow(
     io.out(`ADDED ${k}\n  new: ${next}\n${verbatim(next)}`);
   }
   for (const k of d.removed) {
-    io.out(
-      `REMOVED ${k}\n  old: ${inp.oldValues?.[k] ?? "(text unavailable)"}\n`,
-    );
+    io.out(`REMOVED ${k}\n  old: ${provenOld(inp, k)}\n`);
   }
   const answer = (
     await io.ask(
@@ -300,7 +324,7 @@ Typical flow
      old -> new pair (and whether the new text is verbatim in
      docs/content-intake/site-copy.md). He types "accept", then commits voice.lock.json.
 
-voice:accept refuses non-interactive shells (no TTY, or CI set), so agents cannot run it.
+voice:accept and voice:init refuse non-interactive shells (no TTY, or CI set), so agents cannot run it.
 Options: --lock <file> (default ${LOCK_PATH})  --kb <dir> (default ${KB_ROOT})  --site-copy <file>  --help
 Exit codes: 0 ok, 1 prose differs (check) or accept declined, 2 usage/config error or refused.
 `;
@@ -335,6 +359,13 @@ export async function main(
   const kbRoot = opt(argv, "--kb", KB_ROOT);
   const siteCopyPath = opt(argv, "--site-copy", SITE_COPY_PATH);
   try {
+    if ((mode === "init" || mode === "accept") && (!isTty || isCi(env))) {
+      err(
+        `voice:${mode} needs an interactive terminal and no CI variable: it is for Anderson only.\n` +
+          `Run \`npm run voice:${mode}\` yourself in a normal terminal. Nothing was changed.`,
+      );
+      return 2;
+    }
     if (mode === "init") {
       if (existsSync(lockPath)) {
         err(
@@ -343,19 +374,12 @@ export async function main(
         return 2;
       }
       const h = hashFields(kbRoot);
-      writeLock(lockPath, h);
+      writeLock(lockPath, h, makeMeta("init", {}, h));
       log(`Wrote ${lockPath} with ${Object.keys(h).length} locked fields.`);
       return 0;
     }
     if (mode !== "check" && mode !== "accept") {
       err(`Unknown mode "${mode}".\n\n${USAGE}`);
-      return 2;
-    }
-    if (mode === "accept" && (!isTty || isCi(env))) {
-      err(
-        "voice:accept needs an interactive terminal and no CI variable: it is for Anderson only.\n" +
-          "Run `npm run voice:accept` yourself in a normal terminal. Nothing was changed.",
-      );
       return 2;
     }
     if (!existsSync(lockPath)) {
@@ -397,7 +421,11 @@ export async function main(
         { ask: (q) => rl.question(q), out: log },
       );
       if (res.result === "accepted" && res.fields) {
-        writeLock(lockPath, res.fields);
+        writeLock(
+          lockPath,
+          res.fields,
+          makeMeta("accept", lock.fields, res.fields),
+        );
         log(`Updated ${lockPath}. Commit it with your KB change.`);
       }
       return res.result === "declined" ? 1 : 0;

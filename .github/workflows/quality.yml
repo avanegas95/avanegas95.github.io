@@ -24,6 +24,8 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
@@ -54,6 +56,24 @@ jobs:
 
       - name: PII guard
         run: npm run guard:pii
+
+      # Visibility, not the gate: any voice.lock.json change in the pushed range
+      # or PR is printed as annotations and in the job summary.
+      - name: Voice lock changes
+        run: >
+          node scripts/ci/voice-lock-annotate.ts
+          "${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}"
+
+      # Non-blocking until P5.5-04/05/06 fix the known findings.
+      - name: Facts check (report only)
+        continue-on-error: true
+        shell: bash
+        run: |
+          set +e
+          node scripts/facts-check.ts | tee facts.txt
+          code=${PIPESTATUS[0]}
+          { echo '### facts:check'; echo '```'; cat facts.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          exit $code
 
       - name: E2E (chromium, firefox, webkit; includes axe)
         run: npm run test:e2e
