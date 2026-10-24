@@ -35,7 +35,7 @@ Decided 2026-10-23 (Anderson): Blob and the chat backend move into the existing 
 | P5-11 | Footer: drop Spotify iframe, legacy/policy links, computed year, `/orbithop` email-spacing fix | designer | sonnet | sonnet | P5-02, P5-08 | 4 | merged |
 | P5-10 | Meta: real `og:image`, KB title/description, Person JSON-LD | developer | sonnet | sonnet | P5-05, P5-07 | 4 | merged |
 | P5-12 | Fix super-linear `scrub()` on stray `<` + split PII (DoS risk on chat path); harden load-sensitive test timeouts | developer | opus | opus | P5-03b | 4 | merged |
-| P5-13 | Test follow-ups: scrubber test pinning digit-free obfuscated `tel:` removal (`t<b>e</b>l:abc`, `tel：abc`); decide/handle U+A789 as a colon (pre-existing gap); evals `spendAllowed` "ci" reason tests (CI=true/1 → ci, false/0 → ok); `markdown.test.ts` "linear-ish time" ratio test flakes under load: time CPU (process.cpuUsage) like scrub-perf | developer | sonnet | opus | P5-12 | 4 | wip |
+| P5-13 | Test follow-ups: scrubber test pinning digit-free obfuscated `tel:` removal (`t<b>e</b>l:abc`, `tel：abc`); decide/handle U+A789 as a colon (pre-existing gap); evals `spendAllowed` "ci" reason tests (CI=true/1 → ci, false/0 → ok); `markdown.test.ts` "linear-ish time" ratio test flakes under load: time CPU (process.cpuUsage) like scrub-perf | developer | sonnet | opus | P5-12 | 4 | merged |
 | P5-14 | New OG preview image from the current site (replaces the inspiration-site leftover), reproducible `og:render` script, leftover scan | designer | sonnet | sonnet | P5-10 (branched from it) | 4 | merged |
 | P5-15 | Blob favicon (SVG + PNG/ICO fallbacks, reproducible render) | designer | sonnet | sonnet | P5-14 (branched from it) | 4 | merged |
 | P5-16 | Project-card tag contrast (#8892b0 on card bg 4.33:1 < 4.5:1; a11y-home axe red) | designer | sonnet | sonnet | P5.5-03 | 4 | merged |
@@ -163,3 +163,4 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 2026-10-24 · P5-15 · merged (sonnet APPROVE; 2,463 tests).
 2026-10-24 · P5-04b · merged (opus APPROVE). Unit 2,465/2,465; chromium E2E 83 pass, 2 fail: a11y-home axe color-contrast on project-card tags, which came in with P5.5-03 (not 04b) → P5-16. Review a11y follow-ups added to the P5-04c brief.
 2026-10-24 · P5-16 · merged (one class; verified by the full suite: unit 2,465/2,465, chromium E2E 85/85 incl. a11y-home). P5-04c dispatched.
+2026-10-24 · P5-13 · merged (opus APPROVE; U+A789 left as-is, sound: tel: links never render). Minor: markdown fence-path unit sits on the CPU floor; comment/reps tweak optional.
