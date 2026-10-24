@@ -409,9 +409,8 @@ const LINE_HEAD = /[ \t>*+\-.)0-9]/;
 // check.
 const PII_HINT = /[\p{Nd}@&]/u;
 const TEL = /tel:/i;
-// Both tag readings piiSpans uses: to the first ">", and without a "<" inside.
-const HIDDEN = /<[^>]*>|\p{Cf}|\s*\n\s*/gu;
-const HIDDEN_INNER = /<[^<>]*>|\p{Cf}|\s*\n\s*/gu;
+// Both tag readings piiSpans uses, to the first ">" and without a "<" inside,
+// are taken out by hideMarkup() below.
 
 // Markdown emphasis, strikethrough and code-span markers.
 const MD_MARK = /[*_~`]/;
@@ -426,12 +425,78 @@ function markEdits(text: string): Edit[] {
   return edits;
 }
 
+// The same as n.replace(R, "") for R = /<[^>]*>|\p{Cf}|\s*\n\s*/gu, or with
+// <[^<>]*> as the tag for `inner`, in one linear pass (P5-12).
+// The regexes rescan from every position: a "<" with no ">" after it scans
+// to the end, and so does each space of a run with no line break, so long
+// runs made them quadratic. Exported for the equivalence tests only.
+export function hideMarkup(n: string, inner: boolean): string {
+  let out = "";
+  let gt = n.indexOf(">");
+  for (let i = 0; i < n.length;) {
+    if (n.charCodeAt(i) === 0x3c) {
+      // The tag alternative: to the first ">" (none after this "<" means
+      // none after any later one), or for the inner reading only if a ">"
+      // comes before the next "<".
+      let close = -1;
+      if (inner) {
+        let k = i + 1;
+        while (
+          k < n.length &&
+          n.charCodeAt(k) !== 0x3c &&
+          n.charCodeAt(k) !== 0x3e
+        )
+          k++;
+        if (n.charCodeAt(k) === 0x3e) close = k;
+      } else {
+        if (gt !== -1 && gt < i) gt = n.indexOf(">", i);
+        close = gt;
+      }
+      if (close >= 0) {
+        i = close + 1;
+        continue;
+      }
+      out += "<";
+      i++;
+      continue;
+    }
+    const cp = n.codePointAt(i) as number;
+    const ch = n.slice(i, i + (cp > 0xffff ? 2 : 1));
+    // \p{Cf} comes before the line-break alternative, so U+FEFF (both a
+    // format character and \s) is always dropped on its own.
+    if (FORMAT.test(ch)) {
+      i += ch.length;
+      continue;
+    }
+    if (WS.test(ch)) {
+      // \s*\n\s* from a space matches the rest of its run when the run holds
+      // a line break, and fails at every position of it otherwise.
+      let r = i;
+      let nl = false;
+      while (r < n.length && WS.test(n.charAt(r))) {
+        if (n.charCodeAt(r) === 0x0a) nl = true;
+        r++;
+      }
+      if (!nl) {
+        for (let k = i; k < r; k++) {
+          if (!FORMAT.test(n.charAt(k))) out += n.charAt(k);
+        }
+      }
+      i = r;
+      continue;
+    }
+    out += ch;
+    i += ch.length;
+  }
+  return out;
+}
+
 function mayHavePii(text: string): boolean {
   const n = text.normalize("NFKC");
   return (
     PII_HINT.test(n) ||
-    TEL.test(n.replace(HIDDEN, "")) ||
-    TEL.test(n.replace(HIDDEN_INNER, ""))
+    TEL.test(hideMarkup(n, false)) ||
+    TEL.test(hideMarkup(n, true))
   );
 }
 
