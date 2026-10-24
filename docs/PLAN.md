@@ -106,6 +106,7 @@ Scope: `docs/tasks/P5.5/_proposal.md`; table: `_proposed-plan.md`; Anderson's to
 | P5.5-19 | Revert Experience to the per-role card layout (pre-P5.5-05), keeping KB data and verbatim resume bullets | sonnet | sonnet | P5.5-05, P5.5-17 | 4 | merged |
 | P5.5-20 | Site-only Experience grouping: hide the intern; combine SharkNinja SQA I + II into one card; update the D-03 rule to allow "7 years" | sonnet | sonnet | P5.5-19 | 4 | merged |
 | P5.5-21 | Close the large vertical gap between the hero (Blob/socials) and About Me on `/` (desktop), with no layout shift; keep Blob's bubble room | sonnet | sonnet | P5.5-04 | 5 | todo |
+| P5.5-22 | Tests robust to Anderson's siteBullets; restore the "SQA Engineer II" title and unhide the SQA Engineer role (conflict-resolution slips) | sonnet | — | — | 4 | merged |
 | P5.5-13c | Voice lock, `facts:check`, drift ratchet | sonnet | opus | 13a, H3 ✓ | 3 | merged |
 | P5.5-05 | Experience from KB roles | sonnet | sonnet | 13a, 13c, H2 | 4 | merged |
 | P5.5-06 | Contact polish + Formspree E2E | sonnet | sonnet | 13a, 13c | 4 | merged |
@@ -230,3 +231,4 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 2026-10-24 · P5.5-19 merge note: the orchestrator pushed before checking local results (9 local unit timeouts from machine load: swap ~16.7/17.4 GB, load ~30). GitHub CI on fc29297 confirmed unit and E2E (3 browsers) green; only the Voice lock check is red, awaiting Anderson. From now on, pushes are gated on a green local run or a green CI check.
 2026-10-24 · Local unit rerun on 7bef90b: 2,638/2,638 green (load ~7), confirming the earlier failures were load timeouts.
 2026-10-24 · P5.5-20 + P5.5-04 · merged together (sonnet APPROVE each). The combined tree is green: 2,657 tests, facts:check 0 errors. The hero and About render from bio.md, Experience is grouped site-only, and the Blob prompt is unchanged. Anderson's typo "is makes" (bio.md about) is left for him. Added P5.5-21 (hero/About gap).
+2026-10-24 · P5.5-22 · merged (verified by orchestrator: unit suite green, chromium E2E experience + a11y-home green). Anderson's siteBullets are live, and the SQA I/II card reads Nov 2019 – Sep 2023.
