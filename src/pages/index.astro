@@ -4,6 +4,7 @@ import Layout from "@/layouts/Layout.astro";
 import { currentRoleFromSummary } from "@/lib/seo";
 import Nav from "@/components/sections/Nav.astro";
 import Home from "@/components/sections/Home.astro";
+import About from "@/components/sections/About.astro";
 import Experiences from "@/components/sections/Experiences.astro";
 import Projects from "@/components/sections/Projects.astro";
 import Contact from "@/components/sections/Contact.astro";
@@ -20,9 +21,14 @@ const title = role ? `Anderson Vanegas | ${role.title}` : "Anderson Vanegas";
   <Nav />
   <main id="main-content">
     <Home />
+    <About />
     <Experiences />
     <Projects />
     <Contact />
   </main>
   <Footer />
 </Layout>
+
+<script>
+  import "@/scripts/botid-init.ts";
+</script>

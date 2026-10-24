@@ -1,0 +1,79 @@
+---
+import LogoWall from "@/components/ui/LogoWall.astro";
+import { socialLinks } from "@/data/social-links";
+
+const entranceStep = 0.08;
+/** Same sequence the block had inside the hero. */
+const aboutEntranceStart = 0.62 + socialLinks.length * entranceStep;
+const aboutDelay = (offset: number) =>
+  `${(aboutEntranceStart + offset * entranceStep).toFixed(2)}s`;
+---
+
+<section class="relative" id="about">
+  <div class="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 lg:py-16">
+    <div class="space-y-4">
+      <h2
+        class="animate-fade-in flex items-center gap-2 text-lg md:text-xl lg:text-2xl text-[var(--white)] font-semibold"
+        style={`animation-delay: ${aboutDelay(0)}`}
+      >
+        <span>About Me</span>
+      </h2>
+      <div class="space-y-4 text-[var(--white-icon)]">
+        <p
+          class="animate-fade-in text-sm md:text-base leading-relaxed"
+          style={`animation-delay: ${aboutDelay(1)}`}
+        >
+          I'm an SQA engineer who cares about shipping software that is makes
+          sense, works, and meets customer expectations. I started my career in
+          manually testing consumer home robotic products and have expanded into
+          automation, CI/CD, and helping to create tooling to scale up testing,
+          not just for myself, but for developers as well.
+        </p>
+        <p
+          class="animate-fade-in text-sm md:text-base leading-relaxed"
+          style={`animation-delay: ${aboutDelay(2)}`}
+        >
+          More recently, I've been learning and keeping up with the latest
+          agentic tools in order to expand my knowledge into new domains and
+          accelerate my workflows.
+        </p>
+        <p
+          class="animate-fade-in text-sm md:text-base leading-relaxed"
+          style={`animation-delay: ${aboutDelay(3)}`}
+        >
+          I hold a B.S. in Computer Engineering from Boston University and work
+          day-to-day with:
+        </p>
+        <ul
+          class="animate-fade-in grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-2 text-xs md:text-sm"
+          style={`animation-delay: ${aboutDelay(4)}`}
+        >
+          <li class="flex items-center gap-2">
+            <span class="text-[var(--sec)]">▹</span> Python
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="text-[var(--sec)]">▹</span> Appium
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="text-[var(--sec)]">▹</span> Jenkins / Buildkite
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="text-[var(--sec)]">▹</span> Jira / Confluence
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="text-[var(--sec)]">▹</span> Zephyr / X-Ray / TestRails
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="text-[var(--sec)]">▹</span> Linux / Bash / Windows
+          </li>
+        </ul>
+        <div
+          class="animate-fade-in"
+          style={`animation-delay: ${aboutDelay(5)}`}
+        >
+          <LogoWall />
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

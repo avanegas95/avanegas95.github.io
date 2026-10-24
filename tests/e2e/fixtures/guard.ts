@@ -2,6 +2,7 @@
 // never reachable from E2E. Every context aborts requests to api.anthropic.com and records them;
 // /api/chat is answered with a fixture; the test fails in teardown if anything tried to leave.
 import { expect, test as base } from "@playwright/test";
+import { stubBotId } from "./chat";
 
 export interface Guard {
   /** Requests that tried to reach api.anthropic.com. Must stay empty. */
@@ -30,6 +31,8 @@ export const test = base.extend<{ guard: Guard }>({
           return route.abort();
         },
       );
+      // Every page that mounts Blob loads the BotID client; `serve` has no challenge script.
+      await stubBotId(context);
       await context.route("**/api/chat", (route) => {
         guard.chat.push(route.request().url());
         return route.fulfill({
