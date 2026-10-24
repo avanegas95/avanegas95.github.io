@@ -33,9 +33,10 @@ Decided 2026-10-23 (Anderson): Blob and the chat backend move into the existing 
 | P5-06 | Internal evals port (no publishing) | developer | sonnet | opus | P5-03b | 4 | wip |
 | P5-09 | RUNBOOK (public-safe) + header check (N-3) | developer | sonnet | opus | P5-03b, P5-05 | 4 | brief |
 | P5-11 | Footer: drop Spotify iframe, legacy/policy links, computed year, `/orbithop` email-spacing fix | designer | sonnet | sonnet | P5-02, P5-08 | 4 | merged |
-| P5-10 | Meta: real `og:image`, KB title/description, Person JSON-LD | developer | sonnet | sonnet | P5-05, P5-07 | 4 | wip |
+| P5-10 | Meta: real `og:image`, KB title/description, Person JSON-LD | developer | sonnet | sonnet | P5-05, P5-07 | 4 | review (merge only together with P5-14) |
 | P5-12 | Fix super-linear `scrub()` on stray `<` + split PII (DoS risk on chat path); harden load-sensitive test timeouts | developer | opus | opus | P5-03b | 4 | merged |
 | P5-13 | Scrubber follow-ups: test pinning digit-free obfuscated `tel:` removal (`t<b>e</b>l:abc`, `tel：abc`); decide/handle U+A789 as a colon (pre-existing gap) | developer | sonnet | opus | P5-12 | 4 | todo |
+| P5-14 | New OG preview image from the current site (replaces the inspiration-site leftover), reproducible `og:render` script, leftover scan | designer | sonnet | sonnet | P5-10 (branched from it) | 4 | wip |
 | P5-04c | Mount Blob on `/` in the chosen placement | designer | sonnet | opus | P5-04b, P5-10, P5-11, placement A (decided) | 5 | brief |
 
 Task branches merge into `feat/blob` (the integration branch), not `main`.
@@ -105,6 +106,7 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 ## Decision log
 | Date | Decision | By |
 |---|---|---|
+| 2026-10-24 | The existing `og.image.png` is a leftover from the inspiration site (shows another person's name) and must never ship. Build a new 1200×630 preview image from the current site's look (P5-14), text limited to name, title and domain. Live `main` is unaffected (its og:image URL 404s today). | Anderson |
 | 2026-10-23 | **No emojis on Blob.** Remove the emoji reactions (the pop above his head and the badge on messages); moods show only through Blob's own expressions (eyes, body, motion). Amends SCOPE §2 G2 and §4 (emoji rows/reactions) and supersedes "emoji moods" in the 2026-10-12 row. Built in P5-04b. | Anderson |
 | 2026-10-23 | H1: publish only "What this blog is about" (the one Anderson actually wrote); every other post on `blog-posts`, including "Lessons from wiring CI for mobile tests", stays draft/unpublished. | Anderson |
 | 2026-10-23 | D-14: current title is **Staff** SQA Engineer; the hero changes from "Senior" (in Anderson's words, via intake). | Anderson |
