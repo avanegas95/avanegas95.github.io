@@ -84,6 +84,7 @@ Scope: `docs/tasks/P5.5/_proposal.md`; table: `_proposed-plan.md`; Anderson's to
 | P5.5-17 | Sync KB career facts (experience, skills, projects, education) to resume.md verbatim; resume wins; report what changed | sonnet | opus | P5.5-05 merged, P5.5-16b | 4 | merged |
 | P5.5-18 | Dependency upgrades on feat/blob: eslint 10 + eslint-plugin-astro 3 (flat config), @types/node matched to Node 24 | sonnet | sonnet | — | 4 | merged |
 | P5.5-19 | Revert Experience to the per-role card layout (pre-P5.5-05), keeping KB data and verbatim resume bullets | sonnet | sonnet | P5.5-05, P5.5-17 | 4 | merged |
+| P5.5-20 | Site-only Experience grouping: hide the intern; combine SharkNinja SQA I + II into one card; update the D-03 rule to allow "7 years" | sonnet | sonnet | P5.5-19 | 4 | wip |
 | P5.5-13c | Voice lock, `facts:check`, drift ratchet | sonnet | opus | 13a, H3 ✓ | 3 | merged |
 | P5.5-05 | Experience from KB roles | sonnet | sonnet | 13a, 13c, H2 | 4 | merged |
 | P5.5-06 | Contact polish + Formspree E2E | sonnet | sonnet | 13a, 13c | 4 | merged |
@@ -115,6 +116,7 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 ## Decision log
 | Date | Decision | By |
 |---|---|---|
+| 2026-10-24 | D-03 reversed: the hero keeps stated years ("7 years"), replacing the earlier "since 2019" decision. Experience on the site hides the SharkNinja intern and combines SharkNinja SQA Engineer and SQA Engineer II into one card titled "SQA Engineer I/II" (Nov 2019 – Sep 2023). The KB and Blob keep the separate roles, matching the resume (P5.5-20). | Anderson |
 | 2026-10-24 | Experience returns to one card per role in the old site's style. Each role gets an optional `siteBullets` list in experience.md holding Anderson's own short bullets for the site, while Blob keeps the full resume `bullets`. Anderson writes siteBullets himself (P5.5-19 adds the field). | Anderson |
 | 2026-10-24 | Blob's FAQ states the contact form plainly: there is a contact form on the site (Formspree), and messages go to his email. | Anderson |
 | 2026-10-24 | H4 changes: Anderson edits site copy directly where it renders (Home.astro hero, About.astro, src/data/projects.ts, and the KB for experience and contact), previewing with `npm run dev`. `docs/content-intake/site-copy.md` is retired. P5.5-04 and P5.5-13b move his edited text verbatim into the KB after he signals he's done. | Anderson |
@@ -205,3 +207,4 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 2026-10-24 · P5.5-17 · merged (opus review, round 2 checked by orchestrator; 2,636 tests). KB experience, skills, education and projects now match the resume verbatim. D-10 and D-11 resolved. voice:accept pending for all KB changes.
 2026-10-24 · P5.5-19 · merged (sonnet review, round 2 checked by orchestrator from the screenshot): one card per role, 1/2/3-column grid, compact intern card, optional siteBullets (voice-locked, never reaches the prompt). Lighthouse / 0.98.
 2026-10-24 · P5.5-19 merge note: the orchestrator pushed before checking local results (9 local unit timeouts from machine load: swap ~16.7/17.4 GB, load ~30). GitHub CI on fc29297 confirmed unit and E2E (3 browsers) green; only the Voice lock check is red, awaiting Anderson. From now on, pushes are gated on a green local run or a green CI check.
+2026-10-24 · Local unit rerun on 7bef90b: 2,638/2,638 green (load ~7), confirming the earlier failures were load timeouts.
