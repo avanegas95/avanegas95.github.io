@@ -409,9 +409,8 @@ const LINE_HEAD = /[ \t>*+\-.)0-9]/;
 // check.
 const PII_HINT = /[\p{Nd}@&]/u;
 const TEL = /tel:/i;
-// Both tag readings piiSpans uses: to the first ">", and without a "<" inside.
-const HIDDEN = /<[^>]*>|\p{Cf}|\s*\n\s*/gu;
-const HIDDEN_INNER = /<[^<>]*>|\p{Cf}|\s*\n\s*/gu;
+// Both tag readings piiSpans uses, to the first ">" and without a "<" inside,
+// are taken out by hideMarkup() below.
 
 // Markdown emphasis, strikethrough and code-span markers.
 const MD_MARK = /[*_~`]/;
@@ -426,13 +425,76 @@ function markEdits(text: string): Edit[] {
   return edits;
 }
 
+// The same as n.replace(R, "") for R = /<[^>]*>|\p{Cf}|\s*\n\s*/gu, or with
+// <[^<>]*> as the tag for `inner`, in one linear pass (P5-12).
+// The regexes rescan from every position: a "<" with no ">" after it scans
+// to the end, and so does each space of a run with no line break, so long
+// runs made them quadratic. Plain text between those characters is copied
+// as whole slices, found with native regexes. Exported for tests only.
+const HIDE_NEXT = /[<\s\p{Cf}]/gu; // where any alternative could start
+const CF_AT = /\p{Cf}/uy;
+const WS_RUN = /\s+/y;
+const ANGLE = /[<>]/g;
+const CF_ALL = /\p{Cf}/gu;
+
+export function hideMarkup(n: string, inner: boolean): string {
+  let out = "";
+  let gt = n.indexOf(">");
+  let i = 0;
+  while (i < n.length) {
+    HIDE_NEXT.lastIndex = i;
+    const hit = HIDE_NEXT.exec(n);
+    if (!hit) break;
+    const k = hit.index;
+    out += n.slice(i, k);
+    if (n.charCodeAt(k) === 0x3c) {
+      // The tag alternative: to the first ">" (none after this "<" means
+      // none after any later one), or for the inner reading only if a ">"
+      // comes before the next "<".
+      let close = -1;
+      if (inner) {
+        ANGLE.lastIndex = k + 1;
+        const a = ANGLE.exec(n);
+        if (a && a[0] === ">") close = a.index;
+      } else {
+        if (gt !== -1 && gt < k) gt = n.indexOf(">", k);
+        close = gt;
+      }
+      if (close >= 0) {
+        i = close + 1;
+      } else {
+        out += "<";
+        i = k + 1;
+      }
+      continue;
+    }
+    // \p{Cf} comes before the line-break alternative, so U+FEFF (both a
+    // format character and \s) is always dropped on its own.
+    CF_AT.lastIndex = k;
+    if (CF_AT.test(n)) {
+      i = CF_AT.lastIndex;
+      continue;
+    }
+    // \s*\n\s* from a space matches the rest of its run when the run holds
+    // a line break, and fails at every position of it otherwise (where only
+    // a U+FEFF inside it is dropped, as a format character).
+    WS_RUN.lastIndex = k;
+    WS_RUN.test(n);
+    const r = WS_RUN.lastIndex;
+    const run = n.slice(k, r);
+    if (!run.includes("\n")) out += run.replace(CF_ALL, "");
+    i = r;
+  }
+  return i < n.length ? out + n.slice(i) : out;
+}
+
 function mayHavePii(text: string): boolean {
   const n = text.normalize("NFKC");
-  return (
-    PII_HINT.test(n) ||
-    TEL.test(n.replace(HIDDEN, "")) ||
-    TEL.test(n.replace(HIDDEN_INNER, ""))
-  );
+  if (PII_HINT.test(n)) return true;
+  // Taking characters out never adds one, so without a ":" there is no
+  // "tel:" in either hidden reading.
+  if (!n.includes(":")) return false;
+  return TEL.test(hideMarkup(n, false)) || TEL.test(hideMarkup(n, true));
 }
 
 const WS = /\s/;

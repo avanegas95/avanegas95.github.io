@@ -8,7 +8,7 @@ import {
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
 
 // Samples are assembled at runtime (CLAUDE.md rule 2): fictional 555-01xx
 // numbers and a made-up street, never literals in the repo.
@@ -19,6 +19,17 @@ const MARKER = j("TO", "DO");
 const UNRESOLVED = j("to be ", "confirmed");
 const BREAK = String.fromCharCode(10);
 const SCRIPT = resolve("scripts/pii-guard.ts");
+
+// Each case spawns `node` on the TypeScript CLI. Under load a cold spawn can
+// take several seconds, so this file gets a realistic budget instead of the
+// 5 s default, and every spawn shares one compile cache so the CLI and its
+// imports are type-stripped and compiled once, not once per case. spawnSync
+// blocks, so the cases already run one at a time; the child gets its own
+// timeout so a hang fails with a message instead of stalling the run.
+const SPAWN_TIMEOUT_MS = 45_000;
+vi.setConfig({ testTimeout: 60_000, hookTimeout: 60_000 });
+const COMPILE_CACHE = mkdtempSync(join(tmpdir(), "pii-guard-cache-"));
+afterAll(() => rmSync(COMPILE_CACHE, { recursive: true, force: true }));
 
 const dirs: string[] = [];
 function tmp(): string {
@@ -60,12 +71,18 @@ function run(root: string, opts: RunOpts = {}) {
   const args = [SCRIPT, "--root", root];
   if (html !== null) args.push("--html", html);
   args.push(...(opts.extra ?? []));
-  const env = { ...process.env, CI: opts.ci ?? "" };
+  const env = {
+    ...process.env,
+    CI: opts.ci ?? "",
+    NODE_COMPILE_CACHE: COMPILE_CACHE,
+  };
   const r = spawnSync(process.execPath, args, {
     encoding: "utf8",
     cwd: opts.cwd ?? process.cwd(),
     env,
+    timeout: SPAWN_TIMEOUT_MS,
   });
+  if (r.error) throw r.error;
   return { code: r.status, out: `${r.stdout}${r.stderr}`, stdout: r.stdout };
 }
 

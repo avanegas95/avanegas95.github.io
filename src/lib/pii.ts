@@ -42,6 +42,84 @@ const SUFFIX =
   "Street|St|Avenue|Ave|Road|Rd|Boulevard|Blvd|Lane|Ln|Drive|Dr|Court|Ct|Way|Place|Pl|Terrace|Circle|Parkway|Highway|Path";
 const WORD = "(?:[A-Z][A-Za-z'-]*|\\d+(?:st|nd|rd|th))";
 
+// Linear global search for patterns a backtracking engine makes quadratic
+// (P5-12). The engine retries every start position and can rescan the rest
+// of a long run from each one: "wwww..." for the email pattern, "< < <" with
+// no ">" for a tag; a 32 KB reply took minutes. For a registered pattern,
+// start() finds the first position where a match could begin, skipping
+// positions that provably cannot match, and the same pattern run sticky
+// there confirms it: the same matches in the same order as matchAll(). The
+// patterns stay plain RegExps (a RegExp subclass would switch V8's fast
+// paths off for every regex in the process).
+type Start = { at: number; next: number }; // at -1: no match at or after p
+const NO_START: Start = { at: -1, next: -1 };
+type Finder = { sticky: RegExp; start: (s: string, p: number) => Start };
+const FINDERS = new Map<RegExp, Finder>();
+
+function linear(re: RegExp, start: Finder["start"]): RegExp {
+  const sticky = new RegExp(re.source, `${re.flags.replace(/[gy]/g, "")}y`);
+  FINDERS.set(re, { sticky, start });
+  return re;
+}
+
+// s.matchAll(re) for a global regex, linear for a registered one.
+export function* allMatches(s: string, re: RegExp): Generator<RegExpExecArray> {
+  const f = FINDERS.get(re);
+  if (!f) {
+    yield* s.matchAll(re) as IterableIterator<RegExpExecArray>;
+    return;
+  }
+  let p = 0;
+  while (p <= s.length) {
+    const c = f.start(s, p);
+    if (c.at < 0) return;
+    f.sticky.lastIndex = c.at;
+    const m = f.sticky.exec(s);
+    if (!m) {
+      p = c.next;
+      continue;
+    }
+    p = f.sticky.lastIndex;
+    yield m;
+  }
+}
+
+// The email pattern's local part: a run of these, then "@" (not one of them).
+const LOCAL = "[A-Za-z0-9._%+-]";
+const LOCAL_NEXT = new RegExp(LOCAL, "g");
+const LOCAL_RUN = new RegExp(`${LOCAL}+`, "y");
+
+// Every start inside a run of LOCAL characters ends that part at the same
+// place and needs "@" right there, so a run that does not end at "@" is
+// skipped whole, and if the pattern fails at the run's first start it fails
+// at all of them.
+export const EMAIL_PATTERN = linear(
+  new RegExp(
+    `${LOCAL}+@[A-Za-z0-9-]+(?:\\.[A-Za-z0-9-]+)*\\.[A-Za-z]{2,}`,
+    "g",
+  ),
+  (s, p) => {
+    for (;;) {
+      LOCAL_NEXT.lastIndex = p;
+      if (!LOCAL_NEXT.test(s)) return NO_START;
+      const at = LOCAL_NEXT.lastIndex - 1;
+      LOCAL_RUN.lastIndex = at;
+      LOCAL_RUN.test(s);
+      const r = LOCAL_RUN.lastIndex;
+      if (s.charCodeAt(r) === 0x40) return { at, next: r + 1 };
+      p = r + 1;
+    }
+  },
+);
+
+// A match starts at the first "<" that has a ">" anywhere after it, and when
+// the first "<" has none, no later one does.
+export const TAG_PATTERN = linear(/<[^>]*>/g, (s, p) => {
+  const at = s.indexOf("<", p);
+  if (at < 0 || s.indexOf(">", at + 1) < 0) return NO_START;
+  return { at, next: at + 1 };
+});
+
 // Each rule is a list of patterns; every pattern must use the `g` flag.
 const PATTERNS: Record<PiiRule, readonly RegExp[]> = {
   phone: [
@@ -66,7 +144,7 @@ const PATTERNS: Record<PiiRule, readonly RegExp[]> = {
       "g",
     ),
   ],
-  email: [/[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}/g],
+  email: [EMAIL_PATTERN],
   "contact-url": [
     /(?<![A-Za-z0-9.-])(?:[A-Za-z0-9-]+\.)*(?:linkedin|github)\.com(?![A-Za-z0-9-])[^\s"'<>()[\]]*/gi,
     /(?<![A-Za-z0-9.-])(?:[A-Za-z0-9-]+\.)*(?:x|twitter|instagram|facebook|tiktok)\.com(?![A-Za-z0-9-])/gi,
@@ -193,10 +271,25 @@ const BREAK = "\u0001";
 // Two readings of a tag, both checked: up to the first ">" (as an HTML
 // tokenizer reads "<x <b>"), and the innermost one, without a "<" inside (so
 // "<3 617-555-<b>" does not hide the text before "<b>").
-const TAGS: readonly RegExp[] = [/<[^>]*>/g, /<[^<>]*>/g];
+const TAGS: readonly RegExp[] = [TAG_PATTERN, /<[^<>]*>/g];
 
-function stripTags(s: string, glue: string, tag: RegExp = /<[^>]*>/g): string {
-  return s.replace(tag, (t) => {
+// s.replace(re, fn) for a global regex, through allMatches().
+function replaceAll(
+  s: string,
+  re: RegExp,
+  fn: (match: string, at: number) => string,
+): string {
+  let out = "";
+  let last = 0;
+  for (const m of allMatches(s, re)) {
+    out += s.slice(last, m.index) + fn(m[0], m.index);
+    last = m.index + m[0].length;
+  }
+  return last === 0 ? s : out + s.slice(last);
+}
+
+function stripTags(s: string, glue: string, tag: RegExp = TAG_PATTERN): string {
+  return replaceAll(s, tag, (t) => {
     const nl = t.replace(/[^\n]/g, "");
     return BLOCK_TAG.test(t) ? `${BREAK}${nl}${BREAK}` : nl || glue;
   });
@@ -205,9 +298,17 @@ function stripTags(s: string, glue: string, tag: RegExp = /<[^>]*>/g): string {
 // Non-email rules: each run of block glue (with the spaces around it) reads
 // as one space, so "<li>617</li><li>555-..." still fits SEP and is one phone.
 // Built from BREAK so the source holds no control-character regex literal.
-const BREAK_RUN = new RegExp(`[^\\S\\n]*${BREAK}(?:[^\\S\\n]|${BREAK})*`, "g");
+// A match can only start where a run of spaces starts (every start inside a
+// run reaches the same next character, and a match never ends inside one),
+// so the lookbehind changes no match; it only stops the engine from
+// rescanning a long run from each of its positions (P5-12).
+const H_RUN_START = "(?<![^\\S\\n])";
+const BREAK_RUN = new RegExp(
+  `${H_RUN_START}[^\\S\\n]*${BREAK}(?:[^\\S\\n]|${BREAK})*`,
+  "g",
+);
 const BREAK_RUN_EMAIL = new RegExp(
-  `[^\\S\\n]*${BREAK}(?:\\s*${BREAK})*[^\\S\\n]*`,
+  `${H_RUN_START}[^\\S\\n]*${BREAK}(?:\\s*${BREAK})*[^\\S\\n]*`,
   "g",
 );
 
@@ -341,7 +442,7 @@ function scanWith(
       for (const rule of active) {
         const spans: Array<readonly [number, number]> = [];
         for (const re of patterns[rule] ?? []) {
-          for (const m of content.matchAll(re)) {
+          for (const m of allMatches(content, re)) {
             const start = m.index;
             const end = start + m[0].length;
             if (spans.some(([s, e]) => start < e && end > s)) continue;
@@ -361,7 +462,7 @@ function scanWith(
         for (const rule of active) {
           if (glue === "" && !TIGHT_JOIN.has(rule)) continue;
           for (const re of patterns[rule] ?? []) {
-            for (const m of joined.matchAll(re)) {
+            for (const m of allMatches(joined, re)) {
               const end = m.index + m[0].length;
               const tail = joined.slice(end, end + 2);
               // Or an allowed value on line i whose tail only fuses on here.
@@ -448,9 +549,7 @@ function mapReplace(
   fn: (match: string, at: number) => string,
 ): Mapped {
   re.lastIndex = 0;
-  const any = re.test(m.s);
-  re.lastIndex = 0;
-  if (!any) return m;
+  if (allMatches(m.s, re).next().done) return m;
   let s = "";
   const from: number[] = [];
   const to: number[] = [];
@@ -462,7 +561,7 @@ function mapReplace(
     }
   };
   let last = 0;
-  for (const hit of m.s.matchAll(re)) {
+  for (const hit of allMatches(m.s, re)) {
     const a = hit.index;
     const b = a + hit[0].length;
     if (b === a) continue;
@@ -484,7 +583,9 @@ function mapReplace(
 // Same shape as decodeEntities(); each entity decodes on its own.
 const ENTITY = /&(?:#\d+;?|#x[0-9a-f]+;?|[a-z]+;)/gi;
 const CRLF = /\r\n?/g;
-const LINE_RUN = /\s*\n\s*/g;
+// Starts only where a whitespace run starts: same matches, linear (see
+// H_RUN_START).
+const LINE_RUN = /(?<!\s)\s*\n\s*/g;
 const NON_ASCII = /\P{ASCII}/gu;
 
 // normalize(), one code point at a time so the mapping survives.
@@ -586,7 +687,7 @@ export function piiSpans(
       if (!checks(rule)) continue;
       const seen: Array<readonly [number, number]> = [];
       for (const re of PATTERNS[rule]) {
-        for (const hit of m.s.matchAll(re)) {
+        for (const hit of allMatches(m.s, re)) {
           const a = hit.index;
           const b = a + hit[0].length;
           if (b === a || seen.some(([x, y]) => a < y && b > x)) continue;
