@@ -1,11 +1,4 @@
 {
-  "redirects": [
-    {
-      "source": "/Anderson_Vanegas_Resume.pdf",
-      "destination": "https://www.linkedin.com/in/avanegas95",
-      "statusCode": 302
-    }
-  ],
   "rewrites": [
     {
       "source": "/149e9513-01fa-4fb0-aad4-566afd725d1b/2d206a39-8ed7-437e-a3be-862e0f06eea3/a-4-a/c.js",
@@ -56,6 +49,15 @@
         {
           "key": "X-Frame-Options",
           "value": "SAMEORIGIN"
+        }
+      ]
+    },
+    {
+      "source": "/Anderson_Vanegas_Resume.pdf",
+      "headers": [
+        {
+          "key": "Content-Disposition",
+          "value": "inline; filename=\"Anderson_Vanegas_Resume.pdf\""
         }
       ]
     }

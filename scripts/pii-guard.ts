@@ -1,6 +1,7 @@
 // PII/placeholder guard (CLAUDE.md rule 2, SCOPE §5.2). Runs under plain node.
 // Usage: node scripts/pii-guard.ts [--root <dir>] [--html <dir>] [--strict-markers]
 //          [--site [--site-root <dir>]]
+// PDFs under the --html dir are text-extracted (scripts/pdf-text.ts) and scanned too.
 // Output never contains a full match: findings print as `file:line rule masked`.
 // Exit: 0 ok, 1 PII/placeholder finding or over budget, 2 config/build error,
 // 3 unresolved markers with --strict-markers (they only warn otherwise).
@@ -15,6 +16,7 @@ import {
   loadKbSources,
   type KbSource,
 } from "../src/lib/kb.ts";
+import { extractPdfText } from "./pdf-text.ts";
 import { buildSystemPrompt } from "../src/lib/prompt.ts";
 import {
   scanMarkers,
@@ -125,7 +127,7 @@ function reportSite(siteRoot: string): void {
   console.warn(`pii-guard SITE hits=${hits}`);
 }
 
-function main(): number {
+async function main(): Promise<number> {
   const root = arg("--root") ?? KB_ROOT;
   const htmlArg = arg("--html");
   const htmlDir = htmlArg ?? DEFAULT_HTML;
@@ -178,15 +180,17 @@ function main(): number {
   let html: string[] = [];
   let assets: string[] = [];
   let pdfs: string[] = [];
+  const pdfLinks: string[] = [];
   if (isDir(htmlDir)) {
     const links: string[] = [];
     const all = allFiles(htmlDir, "", [], links);
     html = all.filter((f) => f.endsWith(".html")).map((f) => join(htmlDir, f));
     assets = all.filter((f) => TEXT_ASSET.test(f)).map((f) => join(htmlDir, f));
-    // A symlinked PDF cannot be inspected, so it fails closed as well.
-    pdfs = [...all, ...links]
-      .filter((f) => /\.pdf$/i.test(f))
-      .map((f) => join(htmlDir, f));
+    pdfs = all.filter((f) => /\.pdf$/i.test(f)).map((f) => join(htmlDir, f));
+    // A symlinked PDF cannot be inspected, so it fails closed.
+    pdfLinks.push(
+      ...links.filter((f) => /\.pdf$/i.test(f)).map((f) => join(htmlDir, f)),
+    );
   }
   if (html.length === 0) {
     if (htmlRequired) {
@@ -201,13 +205,32 @@ function main(): number {
     findings.push(...scanText(readFileSync(file, "utf8"), file, HTML_RULES));
   }
 
+  // Every PDF is read with a real text extractor and scanned with the HTML rules.
+  // One that cannot be read fails closed.
+  const pdfFailures: string[] = pdfLinks.map((f) => `${f} pdf-symlink`);
+  for (const file of pdfs) {
+    try {
+      const text = await extractPdfText(file);
+      // Blank-line joined text for the email rule (single breaks glue an address onto the
+      // line above), single-break text for the rest so values split across lines are joined.
+      findings.push(
+        ...scanText(text.replace(/\n/g, "\n\n"), file, HTML_RULES),
+        ...scanText(
+          text,
+          file,
+          HTML_RULES.filter((r) => r !== "email"),
+        ),
+      );
+    } catch (e) {
+      pdfFailures.push(`${file} pdf-unreadable (${errText(e)})`);
+    }
+  }
+
   if (process.argv.includes("--site")) reportSite(arg("--site-root") ?? ".");
 
   findings.forEach(print);
   warnMarkers(markers);
-  // Rule 2: the old PII-bearing PDF must never be served, so any PDF in the
-  // static output fails closed (the public resume route is a redirect).
-  for (const file of pdfs) console.error(`${file} pdf-in-static-output`);
+  for (const line of pdfFailures) console.error(line);
   const tokens = estimateTokens(kb);
   const overBudget = tokens > KB_TOKEN_BUDGET;
   if (overBudget) {
@@ -215,8 +238,10 @@ function main(): number {
       `pii-guard ERROR KB over token budget: est ${tokens} > ${KB_TOKEN_BUDGET}`,
     );
   }
-  if (findings.length > 0 || pdfs.length > 0 || overBudget) {
-    console.error(`pii-guard FAIL findings=${findings.length + pdfs.length}`);
+  if (findings.length > 0 || pdfFailures.length > 0 || overBudget) {
+    console.error(
+      `pii-guard FAIL findings=${findings.length + pdfFailures.length}`,
+    );
     return 1;
   }
   if (strictMarkers && markers.length > 0) {
@@ -224,10 +249,10 @@ function main(): number {
     return 3;
   }
   console.log(
-    `pii-guard OK files=${sources.length} html=${html.length} assets=${assets.length} kbChars=${kb.length} kbEstTokens=${tokens} kbSha256=${kbSha256(kb)}`,
+    `pii-guard OK files=${sources.length} html=${html.length} assets=${assets.length} pdfs=${pdfs.length} kbChars=${kb.length} kbEstTokens=${tokens} kbSha256=${kbSha256(kb)}`,
   );
   return 0;
 }
 
 // exitCode (not exit()) so piped output is fully flushed before the process ends.
-process.exitCode = main();
+process.exitCode = await main();

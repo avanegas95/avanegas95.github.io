@@ -20,7 +20,7 @@ Agents: add new rows when you find conflicts, and never resolve one yourself. On
 | D-03 | Years of experience | Old PDF says 5+, v1/v2 say 6+, and a code TODO says about 7. The resume dates give about 6.5 years in SQA since Nov 2019, or about 7.5 including the internship. | Don't state a number. Say "since 2019". | open |
 | D-04 | LinkedIn URL | `/in/avanegas95/` (V5.0, v1, v2a) vs `/in/andersonvanegas/` (v2b branch). | `/in/avanegas95` | **resolved 2026-10-12** (Anderson) |
 | D-05 | Location detail | V5.0 header has a full street address (never publish). v2b says "Framingham / Boston, MA", elsewhere "Boston, MA". | "Boston area, MA" | open (SCOPE Q7) |
-| D-06 | Old public resume PDF | `public/Anderson_Vanegas_Resume.pdf` on v1 and v2a is stale (2025, Senior title) **and exposes a phone number**. | v3 serves a new PDF exported from V5.0 without address and phone. Anderson supplies it. | open |
+| D-06 | Old public resume PDF | `public/Anderson_Vanegas_Resume.pdf` on v1 and v2a is stale (2025, Senior title) **and exposes a phone number**. | The resume URL serves Anderson's current public-safe PDF (city, site, email and LinkedIn only; no phone, street address or other PII). `guard:pii` scans its extracted text. The Markdown copy is `docs/content-intake/resume.md`. | resolved 2026-10-24 (Anderson supplied the PDF) |
 | D-07 | Staff role start | v1 says "2026", V5.0 says "March 2026". | March 2026 | resolved by V5.0 |
 | D-08 | Employer details OK to share | BD metrics (700+ cases, 16→33 Appium tests, product refresh) and client names (HubSpot, Datalily, PandaDoc). | OK, they're on the resume. | **resolved 2026-10-12** (Anderson) |
 | D-09 | "TestRails" spelling | V5.0 says "TestRails"; the product is "TestRail". | "TestRail" | open (fix in resume) |

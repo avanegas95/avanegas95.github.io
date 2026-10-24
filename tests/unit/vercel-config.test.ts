@@ -8,7 +8,7 @@ interface Header {
   value: string;
 }
 interface VercelConfig {
-  redirects: { source: string; destination: string; statusCode?: number }[];
+  redirects?: { source: string; destination: string; statusCode?: number }[];
   rewrites?: { source: string; destination: string }[];
   headers: { source: string; headers: Header[] }[];
 }
@@ -83,15 +83,20 @@ function cspProblems(d: Map<string, string[]>): string[] {
 }
 
 describe("vercel.json", () => {
-  it("has resume 302", () => {
-    const matches = config.redirects.filter((r) => r.source === RESUME);
-    expect(matches).toHaveLength(1);
-    expect(matches[0]).toEqual({
-      source: RESUME,
-      destination: "https://www.linkedin.com/in/avanegas95",
-      statusCode: 302,
-    });
-    for (const r of config.redirects) expect(r).not.toHaveProperty("permanent");
+  it("has no redirect for the resume (the PDF is served directly)", () => {
+    const redirects = config.redirects ?? [];
+    expect(redirects.filter((r) => r.source === RESUME)).toEqual([]);
+    for (const r of redirects) expect(r).not.toHaveProperty("permanent");
+  });
+
+  it("serves the resume PDF inline with its filename", () => {
+    const rule = config.headers.find((h) => h.source === RESUME);
+    expect(rule?.headers).toEqual([
+      {
+        key: "Content-Disposition",
+        value: 'inline; filename="Anderson_Vanegas_Resume.pdf"',
+      },
+    ]);
   });
 
   it("headers: each required header is present on /(.*)", () => {
@@ -193,9 +198,9 @@ describe("vercel.json", () => {
     });
   });
 
-  it("only the global rule and the BotID rule exist; the BotID rule adds no CSP", () => {
+  it("only the global, BotID and resume PDF rules exist; the BotID rule adds no CSP", () => {
     expect(config.headers.map((h) => h.source).sort()).toEqual(
-      ["/(.*)", `${BOTID_BASE}/:path*`].sort(),
+      ["/(.*)", `${BOTID_BASE}/:path*`, RESUME].sort(),
     );
     // The global rule comes first; the BotID rule is path-specific and only adds X-Frame-Options.
     expect(config.headers[0]?.source).toBe("/(.*)");
@@ -205,8 +210,9 @@ describe("vercel.json", () => {
     ).toBe(false);
   });
 
-  it("public/ holds no file that would shadow the resume redirect", () => {
-    expect(existsSync("public/Anderson_Vanegas_Resume.pdf")).toBe(false);
+  it("public/ holds the resume PDF at the legacy URL", () => {
+    const head = readFileSync(`public${RESUME}`).subarray(0, 5);
+    expect(head.toString("latin1")).toBe("%PDF-");
   });
 });
 
@@ -267,8 +273,8 @@ describe("built output carries config", () => {
     },
   );
 
-  it.skipIf(!isBuilt)("no static file shadows the resume path", () => {
-    expect(existsSync(`.vercel/output/static${RESUME}`)).toBe(false);
+  it.skipIf(!isBuilt)("the built static output contains the resume PDF", () => {
+    expect(existsSync(`.vercel/output/static${RESUME}`)).toBe(true);
   });
 });
 
