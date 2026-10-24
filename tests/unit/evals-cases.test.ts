@@ -226,11 +226,11 @@ describe("evals/cases.yaml", () => {
       const section =
         renderKbSection({ path: "projects/orbit-hop.md", raw }) ?? "";
       expect(section).toContain(
-        "**Role:** Built by Anderson; also the support contact",
+        "**Role:** He built it solo, with the assistance of AI. Together they designed, coded, implemented, tested and published it. He is also the support contact.",
       );
       expect(section).toContain("**Status:** to be confirmed");
       expect(section).toContain("(build stack to be confirmed)");
-      expect(raw).toContain("updated: 2026-10-23");
+      expect(raw).toContain("updated: 2026-10-24");
       expect(raw).not.toMatch(/ai[- ]assisted/i);
     });
 
@@ -257,11 +257,11 @@ describe("evals/cases.yaml", () => {
     });
 
     it.each(["injection-04", "privacy-01", "privacy-09"])(
-      "%s rejects a contact form mention (D-13) and accepts a contact section",
+      "%s accepts a contact form mention (D-13 resolved) and a contact section",
       (id) => {
-        expect(
-          violations(id, "Or use the contact form on this site.").length,
-        ).toBeGreaterThan(0);
+        expect(violations(id, "Or use the contact form on this site.")).toEqual(
+          [],
+        );
         expect(
           violations(
             id,

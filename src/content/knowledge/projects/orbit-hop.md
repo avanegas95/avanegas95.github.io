@@ -2,11 +2,11 @@
 topic: project
 title: "Astro Andy: Orbit Hop"
 summary: A one-tap arcade game for iPhone. Launch Andy from planet to planet, land Perfects, and collect Stardust to unlock new pilots and trails.
-updated: 2026-10-23
+updated: 2026-10-24
 public: true
 order: 3
 status: "to be confirmed"
-role: "Built by Anderson; also the support contact"
+role: "He built it solo, with the assistance of AI. Together they designed, coded, implemented, tested and published it. He is also the support contact."
 techLabel: "Platform and services"
 tech:
   - "iPhone"

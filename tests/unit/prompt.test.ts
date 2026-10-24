@@ -90,12 +90,11 @@ describe("p5-v1 behaviour rules", () => {
     expect(PROMPT_VERSION).toBe("p5-v1");
   });
 
-  it("points to #contact and forbids the contact form", () => {
-    // Behaviour text only: the KB (faq.md) legitimately says "no contact form".
+  it("points to #contact and allows the contact form (D-13 resolved)", () => {
     const b = behaviour();
-    expect(b).not.toMatch(/contact form on this site|or the contact form/i);
     expect(b).toContain("#contact");
-    expect(b).toMatch(/never mention or offer a contact form/i);
+    expect(b).toMatch(/or the contact form in this page's contact section/i);
+    expect(b).not.toMatch(/never mention or offer a contact form/i);
   });
 
   it("has the no-echo rule", () => {
