@@ -60,6 +60,9 @@ export function createBubble(root: HTMLElement): Bubble {
   const prevToggle = hook<HTMLButtonElement>(root, "previous");
   const prevList = hook(root, "history");
   const ac = new AbortController();
+  // "Show more" controls the clip; the id is set here so the markup contract stays small.
+  if (!clip.id) clip.id = "blob-clip";
+  more.setAttribute("aria-controls", clip.id);
 
   let phase: Phase = "idle";
   let expanded = false;
@@ -122,6 +125,14 @@ export function createBubble(root: HTMLElement): Bubble {
   more.addEventListener("click", () => setExpanded(!expanded), {
     signal: ac.signal,
   });
+  // A link inside the clipped part must never take focus while hidden (WCAG 2.4.11): expand.
+  clip.addEventListener(
+    "focusin",
+    () => {
+      if (!expanded && clip.dataset["clamped"] === "true") setExpanded(true);
+    },
+    { signal: ac.signal },
+  );
   prevToggle.addEventListener("click", () => togglePrevious(), {
     signal: ac.signal,
   });

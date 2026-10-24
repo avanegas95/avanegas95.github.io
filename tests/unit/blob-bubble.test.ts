@@ -143,6 +143,47 @@ describe("bubble controller", () => {
     expect(q(a, "previous-wrap").hidden).toBe(false);
   });
 
+  it("Show more points at the clip and keeps aria-expanded in sync", () => {
+    const more = q<HTMLButtonElement>(a, "more");
+    const clip = q(a, "clip");
+    expect(clip.id).not.toBe("");
+    expect(more.getAttribute("aria-controls")).toBe(clip.id);
+    Object.defineProperty(clip, "scrollHeight", { value: 500 });
+    Object.defineProperty(clip, "clientHeight", { value: 100 });
+    a.bubble!.sync();
+    expect(more.hidden).toBe(false);
+    expect(more.getAttribute("aria-expanded")).toBe("false");
+    more.click();
+    expect(more.getAttribute("aria-expanded")).toBe("true");
+    expect(clip.dataset["expanded"]).toBe("true");
+    more.click();
+    expect(more.getAttribute("aria-expanded")).toBe("false");
+  });
+
+  it("focus entering the clamped clip expands it (no hidden focus)", () => {
+    const clip = q(a, "clip");
+    Object.defineProperty(clip, "scrollHeight", { value: 500 });
+    Object.defineProperty(clip, "clientHeight", { value: 100 });
+    clip.insertAdjacentHTML("beforeend", '<a href="#x">late link</a>');
+    a.bubble!.sync();
+    expect(clip.dataset["clamped"]).toBe("true");
+    clip
+      .querySelector("a")!
+      .dispatchEvent(new FocusEvent("focusin", { bubbles: true }));
+    expect(clip.dataset["expanded"]).toBe("true");
+    expect(q(a, "more").getAttribute("aria-expanded")).toBe("true");
+  });
+
+  it("focus in an unclamped clip does not expand it", () => {
+    const clip = q(a, "clip");
+    clip.insertAdjacentHTML("beforeend", '<a href="#x">link</a>');
+    clip
+      .querySelector("a")!
+      .dispatchEvent(new FocusEvent("focusin", { bubbles: true }));
+    expect(clip.dataset["expanded"]).toBe("false");
+    expect(q(a, "more").hidden).toBe(true);
+  });
+
   it("Previous toggles aria-expanded and hidden on the list", () => {
     const b = a.bubble!;
     for (const t of ["a", "b"]) {
