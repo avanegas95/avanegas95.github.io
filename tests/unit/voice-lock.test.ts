@@ -104,6 +104,21 @@ describe("voice-lock hashFields", () => {
     );
   });
 
+  it("locks siteTitle like other prose, and a change is reported", () => {
+    // Placeholder marker text only; no site copy is authored here.
+    edit(
+      "experience.md",
+      "    showOnSite: true\n    bullets:\n",
+      '    showOnSite: true\n    siteTitle: "placeholder title"\n    bullets:\n',
+    );
+    const before = hashFields(kb);
+    expect(Object.keys(before)).toContain("experience.md#roles[0].siteTitle");
+    edit("experience.md", "placeholder title", "edited title");
+    expect(diffLock(before, hashFields(kb)).changed).toContain(
+      "experience.md#roles[0].siteTitle",
+    );
+  });
+
   it("hashes the NFC-normalised value: composed and decomposed forms agree", () => {
     const composed = hashFields(kb);
     const raw = readFileSync(join(kb, "bio.md"), "utf8");

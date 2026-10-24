@@ -30,6 +30,7 @@ describe("site-drift ratchet (fixtures)", () => {
     ["a month-to-month range", "<p>November 2019 – September 2023</p>"],
     ["a month-to-year range", "<p>September 2023 – 2026</p>"],
     ["a year count", "<p>7+ years</p>"],
+    ["a year count other than 7 or 3", "<p>10 years in QA</p>"],
     ["a generic job title", "<h3>Senior SQA Engineer</h3>"],
     ["a KB job title", "<h3>Staff Tester</h3>"],
     ["a KB employer", "<p>Acme Corp</p>"],
@@ -37,6 +38,13 @@ describe("site-drift ratchet (fixtures)", () => {
     expect(check(`<div>\n${line}\n</div>`).map((x) => x.rule)).toEqual([
       "site-drift",
     ]);
+  });
+
+  it.each([
+    "<p>7 years of experience in manual testing</p>",
+    "<p>and 3 years in automation testing</p>",
+  ])("D-03 resolved: %s is not a year-count drift", (line) => {
+    expect(check(`<div>\n${line}\n</div>`)).toEqual([]);
   });
 
   it("a component without fact patterns passes", () => {

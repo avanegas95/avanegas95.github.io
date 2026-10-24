@@ -109,6 +109,7 @@ describe("kb-schema", () => {
   it("exports the voice field paths", () => {
     expect(VOICE_FIELDS).toContain("experience.roles[].bullets[]");
     expect(VOICE_FIELDS).toContain("experience.roles[].siteBullets[]");
+    expect(VOICE_FIELDS).toContain("experience.roles[].siteTitle");
     expect(VOICE_FIELDS).toContain("bio.lede");
   });
 });

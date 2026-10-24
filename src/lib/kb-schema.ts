@@ -22,6 +22,10 @@ export const RoleSchema = z
     bullets: z.array(text),
     // Optional shorter bullets for the site card. Blob's prompt always uses the full `bullets`.
     siteBullets: z.array(text).optional(),
+    // Site-only grouping: consecutive roles sharing a siteGroup render as one card,
+    // titled by the siteTitle of whichever of them sets it. Blob's prompt ignores both.
+    siteGroup: text.optional(),
+    siteTitle: text.optional(),
     note: text.optional(),
   })
   .strict();
@@ -118,6 +122,7 @@ export const VOICE_FIELDS: readonly string[] = [
   "bio.lede",
   "experience.roles[].bullets[]",
   "experience.roles[].siteBullets[]",
+  "experience.roles[].siteTitle",
   "experience.roles[].note",
   "projects.role",
   "projects.techNote",

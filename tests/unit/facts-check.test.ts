@@ -17,7 +17,12 @@ const rules = (f: { rule: string; severity: string }[]) =>
 
 describe("facts-check runChecks", () => {
   it.each([
-    ["a year count in the KB (D-03)", "He has 7 years in QA.", "D-03"],
+    ["a year count in the KB (D-03)", "He has 10 years in QA.", "D-03"],
+    [
+      "a 17 years count is not 7 years (D-03)",
+      "He has 17 years in QA.",
+      "D-03",
+    ],
     ["a plus year count (D-03)", "Over 10+ years of testing.", "D-03"],
     ["Boston, MA without area (D-05)", "Based in Boston, MA.", "D-05"],
     ["TestRails (D-09)", "Uses TestRails daily.", "D-09"],
@@ -32,6 +37,8 @@ describe("facts-check runChecks", () => {
     "Boston University, Boston, MA",
     "Uses TestRail daily.",
     "Working since 2019.",
+    "Senior role with 7 years of experience in manual testing.",
+    "and 3 years in automation testing.",
     "More than 700 test cases.",
   ])("clean text %j produces no findings", (body) => {
     expect(runChecks([kbFile(body)], [])).toEqual([]);
@@ -42,11 +49,17 @@ describe("facts-check runChecks", () => {
     expect(rules(f)).toEqual(["misspelling:suggestion"]);
   });
 
-  it("D-14: a hero that calls him Senior with years is an error on the site only", () => {
-    const hero = "<p>Senior SQA Engineer with 7 years of experience</p>";
-    expect(rules(runChecks([], site(hero)))).toEqual(
-      expect.arrayContaining(["D-14:error", "D-03:error"]),
+  it("D-03 resolved: 7 years and 3 years are allowed, other counts are not", () => {
+    expect(runChecks([kbFile("7 years and 3 years")], [])).toEqual([]);
+    expect(rules(runChecks([kbFile("7+ years")], []))).toContain("D-03:error");
+    expect(rules(runChecks([kbFile("5 years and 7 years")], []))).toContain(
+      "D-03:error",
     );
+  });
+
+  it("D-14: a hero that calls him Senior is an error on the site only; its 7 years is not", () => {
+    const hero = "<p>Senior SQA Engineer with 7 years of experience</p>";
+    expect(rules(runChecks([], site(hero)))).toEqual(["D-14:error"]);
     expect(runChecks([kbFile(hero)], []).some((f) => f.rule === "D-14")).toBe(
       false,
     );
@@ -114,6 +127,65 @@ describe("facts-check runChecks", () => {
         ]);
       },
     );
+  });
+
+  describe("a combined site card (siteGroup / siteTitle)", () => {
+    const role = (
+      title: string,
+      start: string,
+      end: string,
+      extra: string[],
+    ) => [
+      "  - company: Acme",
+      `    title: ${title}`,
+      `    start: '${start}'`,
+      `    end: '${end}'`,
+      "    showOnSite: true",
+      "    bullets: []",
+      ...extra,
+    ];
+    const grouped: KbSource = {
+      path: "experience.md",
+      raw: [
+        "---",
+        "topic: experience",
+        "title: t",
+        "summary: s",
+        "updated: 2026-01-01",
+        "public: true",
+        "roles:",
+        ...role("QA II", "2022-04", "2023-09", [
+          "    siteGroup: qa",
+          "    siteTitle: QA I/II",
+        ]),
+        ...role("QA", "2019-11", "2022-04", ["    siteGroup: qa"]),
+        "---",
+        "body",
+      ].join("\n"),
+    };
+    const card = (title: string, dates: string) =>
+      site(
+        `<p class="experience-card__company">Acme</p>\n<h3 class="experience-card__role">${title}</h3>\n<p class="experience-card__dates">${dates}</p>`,
+        "src/components/sections/Experiences.astro",
+      );
+
+    it("accepts the combined title with the merged date range", () => {
+      expect(
+        runChecks([grouped], card("QA I/II", "November 2019 – September 2023")),
+      ).toEqual([]);
+    });
+    it("the combined title with one role's dates is a date mismatch", () => {
+      expect(
+        rules(
+          runChecks([grouped], card("QA I/II", "April 2022 – September 2023")),
+        ),
+      ).toEqual(["date-mismatch:error"]);
+    });
+    it("a title that is not in the KB is still an error", () => {
+      expect(
+        rules(runChecks([grouped], card("QA III", "2019 – 2023"))),
+      ).toEqual(["title-mismatch:error"]);
+    });
   });
 });
 

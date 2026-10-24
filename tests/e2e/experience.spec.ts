@@ -1,5 +1,7 @@
 import AxeBuilder from "@axe-core/playwright";
+import { groupRoles } from "../../src/lib/experience-groups.ts";
 import { KB_ROOT, loadKbSources, parseKbSource } from "../../src/lib/kb.ts";
+import type { Role } from "../../src/lib/kb-schema.ts";
 import { expect, test } from "./fixtures/guard";
 
 // The KB is the expected value: the page must show exactly what `roles` says (CLAUDE.md rule 1).
@@ -22,22 +24,15 @@ const monthYear = (ym: string) => {
   return `${MONTHS[Number(m) - 1]} ${y}`;
 };
 
-interface KbRole {
-  company: string;
-  title: string;
-  start: string;
-  end: string | null;
-  showOnSite: boolean;
-  bullets: string[];
-}
 const src = loadKbSources(KB_ROOT).find((s) =>
   s.path.endsWith("experience.md"),
 );
 if (!src) throw new Error("experience.md not found");
-const data = parseKbSource(src).data as unknown as { roles: KbRole[] };
-const roles = data.roles.filter((r) => r.showOnSite);
+const data = parseKbSource(src).data as unknown as { roles: Role[] };
+// What the site shows: showOnSite roles, with siteGroup roles merged into one card.
+const roles = groupRoles(data.roles.filter((r) => r.showOnSite));
 
-test("every KB role shows its title and date range, and the Staff card says March 2026", async ({
+test("every site card shows its title and date range, and the Staff card says March 2026", async ({
   page,
 }) => {
   await page.goto("/");
@@ -63,7 +58,47 @@ test("every KB role shows its title and date range, and the Staff card says Marc
   ).toHaveCount(1);
 });
 
-test("one card per role, in KB order, bullets verbatim", async ({ page }) => {
+test("SharkNinja SQA I and II are one card: SQA Engineer I/II, November 2019 – September 2023, one photo and logo", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const section = page.locator("#experience");
+  const card = section.getByTestId("experience-card").filter({
+    has: page.getByRole("heading", {
+      level: 3,
+      name: "SQA Engineer I/II",
+      exact: true,
+    }),
+  });
+  await expect(card).toHaveCount(1);
+  await expect(card.locator(".experience-card__dates")).toHaveText(
+    "November 2019 – September 2023",
+  );
+  await expect(card.locator(".experience-card__company")).toHaveText(
+    "SharkNinja",
+  );
+  await expect(card.locator("img")).toHaveCount(2);
+  // The separate SQA roles stay in the KB for Blob, never on the site.
+  for (const title of ["SQA Engineer", "SQA Engineer II"]) {
+    await expect(
+      section.getByRole("heading", { level: 3, name: title, exact: true }),
+    ).toHaveCount(0);
+  }
+});
+
+test("the Product Development Intern is not rendered", async ({ page }) => {
+  await page.goto("/");
+  const section = page.locator("#experience");
+  await expect(section.getByText("Product Development Intern")).toHaveCount(0);
+  await expect(section.getByText("April 2019")).toHaveCount(0);
+  expect(await section.getByTestId("experience-card").count()).toBe(
+    roles.length,
+  );
+});
+
+test("one card per site card, in KB order, bullets verbatim", async ({
+  page,
+}) => {
   await page.goto("/");
   await expect(page.getByTestId("experience-card")).toHaveCount(roles.length);
   const titles = await page
@@ -91,8 +126,7 @@ test("every bullet shows on its card: no Show more toggle, no hidden bullets", a
       await expect(li).toBeVisible();
     }
     await expect(card.locator("h3")).toHaveCount(1);
-    // Bullet-less roles are compact: title and dates only, no photo.
-    await expect(card.locator("img")).toHaveCount(r.bullets.length ? 2 : 0);
+    await expect(card.locator("img")).toHaveCount(2);
   }
 });
 
@@ -111,36 +145,6 @@ test("cards sit in a 1, 2 then 3 column grid by viewport width", async ({
   expect(await cols(390)).toBe(1);
   expect(await cols(800)).toBe(2);
   expect(await cols(1280)).toBe(3);
-});
-
-test("a compact card sizes to its content, not the row height", async ({
-  page,
-}) => {
-  await page.setViewportSize({ width: 1280, height: 900 });
-  await page.goto("/");
-  const compact = roles.filter((r) => r.bullets.length === 0);
-  expect(compact.length).toBeGreaterThan(0);
-  const heightOf = async (title: string) =>
-    (
-      await page
-        .getByTestId("experience-card")
-        .filter({
-          has: page.getByRole("heading", {
-            level: 3,
-            name: title,
-            exact: true,
-          }),
-        })
-        .boundingBox()
-    )?.height ?? 0;
-  const full = Math.max(
-    ...(await Promise.all(
-      roles.filter((r) => r.bullets.length > 0).map((r) => heightOf(r.title)),
-    )),
-  );
-  for (const r of compact) {
-    expect(await heightOf(r.title)).toBeLessThan(full / 3);
-  }
 });
 
 test("#experience and the old #experiences alias both reach the section", async ({

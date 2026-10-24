@@ -61,25 +61,14 @@ const roles = await getRoles();
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {roles.map((r) => {
-        // A role with no bullets (the intern stint) renders as a compact title-and-dates card.
-        // Site cards use the shorter siteBullets when present, else the full resume bullets.
-        const bullets = r.siteBullets ?? r.bullets;
-        const compact = bullets.length === 0;
-        const m = compact ? undefined : media[slug(r.company) as MediaKey];
+        // Cards come from getRoles(): hidden roles are dropped and siteGroup roles merged.
+        const m = media[slug(r.company) as MediaKey];
         return (
           <div
-            class:list={[
-              "experience-card fade-in fade-in--slow relative overflow-hidden rounded-xl border border-white/[0.08] bg-[var(--surface-card)]",
-              compact ? "self-start" : "h-full",
-            ]}
+            class="experience-card fade-in fade-in--slow relative overflow-hidden rounded-xl border border-white/[0.08] bg-[var(--surface-card)] h-full"
             data-testid="experience-card"
           >
-            <article
-              class:list={[
-                "flex flex-col overflow-hidden rounded-[inherit]",
-                !compact && "h-full",
-              ]}
-            >
+            <article class="flex flex-col overflow-hidden rounded-[inherit] h-full">
               {m && (
                 <div class="experience-card__media">
                   <Image
@@ -104,21 +93,16 @@ const roles = await getRoles();
                     />
                   </div>
                 )}
-                <div
-                  class:list={[
-                    "experience-card__content",
-                    compact && "experience-card__content--compact",
-                  ]}
-                >
+                <div class="experience-card__content">
                   <p class="experience-card__company">{r.company}</p>
                   <h3 class="experience-card__role">{r.title}</h3>
                   <p class="experience-card__dates">
                     {monthYear(r.start)} –{" "}
                     {r.end ? monthYear(r.end) : "Present"}
                   </p>
-                  {bullets.length > 0 && (
+                  {r.bullets.length > 0 && (
                     <ul class="experience-card__highlights">
-                      {bullets.map((b) => (
+                      {r.bullets.map((b) => (
                         <li class="experience-card__item">
                           <span
                             class="experience-card__bullet"
@@ -239,10 +223,6 @@ const roles = await getRoles();
 
   .experience-card__content {
     margin-top: clamp(2.25rem, 10cqw, 3rem);
-  }
-
-  .experience-card__content--compact {
-    margin-top: 0;
   }
 
   .experience-card__company {
