@@ -91,6 +91,20 @@ describe("spendAllowed", () => {
     ).toEqual({ ok: true });
   });
 
+  it.each(["true", "1", "TRUE", " true "])("CI=%j -> ci", (ci) => {
+    expect(spendAllowed(ARGV, { ...ENV, CI: ci }, 0)).toEqual({
+      ok: false,
+      reason: "ci",
+    });
+  });
+
+  it.each(["false", "0", "", "  "])(
+    "CI=%j is allowed when otherwise ok",
+    (ci) => {
+      expect(spendAllowed(ARGV, { ...ENV, CI: ci }, 0)).toEqual({ ok: true });
+    },
+  );
+
   it("preflight exactly at the cap is ok; $1.01 is over_cap", () => {
     expect(spendAllowed(ARGV, ENV, 1_000_000)).toEqual({ ok: true });
     expect(spendAllowed(ARGV, ENV, 1_010_000)).toEqual({

@@ -372,23 +372,29 @@ describe("streaming prefixes", () => {
 });
 
 describe("linear-ish time (scaling ratio, not wall clock)", () => {
+  // Floor for the small input's per-character cost (ms): 0.25 ms of CPU over
+  // its 10 x 2 KB, above CPU timer jitter; real runs are well over it.
+  const FLOOR_MS_PER_CHAR = 0.25 / (10 * 2048);
   // Per-character cost of a 20 KB input vs a 2 KB input. Linear ≈ 1, quadratic ≈ 10.
   function perCharRatio(unit: string): number {
     const small = unit.repeat(Math.ceil(2048 / unit.length));
     const big = unit.repeat(Math.ceil(20480 / unit.length));
+    // CPU time, not wall clock: a descheduled run says nothing about cost.
+    // Best of 3 runs.
     const time = (s: string, reps: number): number => {
       let best = Infinity;
-      for (let r = 0; r < 5; r++) {
-        const t0 = performance.now();
+      for (let r = 0; r < 3; r++) {
+        const t0 = process.cpuUsage();
         for (let k = 0; k < reps; k++) parseMarkdown(s);
-        best = Math.min(best, performance.now() - t0);
+        const d = process.cpuUsage(t0);
+        best = Math.min(best, (d.user + d.system) / 1000);
       }
       return best;
     };
     time(big, 1); // warm up
     const tSmall = time(small, 10) / (10 * small.length);
     const tBig = time(big, 1) / big.length;
-    return tBig / Math.max(tSmall, 1e-9);
+    return tBig / Math.max(tSmall, FLOOR_MS_PER_CHAR);
   }
 
   it.each([
