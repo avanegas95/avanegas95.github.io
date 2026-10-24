@@ -1,0 +1,101 @@
+---
+import "../../styles/blob.css";
+import type { Mood } from "../../lib/moods";
+
+interface Props {
+  size: "hero" | "compact" | "avatar";
+  mood?: Mood;
+}
+const { size, mood = "idle" } = Astro.props;
+// Unique gradient ids per rendered figure (duplicate ids would break url() refs and axe).
+const g = globalThis as { __blobUid?: number };
+g.__blobUid = (g.__blobUid ?? 0) + 1;
+const uid = `bg${g.__blobUid}`;
+---
+
+<div class="blob-figure" data-size={size} data-mood={mood} data-talking="false">
+  <svg viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+    <defs>
+      <radialGradient id={`${uid}b`} cx="0.36" cy="0.28" r="0.85">
+        <stop offset="0" class="stop-lit"></stop>
+        <stop offset="0.5" class="stop-base"></stop>
+        <stop offset="1" class="stop-shade"></stop>
+      </radialGradient>
+      <linearGradient id={`${uid}s`} x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#fff" stop-opacity="0.6"></stop>
+        <stop offset="1" stop-color="#fff" stop-opacity="0"></stop>
+      </linearGradient>
+      <radialGradient id={`${uid}c`}>
+        <stop offset="0" class="stop-ground" stop-opacity="1"></stop>
+        <stop offset="1" class="stop-ground" stop-opacity="0"></stop>
+      </radialGradient>
+      <linearGradient id={`${uid}e`} x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" class="stop-eye-top"></stop>
+        <stop offset="1" class="stop-eye-bottom"></stop>
+      </linearGradient>
+    </defs>
+    <ellipse
+      class="blob-ground"
+      cx="50"
+      cy="93"
+      rx="36"
+      ry="5"
+      fill={`url(#${uid}c)`}
+    ></ellipse>
+    <path
+      class="blob-body"
+      fill={`url(#${uid}b)`}
+      d="M50 10C70 8 90 24 91 48C92 72 76 92 50 91C26 90 9 74 9 50C9 28 28 12 50 10Z"
+    ></path>
+    <ellipse
+      class="blob-shine"
+      fill={`url(#${uid}s)`}
+      cx="34"
+      cy="27"
+      rx="13"
+      ry="7"
+      transform="rotate(-28 34 27)"
+    ></ellipse>
+    <g class="eyes">
+      <rect
+        class="eye eye-l"
+        fill={`url(#${uid}e)`}
+        x="32"
+        y="41"
+        width="12"
+        height="17"
+        rx="2.6"
+      ></rect>
+      <rect
+        class="eye eye-r"
+        fill={`url(#${uid}e)`}
+        x="56"
+        y="41"
+        width="12"
+        height="17"
+        rx="2.6"
+      ></rect>
+      <path
+        class="mark mark-up"
+        d="M32 55Q38 44 44 55M56 55Q62 44 68 55"
+      ></path>
+      <path
+        class="mark mark-down"
+        d="M32 47Q38 58 44 47M56 47Q62 58 68 47"
+      ></path>
+      <path
+        class="mark mark-x"
+        d="M33 42L43 57M43 42L33 57M57 42L67 57M67 42L57 57"
+      ></path>
+    </g>
+    <g class="zs">
+      <text class="z z1" x="74" y="26">
+        z
+      </text>
+      <text class="z z2" x="82" y="17">
+        Z
+      </text>
+    </g>
+  </svg>
+  <span class="blob-emoji" aria-hidden="true"></span>
+</div>
