@@ -11,12 +11,12 @@ import {
 } from "../../src/lib/kb.ts";
 
 const fm = (extra: string, pub = "true") =>
-  `---\ntopic: bio\ntitle: Bio\nsummary: Short.\nupdated: 2026-01-01\npublic: ${pub}\n${extra}---\n\nBody.\n`;
+  `---\ntopic: bio\ntitle: Bio\nsummary: Short.\nupdated: 2026-01-01\npublic: ${pub}\ngreeting: g\nname: n\nheadline: h\nlede: l\nabout: [a]\ntools: [[t]]\n${extra}---\n\nBody.\n`;
 
 const sources: KbSource[] = [
   {
     path: "b.md",
-    raw: "---\ntopic: bio\ntitle: About\nsummary: Who he is.\nupdated: 2026-01-01\npublic: true\n---\n\nHello there.\n",
+    raw: "---\ntopic: bio\ntitle: About\nsummary: Who he is.\nupdated: 2026-01-01\npublic: true\ngreeting: g\nname: n\nheadline: h\nlede: l\nabout: [a]\ntools: [[t]]\n---\n\nHello there.\n",
   },
   {
     path: "projects/a.md",
@@ -60,7 +60,7 @@ describe("buildKb", () => {
   });
 
   it("quoted summary with colon", () => {
-    const raw = `---\ntopic: bio\ntitle: 'It''s: me'\nsummary: "Skills: QA, \\"CI\\""\nupdated: 2026-01-01\npublic: true\n---\nBody\n`;
+    const raw = `---\ntopic: bio\ntitle: 'It''s: me'\nsummary: "Skills: QA, \\"CI\\""\nupdated: 2026-01-01\npublic: true\ngreeting: g\nname: n\nheadline: h\nlede: l\nabout: [a]\ntools: [[t]]\n---\nBody\n`;
     expect(buildKb([{ path: "q.md", raw }])).toBe(
       `## It's: me\n\nSkills: QA, "CI"\n\nBody\n`,
     );
@@ -94,21 +94,23 @@ describe("buildKb", () => {
 
   it("throws with path on empty body", () => {
     const raw =
-      "---\ntopic: bio\ntitle: T\nsummary: S\nupdated: 2026-01-01\npublic: true\n---\n\n  \n";
+      "---\ntopic: bio\ntitle: T\nsummary: S\nupdated: 2026-01-01\npublic: true\ngreeting: g\nname: n\nheadline: h\nlede: l\nabout: [a]\ntools: [[t]]\n---\n\n  \n";
     expect(() => buildKb([{ path: "e.md", raw }])).toThrow(/e\.md/);
   });
 
   it("throws with path on missing title or summary", () => {
-    const raw = "---\ntopic: bio\nsummary: S\npublic: true\n---\nBody\n";
+    const raw =
+      "---\ntopic: bio\nsummary: S\npublic: true\ngreeting: g\nname: n\nheadline: h\nlede: l\nabout: [a]\ntools: [[t]]\n---\nBody\n";
     expect(() => buildKb([{ path: "t.md", raw }])).toThrow(/t\.md/);
-    const raw2 = "---\ntopic: bio\ntitle: T\npublic: true\n---\nBody\n";
+    const raw2 =
+      "---\ntopic: bio\ntitle: T\npublic: true\ngreeting: g\nname: n\nheadline: h\nlede: l\nabout: [a]\ntools: [[t]]\n---\nBody\n";
     expect(() => buildKb([{ path: "s.md", raw: raw2 }])).toThrow(/s\.md/);
   });
 
   it("sorts an unsorted input list by path", () => {
     const mk = (path: string, title: string): KbSource => ({
       path,
-      raw: `---\ntopic: bio\ntitle: ${title}\nsummary: S\nupdated: 2026-01-01\npublic: true\n---\nB\n`,
+      raw: `---\ntopic: bio\ntitle: ${title}\nsummary: S\nupdated: 2026-01-01\npublic: true\ngreeting: g\nname: n\nheadline: h\nlede: l\nabout: [a]\ntools: [[t]]\n---\nB\n`,
     });
     // The nested projects/ path sorts after the root files ("p" > "m" > "a").
     const project: KbSource = {
@@ -125,7 +127,7 @@ describe("buildKb", () => {
   it("sorts by code unit, not locale", () => {
     const mk = (path: string, title: string): KbSource => ({
       path,
-      raw: `---\ntopic: bio\ntitle: ${title}\nsummary: S\nupdated: 2026-01-01\npublic: true\n---\nB\n`,
+      raw: `---\ntopic: bio\ntitle: ${title}\nsummary: S\nupdated: 2026-01-01\npublic: true\ngreeting: g\nname: n\nheadline: h\nlede: l\nabout: [a]\ntools: [[t]]\n---\nB\n`,
     });
     const out = buildKb([mk("a.md", "lower"), mk("B.md", "upper")]);
     expect(out.indexOf("## upper")).toBeLessThan(out.indexOf("## lower"));
@@ -135,7 +137,7 @@ describe("buildKb", () => {
 describe("frontmatter strictness", () => {
   const one = (summary: string): KbSource => ({
     path: "p/f.md",
-    raw: `---\ntopic: bio\ntitle: T\nsummary: ${summary}\nupdated: 2026-01-01\npublic: true\n---\nB\n`,
+    raw: `---\ntopic: bio\ntitle: T\nsummary: ${summary}\nupdated: 2026-01-01\npublic: true\ngreeting: g\nname: n\nheadline: h\nlede: l\nabout: [a]\ntools: [[t]]\n---\nB\n`,
   });
 
   it("throws with path on unquoted value with a ' #' comment", () => {

@@ -1,6 +1,20 @@
 ---
 import LogoWall from "@/components/ui/LogoWall.astro";
 import { socialLinks } from "@/data/social-links";
+import { getBio, getSkillGroups } from "@/lib/site-content";
+
+const bio = await getBio();
+if (!bio) throw new Error("About: bio.md must be public");
+const known = new Set((await getSkillGroups()).flatMap((g) => g.items));
+const toolRows = bio.tools.map((row) => {
+  const missing = row.filter((t) => !known.has(t));
+  if (missing.length > 0) {
+    throw new Error(
+      `About: bio.md tools not in skills.md: ${missing.join(", ")}`,
+    );
+  }
+  return row.join(" / ");
+});
 
 const entranceStep = 0.08;
 /** Same sequence the block had inside the hero. */
@@ -19,57 +33,27 @@ const aboutDelay = (offset: number) =>
         <span>About Me</span>
       </h2>
       <div class="space-y-4 text-[var(--white-icon)]">
-        <p
-          class="animate-fade-in text-sm md:text-base leading-relaxed"
-          style={`animation-delay: ${aboutDelay(1)}`}
-        >
-          I'm an SQA engineer who cares about shipping software that is makes
-          sense, works, and meets customer expectations. I started my career in
-          manually testing consumer home robotic products and have expanded into
-          automation, CI/CD, and helping to create tooling to scale up testing,
-          not just for myself, but for developers as well.
-        </p>
-        <p
-          class="animate-fade-in text-sm md:text-base leading-relaxed"
-          style={`animation-delay: ${aboutDelay(2)}`}
-        >
-          More recently, I've been learning and keeping up with the latest
-          agentic tools in order to expand my knowledge into new domains and
-          accelerate my workflows.
-        </p>
-        <p
-          class="animate-fade-in text-sm md:text-base leading-relaxed"
-          style={`animation-delay: ${aboutDelay(3)}`}
-        >
-          I hold a B.S. in Computer Engineering from Boston University and work
-          day-to-day with:
-        </p>
+        {bio.about.map((text, i) => (
+          <p
+            class="animate-fade-in text-sm md:text-base leading-relaxed"
+            style={`animation-delay: ${aboutDelay(i + 1)}`}
+          >
+            {text}
+          </p>
+        ))}
         <ul
           class="animate-fade-in grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-2 text-xs md:text-sm"
-          style={`animation-delay: ${aboutDelay(4)}`}
+          style={`animation-delay: ${aboutDelay(bio.about.length + 1)}`}
         >
-          <li class="flex items-center gap-2">
-            <span class="text-[var(--sec)]">▹</span> Python
-          </li>
-          <li class="flex items-center gap-2">
-            <span class="text-[var(--sec)]">▹</span> Appium
-          </li>
-          <li class="flex items-center gap-2">
-            <span class="text-[var(--sec)]">▹</span> Jenkins / Buildkite
-          </li>
-          <li class="flex items-center gap-2">
-            <span class="text-[var(--sec)]">▹</span> Jira / Confluence
-          </li>
-          <li class="flex items-center gap-2">
-            <span class="text-[var(--sec)]">▹</span> Zephyr / X-Ray / TestRails
-          </li>
-          <li class="flex items-center gap-2">
-            <span class="text-[var(--sec)]">▹</span> Linux / Bash / Windows
-          </li>
+          {toolRows.map((tool) => (
+            <li class="flex items-center gap-2">
+              <span class="text-[var(--sec)]">▹</span> {tool}
+            </li>
+          ))}
         </ul>
         <div
           class="animate-fade-in"
-          style={`animation-delay: ${aboutDelay(5)}`}
+          style={`animation-delay: ${aboutDelay(bio.about.length + 2)}`}
         >
           <LogoWall />
         </div>

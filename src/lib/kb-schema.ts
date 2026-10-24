@@ -69,8 +69,14 @@ export const KnowledgeSchema = z.discriminatedUnion("topic", [
     .object({
       topic: z.literal("bio"),
       ...base,
-      headline: text.optional(),
-      lede: text.optional(),
+      greeting: text,
+      name: text,
+      headline: text,
+      lede: text,
+      // About Me paragraphs, in order; the last one introduces the tool list.
+      about: z.array(text).min(1),
+      // Tool rows for About: each entry is a skills.md item name, joined with " / ".
+      tools: z.array(z.array(text).min(1)).min(1),
     })
     .strict(),
   z
@@ -116,6 +122,10 @@ export type Project = z.infer<typeof ProjectSchema>;
 export const VOICE_FIELDS: readonly string[] = [
   "bio.headline",
   "bio.lede",
+  "bio.greeting",
+  "bio.name",
+  "bio.about[]",
+  "bio.tools[][]",
   "experience.roles[].bullets[]",
   "experience.roles[].siteBullets[]",
   "experience.roles[].note",

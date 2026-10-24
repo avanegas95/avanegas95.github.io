@@ -3,6 +3,10 @@ import BlobAgent from "@/components/blob/BlobAgent.astro";
 import SocialLinks from "@/components/ui/SocialLinks.astro";
 import { DotPattern } from "@/components/ui/dot-pattern";
 import { socialLinks } from "@/data/social-links";
+import { getBio } from "@/lib/site-content";
+
+const bio = await getBio();
+if (!bio) throw new Error("Home: bio.md must be public");
 ---
 
 <section
@@ -24,19 +28,16 @@ import { socialLinks } from "@/data/social-links";
     <div class="home-grid">
       <div class="home-intro space-y-4 md:space-y-6">
         <p class="text-[var(--sec)] font-mono mb-2 md:mb-3 text-base animate-fade-in">
-          Hi, my name is
+          {bio.greeting}
         </p>
         <h1 class="text-[var(--white)] text-5xl sm:text-6xl md:text-7xl font-bold mb-2 md:mb-3 animate-fade-in">
-          Anderson Vanegas.
+          {bio.name}
         </h1>
         <h2 class="text-[var(--white-icon)] text-3xl sm:text-4xl md:text-5xl font-bold mb-3 md:mb-4 animate-fade-in">
-          I help put quality into software.
+          {bio.headline}
         </h2>
         <p class="text-[var(--white-icon)] max-w-2xl text-base md:text-lg mb-6 md:mb-8 leading-relaxed animate-fade-in">
-          Staff SQA Engineer with 7 years of testing and 3
-          years of automation experience. At Boston Dynamics, I build
-          Python tooling, Appium mobile tests, and nightly HIL CI pipelines that keep
-          robots and software reliable.
+          {bio.lede}
         </p>
       </div>
 

@@ -24,14 +24,30 @@ async function publicData<T extends Topic>(
 export async function getBio(): Promise<{
   title: string;
   summary: string;
-  headline?: string;
-  lede?: string;
+  greeting: string;
+  name: string;
+  headline: string;
+  lede: string;
+  about: string[];
+  /** Tool rows for About, as skills.md item names. */
+  tools: string[][];
   body: string;
 } | null> {
   const e = await publicData("bio");
   if (!e) return null;
-  const { title, summary, headline, lede } = e.data;
-  return { title, summary, headline, lede, body: e.body };
+  const { title, summary, greeting, name, headline, lede, about, tools } =
+    e.data;
+  return {
+    title,
+    summary,
+    greeting,
+    name,
+    headline,
+    lede,
+    about,
+    tools,
+    body: e.body,
+  };
 }
 
 /** Roles shown on the site, in KB order. */
