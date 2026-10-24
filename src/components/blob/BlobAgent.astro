@@ -1,5 +1,5 @@
 ---
-import "../../styles/blob-panel.css";
+import "../../styles/blob-bubble.css";
 import BlobFigure from "./BlobFigure.astro";
 import { COPY } from "../../scripts/blob/copy";
 
@@ -26,77 +26,76 @@ const RESUME_HREF = "https://www.linkedin.com/in/avanegas95";
   </div>
 
   <div class="ba-ui">
-    <div class="ba-stage">
-      <button
-        type="button"
-        class="ba-toggle"
-        data-ba="toggle"
-        aria-expanded="false"
-        aria-controls="blob-panel"
-        aria-label={COPY.toggleLabel}
-      >
-        <BlobFigure size={size} />
-      </button>
-      <p class="ba-bubble">{COPY.bubble}</p>
+    <div class="ba-figure" data-ba="figure">
+      <BlobFigure size={size} />
     </div>
 
-    <button type="button" class="ba-ask" data-ba="ask">
-      {COPY.askPrompt}
-    </button>
-
-    <ul class="ba-chips">
-      {COPY.chips.map((chip) => (
-        <li>
-          <button type="button" class="ba-chip" data-ba="chip">
-            {chip}
-          </button>
-        </li>
-      ))}
-    </ul>
-
-    <div
-      class="ba-panel"
-      id="blob-panel"
-      data-ba="panel"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="blob-panel-title"
-      tabindex="-1"
-      hidden
-    >
-      <header class="ba-head">
-        <BlobFigure size="avatar" />
-        <p class="ba-title" id="blob-panel-title">
-          {COPY.panelTitle}
-        </p>
-        <button type="button" class="ba-close" data-ba="close">
-          {COPY.close}
+    <form class="ba-form" data-ba="form">
+      <label for="blob-input">{COPY.inputLabel}</label>
+      <div class="ba-row">
+        <input
+          id="blob-input"
+          data-ba="input"
+          type="text"
+          maxlength="500"
+          autocomplete="off"
+          placeholder={COPY.inputPlaceholder}
+        />
+        <button type="submit" class="ba-send">
+          {COPY.send}
         </button>
-      </header>
-      <div class="ba-log" data-ba="log" role="log" aria-live="polite"></div>
-      <form class="ba-form" data-ba="form">
-        <label for="blob-input">{COPY.inputLabel}</label>
-        <div class="ba-row">
-          <input
-            id="blob-input"
-            data-ba="input"
-            type="text"
-            maxlength="500"
-            autocomplete="off"
-            placeholder={COPY.inputPlaceholder}
-          />
-          <button type="submit" class="ba-send">
-            {COPY.send}
-          </button>
+      </div>
+    </form>
+
+    <div class="ba-foot">
+      <!-- prettier-ignore -->
+      <p>{COPY.disclaimer.before}<a href="#contact">{COPY.disclaimer.linkLabel}</a>{COPY.disclaimer.after}</p>
+      <button type="button" class="ba-clear" data-ba="clear">
+        {COPY.clear}
+      </button>
+    </div>
+
+    <div class="ba-reply">
+      <p class="ba-question" data-ba="question" hidden></p>
+      <div class="ba-bubble" data-ba="bubble" data-phase="idle">
+        <div class="ba-answer" data-ba="answer" aria-live="polite">
+          <div class="ba-clip" data-ba="clip" data-expanded="false">
+            <p class="ba-greeting" data-ba="greeting">
+              {COPY.greeting}
+            </p>
+          </div>
         </div>
-      </form>
-      <footer class="ba-foot">
-        <!-- prettier-ignore -->
-        <p>{COPY.disclaimer.before}<a href="#contact">{COPY.disclaimer.linkLabel}</a>{COPY.disclaimer.after}</p>
-        <button type="button" class="ba-clear" data-ba="clear">
-          {COPY.clear}
+        <button
+          type="button"
+          class="ba-more"
+          data-ba="more"
+          aria-expanded="false"
+          hidden
+        >
+          {COPY.showMore}
         </button>
-      </footer>
+        <ul class="ba-chips" data-ba="starters">
+          {COPY.chips.map((chip) => (
+            <li>
+              <button type="button" class="ba-chip" data-ba="chip">
+                {chip}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div class="ba-prev" data-ba="previous-wrap" hidden>
+        <button
+          type="button"
+          class="ba-prev-toggle"
+          data-ba="previous"
+          aria-expanded="false"
+          aria-controls="blob-history"
+        >
+          {COPY.previous}
+        </button>
+        <ol class="ba-history" id="blob-history" data-ba="history" hidden></ol>
+      </div>
     </div>
   </div>
 </blob-agent>

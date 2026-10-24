@@ -1,8 +1,9 @@
+import { readFileSync } from "node:fs";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import * as motion from "../../src/scripts/blob/motion.ts";
 import {
   createBlobMotion,
   eyeOffset,
-  MOOD_EMOJI,
   nextBlinkDelay,
 } from "../../src/scripts/blob/motion.ts";
 import { MOODS } from "../../src/lib/moods.ts";
@@ -35,34 +36,39 @@ describe("eyeOffset", () => {
   });
 });
 
-describe("MOOD_EMOJI", () => {
-  it("has exactly the mood keys and matches SCOPE 4.2", () => {
-    expect(Object.keys(MOOD_EMOJI).sort()).toEqual([...MOODS].sort());
-    expect(MOOD_EMOJI).toEqual({
-      idle: null,
-      listening: "✍️",
-      thinking: "🤔",
-      happy: "😄",
-      excited: "🤩",
-      proud: "😎",
-      curious: "🧐",
-      confused: "😅",
-      sleepy: "😴",
-      error: "🫠",
-    });
+describe("moods read without an emoji", () => {
+  const css = readFileSync("src/styles/blob.css", "utf8");
+  const figure = readFileSync("src/components/blob/BlobFigure.astro", "utf8");
+
+  it("has no emoji markup or styles left", () => {
+    expect(css).not.toMatch(/blob-emoji|data-pop/);
+    expect(figure).not.toContain("blob-emoji");
+  });
+
+  it("every mood except idle has its own eye, shape or motion rule", () => {
+    for (const m of MOODS) {
+      if (m === "idle") continue;
+      expect(css, m).toContain(`data-mood="${m}"`);
+    }
+  });
+});
+
+describe("no emoji on Blob", () => {
+  it("motion.ts exports no mood-to-emoji table and covers every mood by name", () => {
+    expect("MOOD_EMOJI" in motion).toBe(false);
+    expect(MOODS).toHaveLength(10);
   });
 });
 
 function fakeFigure() {
-  const emoji = { textContent: "" };
   const props = new Map<string, string>();
   const figure = {
     dataset: { mood: "idle", talking: "false" } as Record<string, string>,
     style: { setProperty: (k: string, v: string) => props.set(k, v) },
-    querySelector: () => emoji,
+    querySelector: () => null,
     getBoundingClientRect: () => ({ left: 0, top: 0, width: 100, height: 100 }),
   };
-  return { figure: figure as unknown as HTMLElement, emoji, props };
+  return { figure: figure as unknown as HTMLElement, props };
 }
 
 function stubEnv(reduce = false) {
@@ -83,21 +89,18 @@ afterEach(() => {
 });
 
 describe("createBlobMotion", () => {
-  it("sets mood/talking attributes and pops the emoji on change only", () => {
+  it("sets mood/talking attributes on change only and never pops an emoji", () => {
     vi.useFakeTimers();
     stubEnv();
-    const { figure, emoji } = fakeFigure();
+    const { figure } = fakeFigure();
     const m = createBlobMotion(figure);
     m.setMood("happy");
     expect(figure.dataset["mood"]).toBe("happy");
-    expect(emoji.textContent).toBe("😄");
-    expect(figure.dataset["pop"]).toBe("1");
-    vi.advanceTimersByTime(1300);
     expect(figure.dataset["pop"]).toBeUndefined();
+    expect(vi.getTimerCount()).toBe(1); // only the blink timer
     m.setMood("happy");
-    expect(figure.dataset["pop"]).toBeUndefined();
     m.setMood("idle");
-    expect(emoji.textContent).toBe("");
+    expect(figure.dataset["mood"]).toBe("idle");
     m.setTalking(true);
     expect(figure.dataset["talking"]).toBe("true");
     m.destroy();

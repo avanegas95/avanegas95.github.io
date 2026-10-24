@@ -9,16 +9,16 @@ export type Message = {
 };
 
 export const COPY: {
-  bubble: string;
+  greeting: string;
   chips: readonly string[];
-  toggleLabel: string;
-  askPrompt: string;
-  panelTitle: string;
   inputLabel: string;
   inputPlaceholder: string;
   send: string;
-  close: string;
   clear: string;
+  previous: string;
+  previousHide: string;
+  showMore: string;
+  showLess: string;
   disclaimer: { before: string; linkLabel: string; after: string };
   noJs: {
     before: string;
@@ -30,21 +30,21 @@ export const COPY: {
   thinking: string;
   errors: Record<CopyErrorCode, Message>;
 } = {
-  bubble: "Hi! I'm Blob 👋 Ask me anything about Anderson.",
+  greeting: "Hi! I'm Blob. Ask me anything about Anderson.",
   chips: [
     "What does he do at Boston Dynamics?",
     "Show me his projects",
     "What's his test automation stack?",
     "Can I get his resume?",
   ],
-  toggleLabel: "Chat with Blob",
-  askPrompt: "Ask Blob about Anderson",
-  panelTitle: "Chat with Blob",
   inputLabel: "Your question for Blob",
   inputPlaceholder: "Ask about Anderson's work",
   send: "Send",
-  close: "Close chat",
   clear: "Clear chat",
+  previous: "Previous answers",
+  previousHide: "Hide previous answers",
+  showMore: "Show more",
+  showLess: "Show less",
   disclaimer: {
     before: "Blob is an AI and can make mistakes. Ask Anderson directly via ",
     linkLabel: "contact",
@@ -63,7 +63,7 @@ export const COPY: {
       text: "Whoa, that's a lot of questions! Give Blob a minute, then try again.",
     },
     budget: {
-      text: "Blob is napping 😴 for today. Anderson is awake, though.",
+      text: "Blob is napping for today. Anderson is awake, though.",
       link: { label: "Contact him", href: "#contact" },
     },
     bot: {

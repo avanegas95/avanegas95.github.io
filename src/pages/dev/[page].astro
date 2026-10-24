@@ -4,7 +4,6 @@ import BlobAgent from "@/components/blob/BlobAgent.astro";
 import BlobFigure from "@/components/blob/BlobFigure.astro";
 import { devPreviewEnabled } from "@/lib/dev-pages";
 import { MOODS } from "@/lib/moods";
-import { MOOD_EMOJI } from "@/scripts/blob/motion";
 
 // Preview-only: built locally and on Vercel previews, never on production. Nothing links here.
 export function getStaticPaths() {
@@ -37,8 +36,8 @@ export function getStaticPaths() {
         Contact (stub)
       </h2>
       <p class="blob-preview-note">
-        Anchor target so Blob's in-panel contact links have somewhere to land on
-        this preview page.
+        Anchor target so Blob's contact links have somewhere to land on this
+        preview page.
       </p>
     </section>
 
@@ -72,9 +71,7 @@ export function getStaticPaths() {
               <BlobFigure size="hero" mood={m} />
               <BlobFigure size="avatar" mood={m} />
             </div>
-            <span>
-              {m} {MOOD_EMOJI[m] ?? ""}
-            </span>
+            <span>{m}</span>
           </li>
         ))}
       </ul>

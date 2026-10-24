@@ -1,11 +1,11 @@
 // Conversation wiring for <blob-agent> (SCOPE §4.2-§4.4, §5.4): submit -> /api/chat stream ->
-// safe markdown in the log, moods on both figures, friendly errors, clear chat.
+// safe markdown in the speech bubble, moods on the figure (never an emoji), friendly errors, clear chat.
 // Owns every timer and listener it creates; destroy() removes them all.
 import type { ClientErrorCode, streamChat } from "./chat-client";
 import { COPY } from "./copy";
 import type { BlobAgent } from "./element";
 import { buildRequest, newSessionId, type Turn } from "./history";
-import { appendAssistant, appendUser } from "./messages";
+import type { appendAssistant } from "./messages";
 import {
   ERROR_HOLD_MS,
   INITIAL_MOOD_STATE,
@@ -24,7 +24,6 @@ export type ConversationDeps = {
 type Timer = ReturnType<typeof setTimeout>;
 type Reply = ReturnType<typeof appendAssistant>;
 
-const NEAR_BOTTOM_PX = 32;
 const ACTIVITY = ["pointerdown", "pointermove", "keydown", "input"] as const;
 
 export function attachConversation(
@@ -43,7 +42,9 @@ export function attachConversation(
 
   const ac = new AbortController();
   const on = { signal: ac.signal };
-  const log = el.log;
+  const bubble = el.bubble;
+  if (!bubble) throw new Error("blob-agent: bubble missing");
+  const answer = el.answer;
   const sendButton = el.querySelector<HTMLButtonElement>(
     '[data-ba="form"] [type="submit"]',
   );
@@ -62,12 +63,10 @@ export function attachConversation(
 
   const mood = (i: MoodInput): void => {
     state = nextMood(state, i);
-    el.heroMotion?.setMood(state.mood);
-    el.avatarMotion?.setMood(state.mood);
+    el.motion?.setMood(state.mood);
   };
   const talking = (v: boolean): void => {
-    el.heroMotion?.setTalking(v);
-    el.avatarMotion?.setTalking(v);
+    el.motion?.setTalking(v);
   };
 
   const setBusy = (busy: boolean): void => {
@@ -91,29 +90,18 @@ export function attachConversation(
     p?.();
   };
 
-  const scrollDown = (): void => {
-    log.scrollTop = log.scrollHeight;
-  };
-  // Runs a content change and follows it to the bottom only if the reader was already there
-  // (within NEAR_BOTTOM_PX), so scrolling up to re-read is never yanked back down.
-  const follow = (change: () => void): void => {
-    const stick =
-      log.scrollHeight - log.scrollTop - log.clientHeight <= NEAR_BOTTOM_PX;
-    change();
-    if (stick) scrollDown();
-  };
-
   // Ends the in-flight request's UI state. Callbacks from it are ignored afterwards.
   const finish = (): void => {
     inflight = null;
     failInflight = null;
-    log.setAttribute("aria-busy", "false");
+    answer.setAttribute("aria-busy", "false");
     talking(false);
     setBusy(false);
   };
 
   const showError = (reply: Reply, code: ClientErrorCode): void => {
-    follow(() => reply.setError(COPY.errors[code]));
+    reply.setError(COPY.errors[code]);
+    bubble.fail();
     mood({ type: "error" });
     cancel(errorTimer);
     errorTimer = later(() => {
@@ -127,9 +115,7 @@ export function attachConversation(
     if (text === "" || inflight) return;
     cancel(errorTimer);
     errorTimer = undefined;
-    appendUser(log, text);
-    const reply = appendAssistant(log);
-    scrollDown();
+    const reply = bubble.ask(text);
     const req = buildRequest(
       [...history, { role: "user", content: text }],
       sessionId,
@@ -146,9 +132,9 @@ export function attachConversation(
     const live = (): boolean => inflight === ctrl;
     let buffer = "";
     let started = false;
-    let badged = false;
     const render = (): void => {
-      follow(() => reply.setMarkdown(buffer));
+      reply.setMarkdown(buffer);
+      bubble.sync();
     };
     const fail = (code: ClientErrorCode): void => {
       if (!live()) return;
@@ -165,17 +151,14 @@ export function attachConversation(
           onMood(m) {
             if (!live()) return;
             mood({ type: "mood", mood: m });
-            reply.setMood(m);
-            badged = true;
           },
           onDelta(t) {
             if (!live()) return;
             if (!started) {
               started = true;
               mood({ type: "firstDelta" });
-              if (!badged && state.replyMood) reply.setMood(state.replyMood);
-              badged = true;
-              log.setAttribute("aria-busy", "true");
+              bubble.delta();
+              answer.setAttribute("aria-busy", "true");
               talking(true);
             }
             buffer += t;
@@ -187,6 +170,7 @@ export function attachConversation(
             cancelFrame();
             buffer = "";
             reply.setMarkdown("");
+            bubble.sync();
           },
           onDone() {
             if (!live()) return;
@@ -204,6 +188,7 @@ export function attachConversation(
               { role: "assistant", content: buffer },
             ];
             finish();
+            bubble.done();
             mood({ type: "done" });
           },
           onError: fail,
@@ -227,7 +212,7 @@ export function attachConversation(
     abort();
     cancel(errorTimer);
     errorTimer = undefined;
-    log.replaceChildren();
+    bubble.clear();
     history = [];
     sessionId = newSessionId();
     mood({ type: "clear" });
@@ -270,7 +255,7 @@ export function attachConversation(
       signal: ac.signal,
     });
   }
-  // Closing the panel keeps the reply streaming; leaving the page does not.
+  // Leaving the page stops the reply; nothing else does (Esc included).
   addEventListener(
     "pagehide",
     () => {
@@ -281,10 +266,10 @@ export function attachConversation(
     },
     on,
   );
-  // A (re)attached element starts fresh: empty log, idle figures (setMood skips an unchanged
-  // mood, so this also syncs figures left on another mood by an earlier attach).
-  log.replaceChildren();
-  log.setAttribute("aria-busy", "false");
+  // A (re)attached element starts fresh: greeting bubble, idle figure (setMood skips an
+  // unchanged mood, so this also syncs a figure left on another mood by an earlier attach).
+  bubble.clear();
+  answer.setAttribute("aria-busy", "false");
   mood({ type: "clear" });
   armIdle(SLEEPY_AFTER_MS);
 

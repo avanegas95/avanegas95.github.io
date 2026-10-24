@@ -13,7 +13,7 @@ const all = strings(COPY);
 
 describe("COPY SCOPE strings", () => {
   it("matches SCOPE 4.3 bubble and chips", () => {
-    expect(COPY.bubble).toBe("Hi! I'm Blob 👋 Ask me anything about Anderson.");
+    expect(COPY.greeting).toBe("Hi! I'm Blob. Ask me anything about Anderson.");
     expect(COPY.chips).toHaveLength(4);
     expect([...COPY.chips]).toEqual([
       "What does he do at Boston Dynamics?",
@@ -55,13 +55,17 @@ describe("COPY errors", () => {
   });
 
   it("budget and unavailable link to contact; budget naps", () => {
-    expect(COPY.errors.budget.text).toContain("😴");
+    expect(COPY.errors.budget.text).toContain("napping");
     expect(COPY.errors.budget.link?.href).toBe("#contact");
     expect(COPY.errors.unavailable.link?.href).toBe("#contact");
   });
 });
 
 describe("COPY hygiene", () => {
+  it("has no emoji anywhere (orchestrator note 2026-10-23)", () => {
+    for (const s of all) expect(s).not.toMatch(/\p{Extended_Pictographic}/u);
+  });
+
   it("has no markup, URLs, emails or placeholders", () => {
     expect(all.length).toBeGreaterThan(20);
     for (const s of all) {

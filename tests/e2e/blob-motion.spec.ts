@@ -8,9 +8,7 @@ import {
   stubBotId,
 } from "./fixtures/chat";
 
-const toggle = (page: Page) =>
-  page.getByRole("button", { name: "Chat with Blob" });
-const hero = (page: Page) => toggle(page).locator(".blob-figure");
+const hero = (page: Page) => page.locator('[data-ba="figure"] .blob-figure');
 const input = (page: Page) => page.getByLabel("Your question for Blob");
 
 async function setup(page: Page) {
@@ -23,7 +21,6 @@ async function setup(page: Page) {
 }
 
 async function ask(page: Page, text: string) {
-  await toggle(page).click();
   await input(page).fill(text);
   await input(page).press("Enter");
 }
@@ -59,10 +56,10 @@ test.describe("reduced motion", () => {
     await mockChat(page, { events: FIXTURES.excited });
     expect(await runningInSlot(page)).toEqual([]);
     await ask(page, "Tell me about a project");
-    await expect(
-      page.locator('[data-ba="log"] [data-role="assistant"]').last(),
-    ).toContainText("Ooh, fun project!");
-    // excited normally bounces and the emoji normally floats; neither may run.
+    await expect(page.locator('[data-ba="clip"] > .ba-msg')).toContainText(
+      "Ooh, fun project!",
+    );
+    // excited normally bounces and the bubble normally pops in; neither may run.
     expect(await runningInSlot(page)).toEqual([]);
     expect(api.blocked).toEqual([]);
     expect(errors()).toEqual([]);
@@ -104,7 +101,7 @@ test.describe("full motion", () => {
     await page.evaluate(() => {
       const w = window as unknown as { __blinked: boolean };
       w.__blinked = false;
-      const fig = document.querySelector(".ba-toggle .blob-figure")!;
+      const fig = document.querySelector(".ba-figure .blob-figure")!;
       new MutationObserver(() => {
         if (fig.hasAttribute("data-blink")) w.__blinked = true;
       }).observe(fig, { attributes: true, attributeFilter: ["data-blink"] });
