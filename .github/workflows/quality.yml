@@ -8,9 +8,11 @@ on:
   push:
     branches: [feat/blob]
 
+# Pushes: one group per SHA, so a later commit never cancels an earlier commit's run.
+# Pull requests: one group per PR, newer pushes cancel the stale run.
 concurrency:
-  group: quality-${{ github.ref }}
-  cancel-in-progress: true
+  group: quality-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read

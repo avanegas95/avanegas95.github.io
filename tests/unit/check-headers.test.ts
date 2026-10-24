@@ -64,18 +64,52 @@ describe("check-headers", () => {
     expect(r.output).toContain("strict-transport-security");
   });
 
-  it("fails when the BotID path sends DENY", async () => {
+  it("probes the challenge script and checks only HSTS there", async () => {
     const { run } = await load();
+    const seen: { url: string; init?: RequestInit }[] = [];
     const r = await run(
       args,
       {},
       makeFetch((p, h) => {
-        if (p.startsWith(BOTID)) h["x-frame-options"] = "DENY";
+        if (p.startsWith(BOTID)) {
+          return {
+            "strict-transport-security": h["strict-transport-security"],
+          };
+        }
         return h;
-      }),
+      }, seen),
+    );
+    expect(r.code).toBe(0);
+    const paths = seen.map((s) => new URL(s.url).pathname);
+    expect(paths).toContain(`${BOTID}/a-4-a/c.js`);
+    expect(paths).not.toContain(BOTID);
+    expect(paths).not.toContain(`${BOTID}/`);
+  });
+
+  it("fails when the BotID path lacks HSTS", async () => {
+    const { run } = await load();
+    const r = await run(
+      args,
+      {},
+      makeFetch((p, h) => (p.startsWith(BOTID) ? {} : h)),
     );
     expect(r.code).toBe(1);
-    expect(r.output).toContain("SAMEORIGIN");
+    expect(r.output).toContain("strict-transport-security");
+  });
+
+  it("fails when the BotID path is served as text/html", async () => {
+    const { run } = await load();
+    const r = await run(
+      args,
+      {},
+      makeFetch((p, h) =>
+        p.startsWith(BOTID)
+          ? { ...h, "content-type": "text/html; charset=utf-8" }
+          : h,
+      ),
+    );
+    expect(r.code).toBe(1);
+    expect(r.output).toContain("text/html");
   });
 
   it("fails when /api/chat does not answer 405", async () => {
@@ -121,7 +155,7 @@ describe("check-headers", () => {
       makeFetch((_p, h) => h, seen),
     );
     const paths = seen.map((s) => new URL(s.url).pathname);
-    expect(paths).toContain(expected);
+    expect(paths).toContain(`${expected}a-4-a/c.js`);
   });
 
   it("requires a URL", async () => {
