@@ -89,7 +89,7 @@ Scope: `docs/tasks/P5.5/_proposal.md`; table: `_proposed-plan.md`; Anderson's to
 | P5.5-05 | Experience from KB roles | sonnet | sonnet | 13a, 13c, H2 | 4 | merged |
 | P5.5-06 | Contact polish + Formspree E2E | sonnet | sonnet | 13a, 13c | 4 | merged |
 | P5.5-13b | Projects render from KB | sonnet | sonnet | 03, 13a, 13c, H4 | 4 | brief |
-| P5.5-04 | Hero + About from intake | sonnet | sonnet | 13a, 13c, H2, H4 | 4 | brief |
+| P5.5-04 | Hero + About moved verbatim from Anderson's edited components into the KB | sonnet | sonnet | 13a, 13c, H2, H4 ✓ | 4 | wip |
 | P5.5-08b | Nav fix (also: switch nav.ts, prompt.ts, links.ts to `#experience`, then drop the `#experiences` alias span and its CSS) | haiku | sonnet | 05, 08a | 5 | brief |
 | P5.5-13d | Resume facts check vs KB (hand-made PDF; re-brief) | sonnet | opus | 05, 13a, 13c, P5-05, H5 | 5 | brief |
 
