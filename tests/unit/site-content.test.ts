@@ -44,16 +44,15 @@ describe("site-content", () => {
     expect(getCollection).toHaveBeenCalledWith("projects");
   });
 
-  it("roles keep KB order (intern included since D-02)", async () => {
+  it("cards keep KB order; SQA I/II is one card and the intern is hidden", async () => {
     const roles = await getRoles();
-    expect(roles.map((r) => `${r.company}|${r.title}|${r.start}`)).toEqual([
-      "Boston Dynamics|Staff SQA Engineer|2026-03",
-      "Boston Dynamics|Senior SQA Engineer|2023-09",
-      "SharkNinja|SQA Engineer II|2022-04",
-      "SharkNinja|SQA Engineer|2019-11",
-      "SharkNinja|Product Development Intern|2019-04",
+    expect(
+      roles.map((r) => `${r.company}|${r.title}|${r.start}|${r.end}`),
+    ).toEqual([
+      "Boston Dynamics|Staff SQA Engineer|2026-03|null",
+      "Boston Dynamics|Senior SQA Engineer|2023-09|2026-03",
+      "SharkNinja|SQA Engineer I/II|2019-11|2023-09",
     ]);
-    expect(roles[0]?.end).toBeNull();
   });
 
   it("returns skill groups, contact and bio from the KB", async () => {

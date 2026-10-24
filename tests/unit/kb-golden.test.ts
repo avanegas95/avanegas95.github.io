@@ -40,6 +40,25 @@ describe("KB prompt goldens", () => {
     expect(out).toBe(golden(exp.path));
   });
 
+  it("siteGroup, siteTitle and showOnSite never reach the prompt: Blob keeps separate roles", () => {
+    const exp = sources.find((s) => s.path.endsWith("experience.md"));
+    if (!exp) throw new Error("experience.md not found");
+    const out = renderKbSection(exp) ?? "";
+    expect(out).toContain("SQA Engineer II");
+    expect(out).toContain("Product Development Intern");
+    expect(out).not.toContain("I/II");
+    expect(out).not.toContain("sharkninja-sqa");
+    const marked = {
+      ...exp,
+      raw: exp.raw.replace(
+        "    showOnSite: true\n    bullets:\n",
+        '    showOnSite: true\n    siteGroup: "SITE-GROUP-MARKER"\n    siteTitle: "SITE-TITLE-MARKER"\n    bullets:\n',
+      ),
+    };
+    expect(marked.raw).toContain("SITE-TITLE-MARKER");
+    expect(renderKbSection(marked) ?? "").toBe(golden(exp.path));
+  });
+
   it("full KB equals the sorted concatenation of the goldens", () => {
     const parts = sources
       .map((s) => s.path)

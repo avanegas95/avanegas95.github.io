@@ -2,7 +2,8 @@
 // rule 1): sections render these values instead of hard-coding facts.
 import { getCollection, getEntry } from "astro:content";
 import type { CollectionEntry } from "astro:content";
-import type { ContactLinks, Knowledge, Role, SkillGroup } from "./kb-schema.ts";
+import type { ContactLinks, Knowledge, SkillGroup } from "./kb-schema.ts";
+import { groupRoles, type SiteRole } from "./experience-groups.ts";
 
 type Topic = Knowledge["topic"];
 
@@ -34,10 +35,10 @@ export async function getBio(): Promise<{
   return { title, summary, headline, lede, body: e.body };
 }
 
-/** Roles shown on the site, in KB order. */
-export async function getRoles(): Promise<Role[]> {
+/** Experience cards: showOnSite roles in KB order, merged by siteGroup. */
+export async function getRoles(): Promise<SiteRole[]> {
   const e = await publicData("experience");
-  return (e?.data.roles ?? []).filter((r) => r.showOnSite);
+  return groupRoles((e?.data.roles ?? []).filter((r) => r.showOnSite));
 }
 
 export async function getSkillGroups(): Promise<SkillGroup[]> {

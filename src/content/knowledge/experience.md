@@ -39,6 +39,8 @@ roles:
     start: "2022-04"
     end: "2023-09"
     showOnSite: true
+    siteGroup: "sharkninja-sqa"
+    siteTitle: "SQA Engineer I/II"
     bullets:
       - "Led and mentored junior SQA engineers and contractors during sprints; managed test execution, defect tracking, and daily standups."
       - "Coordinated with cross-functional hardware/software teams to design test procedures and protocols."
@@ -49,6 +51,7 @@ roles:
     start: "2019-11"
     end: "2022-04"
     showOnSite: true
+    siteGroup: "sharkninja-sqa"
     bullets:
       - "Designed and executed manual test cases from SRS documentation; logged defects in Jira and collaborated cross-functionally to ensure high-quality releases across backend cloud tools and user-facing mobile apps."
       - "Assisted the automation team by debugging and improving Python scripts."
@@ -58,7 +61,7 @@ roles:
     employment: "full time"
     start: "2019-04"
     end: "2019-11"
-    showOnSite: true
+    showOnSite: false
     bullets: []
     note: "Anderson started at SharkNinja as a Product Development Intern, April to November 2019. Details beyond the title and dates are not available."
 ---

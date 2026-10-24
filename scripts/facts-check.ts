@@ -15,6 +15,7 @@ import {
   type KbSource,
 } from "../src/lib/kb.ts";
 import { scanText, type PiiRule } from "../src/lib/pii.ts";
+import { groupRoles } from "../src/lib/experience-groups.ts";
 
 export type Finding = {
   rule: string;
@@ -29,6 +30,10 @@ function eachLine(text: string): [number, string][] {
   return text.split(/\r\n?|\n/).map((l, i) => [i + 1, l]);
 }
 
+// D-03 (resolved 2026-10-24): Anderson keeps "7 years" (experience) and "3 years"
+// (automation) in the hero. Any other year count is still an error.
+const STATED_YEARS = /\b(?!(?:7|3)\s+years\b)\d+\+?\s+years\b/i;
+
 // DISCREPANCIES interim rules. `skip` exempts lines that match a different,
 // legitimate phrase ("Boston University, Boston, MA" is not a location claim).
 type LineRule = {
@@ -41,8 +46,9 @@ type LineRule = {
 const LINE_RULES: readonly LineRule[] = [
   {
     rule: "D-03",
-    re: /\b\d+\+?\s+years\b/i,
-    message: 'states a number of years; interim rule: say "since 2019" instead',
+    re: STATED_YEARS,
+    message:
+      'states a number of years other than "7 years" or "3 years" (Anderson, 2026-10-24)',
     scope: "both",
   },
   {
@@ -62,7 +68,7 @@ const LINE_RULES: readonly LineRule[] = [
     rule: "D-14",
     re: /Senior SQA Engineer with/,
     message:
-      "hero calls him Senior; interim rule: Staff SQA Engineer since March 2026, no years stated",
+      "hero calls him Senior; interim rule: Staff SQA Engineer since March 2026",
     scope: "site",
   },
 ];
@@ -139,7 +145,9 @@ function checkExperience(
   if (!exp) return [];
   const data = parseKbSource(exp).data;
   if (data.topic !== "experience") return [];
-  const roles = (data.roles ?? []).filter((r) => r.showOnSite);
+  const shown = (data.roles ?? []).filter((r) => r.showOnSite);
+  // The site shows merged cards (siteGroup, e.g. "SQA Engineer I/II"); a KB role's own title is also accepted.
+  const roles = [...groupRoles(shown), ...shown];
   const out: Finding[] = [];
   for (const src of site) {
     for (const card of experienceCards(src.text)) {
@@ -272,7 +280,9 @@ export function driftConfigFromKb(kb: readonly KbSource[]): DriftConfig {
 
 const YEAR_RANGE =
   /\b(?:19|20)\d{2}\s*[–—-]\s*(?:(?:(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+)?(?:19|20)\d{2}|Present)\b/i;
-const YEARS = /\b\d+\+?\s+years\b|years of experience/i;
+// "7 years" and "3 years" are Anderson's stated counts (D-03); other counts still drift.
+const YEARS =
+  /\b(?!(?:7|3)\s+years\b)\d+\+?\s+years\b|(?<!\b[73]\s)years of experience/i;
 const TITLE = /\bSQA Engineer\b/;
 
 export type DriftHit = { line: number; text: string };
