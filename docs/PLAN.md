@@ -39,6 +39,7 @@ Decided 2026-10-23 (Anderson): Blob and the chat backend move into the existing 
 | P5-14 | New OG preview image from the current site (replaces the inspiration-site leftover), reproducible `og:render` script, leftover scan | designer | sonnet | sonnet | P5-10 (branched from it) | 4 | merged |
 | P5-15 | Blob favicon (SVG + PNG/ICO fallbacks, reproducible render) | designer | sonnet | sonnet | P5-14 (branched from it) | 4 | merged |
 | P5-16 | Project-card tag contrast (#8892b0 on card bg 4.33:1 < 4.5:1; a11y-home axe red) | designer | sonnet | sonnet | P5.5-03 | 4 | merged |
+| P5-17 | Serve the new public-safe resume PDF at the resume URL; guard:pii scans PDF text; amend rule 7 / D-06; update resume E2E | developer | sonnet | opus | Anderson's final PDF | 4 | blocked (human: final PDF) |
 | P5-04c | Mount Blob on `/` in the chosen placement | designer | sonnet | opus | P5-04b, P5-10, P5-11, P5-16, placement A (decided) | 5 | merged |
 
 Task branches merge into `feat/blob` (the integration branch), not `main`.
@@ -108,7 +109,8 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 ## Decision log
 | Date | Decision | By |
 |---|---|---|
-| 2026-10-24 | Anderson's updated resume (kept outside the repo) now has no street address or phone, says Paychira and Staff, and lists Zephyr, Buildkite, Jenkins and Bash. That settles D-11: the hero's tool list matches the resume. Whether to serve this PDF at the resume URL instead of the LinkedIn 302 is open (rule 7 / D-06). | Anderson |
+| 2026-10-24 | Serve Anderson's updated, public-safe resume PDF at the existing resume URL instead of the LinkedIn 302, once he supplies the final export. Amend CLAUDE.md rule 7 and D-06, and extend guard:pii to extract and scan PDF text so no phone or street address can ship (task P5-17). | Anderson |
+| 2026-10-24 | Anderson's updated resume (kept outside the repo) now has no street address or phone, says Paychira and Staff, and lists Zephyr, Buildkite, Jenkins and Bash. That settles D-11: the hero's tool list matches the resume. | Anderson |
 | 2026-10-24 | Phase gate may run the chat smoke test against the Vercel Preview with `--spend` (a few messages, under $0.01). Anderson provides the Preview bypass token via the shell as `VERCEL_AUTOMATION_BYPASS_SECRET`; it is never written to the repo or chat. | Anderson |
 | 2026-10-24 | Favicon: replace the gradient orb (unknown origin) with a small teal Blob favicon (P5-15). | Anderson |
 | 2026-10-24 | New OG image approved (with the site's monospace font bundled). LICENSE stays MIT with the holder changed to Anderson Vanegas; remove every reference to Oscar Hernandez (the inspiration site) from the repo and site (P5-14 round 2). | Anderson |
