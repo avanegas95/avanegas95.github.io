@@ -3,7 +3,7 @@
 > The live plan for porting Blob into this repo. Only the orchestrator edits this file. Product decisions are in `docs/SCOPE.md` (carried over from portfolio-v3; read it as applying to this repo). Agent rules are in `CLAUDE.md`. Briefs go in `docs/tasks/<phase>/<task-id>.md`.
 > History for P0–P4 (all PASSED) and the private review material (security review, red-team checklist, eval reports, research) are in the **private** sibling repo `../portfolio-v3` (local path `/Users/anderson/Github Projects/portfolio-v3`). Read them there and never copy them into this public repo.
 
-## ▶ Current phase: **P5: Port Blob into avanegas95.github.io, on Vercel** · Status: `in progress` (2026-10-23). P5-00 done (Vercel project, env, Upstash, BotID, spend alert). P5-01 audit + briefs merged; batch 1 (P5-02) dispatched. All P5 tasks merged; phase gate in progress.
+## ▶ Current phase: **P5.5: Portfolio improvement** · Status: `in progress` (2026-10-24). P5 PASSED its gate on 2026-10-24 (Preview of feat/blob @ e79dbc5). P6 waits on Anderson's explicit approval.
 
 **Status legend:** `todo` · `brief` · `wip` · `review` · `changes` · `merged` · `blocked`
 
@@ -77,8 +77,8 @@ Scope: `docs/tasks/P5.5/_proposal.md`; table: `_proposed-plan.md`; Anderson's to
 | ID | Task | Model | Reviewer | Depends on | Batch | Status |
 |---|---|---|---|---|---|---|
 | P5.5-03 | Land `origin/feature/projects-section` | sonnet | sonnet | — | 0 | merged |
-| P5.5-08a | Land `origin/blog-posts` (only "What this blog is about" published) | sonnet | sonnet | H1 ✓ | 0 | brief |
-| P5.5-15 | Rename Finance Forecast → Paychira | haiku | sonnet | P5-06, P5-07 | 1 | brief |
+| P5.5-08a | Land `origin/blog-posts` (only "What this blog is about" published) | sonnet | sonnet | H1 ✓ | 0 | wip |
+| P5.5-15 | Rename Finance Forecast → Paychira | haiku | sonnet | P5-06, P5-07 | 1 | wip |
 | P5.5-13a | Shared KB schema, per-file golden prompt, `site-copy.md` template | opus | opus | P5 gate, 08a, 15 | 2 | brief |
 | P5.5-13c | Voice lock, `facts:check`, drift ratchet | sonnet | opus | 13a, H3 | 3 | brief |
 | P5.5-05 | Experience from KB roles | sonnet | sonnet | 13a, 13c, H2 | 4 | brief |
@@ -175,3 +175,4 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 2026-10-24 · P5 GATE run 1 (opus test-engineer, feat/blob @ 02f5959): 7/8 PASS. Preview Ready and serves the full site with Blob; legacy URLs 200; live chat smoke 200 SSE (~$0.0013); CI green on 4f8a2cb (unit 2,495, E2E 282 across 3 browsers, Lighthouse asserts); local Lighthouse mobile ≥0.98, desktop 1.0; island 8.5 KB gz; RUNBOOK + spend alert in place. FAIL: check-headers on the BotID path (proxied to Vercel, only HSTS applied) → P5-18. Re-run criteria 2–3 after P5-17 and P5-18. Notes: Preview Lighthouse BP 0.93 from Vercel toolbar vs CSP (Preview-only); Preview shares the prod Upstash DB (P6).
 2026-10-24 · P5-17 · merged (opus APPROVE round 2): resume PDF served at /Anderson_Vanegas_Resume.pdf; guard:pii scans PDF text (split-line, size/page/time caps). Unit 2,510, chromium E2E 94/94.
 2026-10-24 · P5-18 · merged (round 2 verified by orchestrator: paths-ignore removed, per-SHA push concurrency). Unit 2,512. Next: re-run gate criteria 2–3 on the new Preview.
+2026-10-24 · P5 GATE run 2 (criteria 2, 3, 5 on Preview @ e79dbc5): all PASS. Resume PDF 200 application/pdf, byte-identical, full security headers; check-headers passes; CI run 40105362997 green (unit 2,512; E2E 282 across 3 browsers; bundle 8.5 KB; guard:pii incl. PDF; Lighthouse asserts). With run 1 (criteria 1, 4, 6, 7, 8) → **P5 PASSED**. Notes: guard:pii warns on unresolved "to be confirmed" markers in KB finance-forecast.md and orbit-hop.md (Anderson content, P5.5); Preview adds x-robots-tag noindex (Vercel default; confirm absent on production in P6); Preview shares the prod Upstash DB (P6).
