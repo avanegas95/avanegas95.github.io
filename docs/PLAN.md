@@ -31,11 +31,11 @@ Decided 2026-10-23 (Anderson): Blob and the chat backend move into the existing 
 | P5-07 | KB ↔ v1 site consistency, DISCREPANCIES, `site.md` | researcher | sonnet | sonnet | P5-03a | 3 | merged |
 | P5-04b | Speech-bubble replies replace the panel | designer | sonnet | opus | P5-04a | 4 | merged |
 | P5-06 | Internal evals port (no publishing) | developer | sonnet | opus | P5-03b | 4 | merged |
-| P5-09 | RUNBOOK (public-safe) + header check (N-3) | developer | sonnet | opus | P5-03b, P5-05 | 4 | brief |
+| P5-09 | RUNBOOK (public-safe) + header check (N-3) | developer | sonnet | opus | P5-03b, P5-05 | 4 | wip |
 | P5-11 | Footer: drop Spotify iframe, legacy/policy links, computed year, `/orbithop` email-spacing fix | designer | sonnet | sonnet | P5-02, P5-08 | 4 | merged |
 | P5-10 | Meta: real `og:image`, KB title/description, Person JSON-LD | developer | sonnet | sonnet | P5-05, P5-07 | 4 | merged |
 | P5-12 | Fix super-linear `scrub()` on stray `<` + split PII (DoS risk on chat path); harden load-sensitive test timeouts | developer | opus | opus | P5-03b | 4 | merged |
-| P5-13 | Test follow-ups: scrubber test pinning digit-free obfuscated `tel:` removal (`t<b>e</b>l:abc`, `tel：abc`); decide/handle U+A789 as a colon (pre-existing gap); evals `spendAllowed` "ci" reason tests (CI=true/1 → ci, false/0 → ok); `markdown.test.ts` "linear-ish time" ratio test flakes under load: time CPU (process.cpuUsage) like scrub-perf | developer | sonnet | opus | P5-12 | 4 | todo |
+| P5-13 | Test follow-ups: scrubber test pinning digit-free obfuscated `tel:` removal (`t<b>e</b>l:abc`, `tel：abc`); decide/handle U+A789 as a colon (pre-existing gap); evals `spendAllowed` "ci" reason tests (CI=true/1 → ci, false/0 → ok); `markdown.test.ts` "linear-ish time" ratio test flakes under load: time CPU (process.cpuUsage) like scrub-perf | developer | sonnet | opus | P5-12 | 4 | wip |
 | P5-14 | New OG preview image from the current site (replaces the inspiration-site leftover), reproducible `og:render` script, leftover scan | designer | sonnet | sonnet | P5-10 (branched from it) | 4 | merged |
 | P5-15 | Blob favicon (SVG + PNG/ICO fallbacks, reproducible render) | designer | sonnet | sonnet | P5-14 (branched from it) | 4 | merged |
 | P5-16 | Project-card tag contrast (#8892b0 on card bg 4.33:1 < 4.5:1; a11y-home axe red) | designer | sonnet | sonnet | P5.5-03 | 4 | wip |
