@@ -3,7 +3,7 @@
 > The live plan for porting Blob into this repo. Only the orchestrator edits this file. Product decisions are in `docs/SCOPE.md` (carried over from portfolio-v3; read it as applying to this repo). Agent rules are in `CLAUDE.md`. Briefs go in `docs/tasks/<phase>/<task-id>.md`.
 > History for P0–P4 (all PASSED) and the private review material (security review, red-team checklist, eval reports, research) are in the **private** sibling repo `../portfolio-v3` (local path `/Users/anderson/Github Projects/portfolio-v3`). Read them there and never copy them into this public repo.
 
-## ▶ Current phase: **P5: Port Blob into avanegas95.github.io, on Vercel** · Status: `in progress` (2026-10-23). P5-00 done (Vercel project, env, Upstash, BotID, spend alert). P5-01 audit + briefs merged; batch 1 (P5-02) dispatched. Placement A + teal Blob decided; resume-PDF fix on main in flight.
+## ▶ Current phase: **P5: Port Blob into avanegas95.github.io, on Vercel** · Status: `in progress` (2026-10-23). P5-00 done (Vercel project, env, Upstash, BotID, spend alert). P5-01 audit + briefs merged; batch 1 (P5-02) dispatched. All P5 tasks merged; phase gate in progress.
 
 **Status legend:** `todo` · `brief` · `wip` · `review` · `changes` · `merged` · `blocked`
 
@@ -39,7 +39,7 @@ Decided 2026-10-23 (Anderson): Blob and the chat backend move into the existing 
 | P5-14 | New OG preview image from the current site (replaces the inspiration-site leftover), reproducible `og:render` script, leftover scan | designer | sonnet | sonnet | P5-10 (branched from it) | 4 | merged |
 | P5-15 | Blob favicon (SVG + PNG/ICO fallbacks, reproducible render) | designer | sonnet | sonnet | P5-14 (branched from it) | 4 | merged |
 | P5-16 | Project-card tag contrast (#8892b0 on card bg 4.33:1 < 4.5:1; a11y-home axe red) | designer | sonnet | sonnet | P5.5-03 | 4 | merged |
-| P5-04c | Mount Blob on `/` in the chosen placement | designer | sonnet | opus | P5-04b, P5-10, P5-11, P5-16, placement A (decided) | 5 | wip |
+| P5-04c | Mount Blob on `/` in the chosen placement | designer | sonnet | opus | P5-04b, P5-10, P5-11, P5-16, placement A (decided) | 5 | merged |
 
 Task branches merge into `feat/blob` (the integration branch), not `main`.
 
@@ -166,3 +166,4 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 2026-10-24 · P5-16 · merged (one class; verified by the full suite: unit 2,465/2,465, chromium E2E 85/85 incl. a11y-home). P5-04c dispatched.
 2026-10-24 · P5-13 · merged (opus APPROVE; U+A789 left as-is, sound: tel: links never render). Minor: markdown fence-path unit sits on the CPU floor; comment/reps tweak optional.
 2026-10-24 · P5-09 · merged (opus APPROVE round 2; RUNBOOK error table verified against code). Still to do at the gate: run check-headers against the Preview (needs the Preview bypass token in the shell).
+2026-10-24 · P5-04c · merged (opus APPROVE round 2; unit 2,495, chromium E2E 94/94; Blob island 8.5 KB gz; LCP +0.13 s accepted). All P5 tasks merged → phase gate.
