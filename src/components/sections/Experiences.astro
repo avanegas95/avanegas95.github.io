@@ -68,10 +68,18 @@ const roles = await getRoles();
         const m = compact ? undefined : media[slug(r.company) as MediaKey];
         return (
           <div
-            class="experience-card fade-in fade-in--slow relative h-full overflow-hidden rounded-xl border border-white/[0.08] bg-[var(--surface-card)]"
+            class:list={[
+              "experience-card fade-in fade-in--slow relative overflow-hidden rounded-xl border border-white/[0.08] bg-[var(--surface-card)]",
+              compact ? "self-start" : "h-full",
+            ]}
             data-testid="experience-card"
           >
-            <article class="flex h-full flex-col overflow-hidden rounded-[inherit]">
+            <article
+              class:list={[
+                "flex flex-col overflow-hidden rounded-[inherit]",
+                !compact && "h-full",
+              ]}
+            >
               {m && (
                 <div class="experience-card__media">
                   <Image

@@ -113,6 +113,36 @@ test("cards sit in a 1, 2 then 3 column grid by viewport width", async ({
   expect(await cols(1280)).toBe(3);
 });
 
+test("a compact card sizes to its content, not the row height", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/");
+  const compact = roles.filter((r) => r.bullets.length === 0);
+  expect(compact.length).toBeGreaterThan(0);
+  const heightOf = async (title: string) =>
+    (
+      await page
+        .getByTestId("experience-card")
+        .filter({
+          has: page.getByRole("heading", {
+            level: 3,
+            name: title,
+            exact: true,
+          }),
+        })
+        .boundingBox()
+    )?.height ?? 0;
+  const full = Math.max(
+    ...(await Promise.all(
+      roles.filter((r) => r.bullets.length > 0).map((r) => heightOf(r.title)),
+    )),
+  );
+  for (const r of compact) {
+    expect(await heightOf(r.title)).toBeLessThan(full / 3);
+  }
+});
+
 test("#experience and the old #experiences alias both reach the section", async ({
   page,
 }) => {
