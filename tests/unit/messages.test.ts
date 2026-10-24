@@ -1,27 +1,13 @@
 // @vitest-environment happy-dom
 import { beforeEach, describe, expect, it } from "vitest";
 import { COPY } from "../../src/scripts/blob/copy.ts";
-import {
-  appendAssistant,
-  appendUser,
-} from "../../src/scripts/blob/messages.ts";
-import { MOOD_EMOJI } from "../../src/scripts/blob/motion.ts";
+import { appendAssistant } from "../../src/scripts/blob/messages.ts";
+import * as motion from "../../src/scripts/blob/motion.ts";
 
 let log: HTMLElement;
 beforeEach(() => {
   log = document.createElement("div");
   document.body.replaceChildren(log);
-});
-
-describe("appendUser", () => {
-  it("keeps markup in user text as plain text", () => {
-    const evil = `<img src=x onerror="alert(1)"> **bold** [x](javascript:alert(1))`;
-    const el = appendUser(log, evil);
-    expect(log.lastElementChild).toBe(el);
-    expect(el.textContent).toBe(evil);
-    expect(log.querySelector("img, strong, a")).toBeNull();
-    expect(el.dataset["role"]).toBe("user");
-  });
 });
 
 describe("appendAssistant", () => {
@@ -49,17 +35,13 @@ describe("appendAssistant", () => {
     expect(m.el.querySelector(".ba-text")?.childNodes.length).toBe(0);
   });
 
-  it("shows the mood emoji in an aria-hidden badge", () => {
+  it("renders no emoji badge and offers no mood glyph API", () => {
     const m = appendAssistant(log);
-    const badge = m.el.querySelector<HTMLElement>(".ba-badge");
-    expect(badge).not.toBeNull();
-    expect(badge?.getAttribute("aria-hidden")).toBe("true");
-    expect(badge?.hidden).toBe(true);
-    m.setMood("excited");
-    expect(badge?.hidden).toBe(false);
-    expect(badge?.textContent).toBe(MOOD_EMOJI.excited);
-    m.setMood("proud");
-    expect(badge?.textContent).toBe(MOOD_EMOJI.proud);
+    m.setMarkdown("Hello");
+    expect(m.el.querySelector(".ba-badge")).toBeNull();
+    expect("setMood" in m).toBe(false);
+    expect("MOOD_EMOJI" in motion).toBe(false);
+    expect(m.el.textContent).not.toMatch(/\p{Extended_Pictographic}/u);
   });
 
   it("setError shows the copy and links only to #contact", () => {

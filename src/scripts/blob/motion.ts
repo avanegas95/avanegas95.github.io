@@ -1,21 +1,7 @@
 // Blob motion controller. Sets attributes and CSS custom properties only (CSP-safe).
+// Moods show through eyes, body shape and motion only; Blob never renders an emoji.
 import type { Mood } from "../../lib/moods";
 
-// SCOPE §4.2. idle has no emoji.
-export const MOOD_EMOJI: Record<Mood, string | null> = {
-  idle: null,
-  listening: "✍️",
-  thinking: "🤔",
-  happy: "😄",
-  excited: "🤩",
-  proud: "😎",
-  curious: "🧐",
-  confused: "😅",
-  sleepy: "😴",
-  error: "🫠",
-};
-
-const POP_MS = 1200;
 const BLINK_MS = 140;
 const SLOW_BLINK_MS = 320;
 const TRACK_RADIUS = 4; // viewBox units
@@ -50,11 +36,9 @@ export function createBlobMotion(
   figure: HTMLElement,
   opts?: { track?: boolean },
 ): BlobMotion {
-  const emoji = figure.querySelector(".blob-emoji");
   const reduce = globalThis.matchMedia("(prefers-reduced-motion: reduce)");
   const fine = globalThis.matchMedia("(pointer: fine)");
   let blinkTimer: ReturnType<typeof setTimeout> | undefined;
-  let popTimer: ReturnType<typeof setTimeout> | undefined;
   let tracking = false;
   let dead = false;
 
@@ -106,15 +90,6 @@ export function createBlobMotion(
     setMood(m) {
       if (figure.dataset["mood"] === m) return;
       figure.dataset["mood"] = m;
-      const glyph = MOOD_EMOJI[m];
-      clearTimeout(popTimer);
-      delete figure.dataset["pop"];
-      if (emoji) emoji.textContent = glyph ?? "";
-      if (glyph) {
-        void figure.offsetWidth; // restart the CSS animation
-        figure.dataset["pop"] = "1";
-        popTimer = setTimeout(() => delete figure.dataset["pop"], POP_MS);
-      }
     },
     setTalking(on) {
       figure.dataset["talking"] = on ? "true" : "false";
@@ -122,9 +97,7 @@ export function createBlobMotion(
     destroy() {
       dead = true;
       clearTimeout(blinkTimer);
-      clearTimeout(popTimer);
       delete figure.dataset["blink"];
-      delete figure.dataset["pop"];
       if (tracking) globalThis.removeEventListener("pointermove", onMove);
       tracking = false;
       reduce.removeEventListener("change", syncTracking);

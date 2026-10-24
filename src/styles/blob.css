@@ -1,5 +1,5 @@
 /* Blob: look and motion (SCOPE 4.2). Everything is driven by data-mood / data-talking /
-   data-blink / data-pop on .blob-figure.
+   data-blink on .blob-figure.
 
    Tokens. Blob's one accent is --blob (+ --blob-contrast for eyes and text on it); every Blob
    colour derives from it. Default is v1's --sec teal (Anderson, 2026-10-23); change it here
@@ -27,7 +27,6 @@ blob-agent :focus-visible,
   --blob-breathe: 6s;
   --blob-bob: 0.55s;
   --blob-bounce: 0.7s;
-  --blob-pop: 1.2s;
   --blob-ease: cubic-bezier(0.3, 0.7, 0.4, 1);
   position: relative;
   display: inline-block;
@@ -178,27 +177,36 @@ blob-agent :focus-visible,
   display: inline;
 }
 
+/* Body shape per mood (no emoji, so the silhouette helps carry the mood). Individual
+   transform properties compose with the bob and bounce animations on transform. */
+.blob-figure > svg {
+  transform-origin: 50% 90%;
+  transition:
+    rotate 220ms var(--blob-ease),
+    scale 220ms var(--blob-ease);
+}
+.blob-figure[data-mood="thinking"] > svg {
+  rotate: 4deg;
+}
+.blob-figure[data-mood="curious"] > svg {
+  rotate: -5deg;
+}
+.blob-figure[data-mood="proud"] > svg {
+  scale: 1.03 1.07;
+}
+.blob-figure[data-mood="sleepy"] > svg {
+  scale: 1.03 0.92;
+}
+.blob-figure[data-mood="error"] > svg {
+  scale: 1.07 0.9;
+}
+
 /* Talking bob and excited bounce */
 .blob-figure[data-talking="true"] > svg {
   animation: blob-bob var(--blob-bob) ease-in-out infinite alternate;
 }
 .blob-figure[data-mood="excited"] > svg {
   animation: blob-bounce var(--blob-bounce) ease-in-out infinite;
-}
-
-/* Emoji pop: scale + float + fade, ~1.2 s, on mood change */
-.blob-emoji {
-  position: absolute;
-  left: 50%;
-  bottom: 100%;
-  font-size: calc(var(--blob-size) * 0.3);
-  line-height: 1;
-  opacity: 0;
-  pointer-events: none;
-  transform: translate(-50%, 0);
-}
-.blob-figure[data-pop] .blob-emoji {
-  animation: blob-emoji var(--blob-pop) ease-out forwards;
 }
 
 @keyframes blob-breathe {
@@ -223,20 +231,6 @@ blob-agent :focus-visible,
     transform: translateY(-8%);
   }
 }
-@keyframes blob-emoji {
-  0% {
-    opacity: 0;
-    transform: translate(-50%, 0) scale(0.5);
-  }
-  20% {
-    opacity: 1;
-    transform: translate(-50%, -20%) scale(1.15);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(-50%, -90%) scale(1);
-  }
-}
 @keyframes blob-z {
   0% {
     opacity: 0;
@@ -252,16 +246,12 @@ blob-agent :focus-visible,
 }
 
 /* Reduced motion: no wobble, tracking, bob or float. Blink and mood swaps are instant state
-   changes; the emoji shows statically for its 1.2 s.  */
+   changes. Body-shape poses (rotate/scale) are static, so they stay.  */
 @media (prefers-reduced-motion: reduce) {
   .blob-figure,
   .blob-figure * {
     animation: none !important;
     transition: none !important;
-  }
-  .blob-figure[data-pop] .blob-emoji {
-    opacity: 1;
-    transform: translate(-50%, -20%);
   }
   .z {
     opacity: 1;

@@ -16,26 +16,32 @@ import {
   ERROR_HOLD_MS,
   SLEEPY_AFTER_MS,
 } from "../../src/scripts/blob/mood-state.ts";
-import { MOOD_EMOJI } from "../../src/scripts/blob/motion.ts";
 
 const FIGURE = (size: string) =>
-  `<div class="blob-figure" data-size="${size}" data-mood="idle" data-talking="false"><svg aria-hidden="true"></svg><span class="blob-emoji" aria-hidden="true"></span></div>`;
+  `<div class="blob-figure" data-size="${size}" data-mood="idle" data-talking="false"><svg aria-hidden="true"></svg></div>`;
+const EMOJI = /\p{Extended_Pictographic}/u;
 
+// Mirrors the server-rendered markup of BlobAgent.astro (the E2E specs cover the real thing).
 const MARKUP = `
 <blob-agent>
-  <button type="button" data-ba="toggle" aria-expanded="false">${FIGURE("hero")}</button>
-  <button type="button" data-ba="ask">Ask</button>
-  <button type="button" data-ba="chip">Show me his projects</button>
-  <div id="blob-panel" data-ba="panel" role="dialog" tabindex="-1" hidden>
-    ${FIGURE("avatar")}
-    <button type="button" data-ba="close">Close chat</button>
-    <div data-ba="log" role="log" aria-live="polite"></div>
-    <form data-ba="form">
-      <label for="blob-input">Your question</label>
-      <input id="blob-input" data-ba="input" maxlength="500" />
-      <button type="submit">Send</button>
-    </form>
-    <button type="button" data-ba="clear">Clear chat</button>
+  <div data-ba="figure">${FIGURE("hero")}</div>
+  <form data-ba="form">
+    <label for="blob-input">Your question</label>
+    <input id="blob-input" data-ba="input" maxlength="500" />
+    <button type="submit">Send</button>
+  </form>
+  <button type="button" data-ba="clear">Clear chat</button>
+  <p data-ba="question" hidden></p>
+  <div data-ba="bubble" data-phase="idle">
+    <div data-ba="answer" aria-live="polite">
+      <div data-ba="clip"><p data-ba="greeting">Hi! I'm Blob.</p></div>
+    </div>
+    <button type="button" data-ba="more" aria-expanded="false" hidden>Show more</button>
+    <ul data-ba="starters"><li><button type="button" data-ba="chip">Show me his projects</button></li></ul>
+  </div>
+  <div data-ba="previous-wrap" hidden>
+    <button type="button" data-ba="previous" aria-expanded="false" aria-controls="blob-history">Previous answers</button>
+    <ol id="blob-history" data-ba="history" hidden></ol>
   </div>
 </blob-agent>`;
 
@@ -55,16 +61,20 @@ const stream = ((body: string, h: StreamHandlers, opts?: StreamOptions) => {
 }) as typeof streamChat;
 
 const hero = () =>
-  el.querySelector<HTMLElement>('[data-ba="toggle"] .blob-figure')!;
-const avatar = () =>
-  el.querySelector<HTMLElement>('[data-ba="panel"] .blob-figure')!;
+  el.querySelector<HTMLElement>('[data-ba="figure"] .blob-figure')!;
 const mood = () => hero().dataset["mood"];
-const log = () => el.log;
+const answer = () => el.answer;
+const clip = () => el.querySelector<HTMLElement>('[data-ba="clip"]')!;
+const question = () => el.querySelector<HTMLElement>('[data-ba="question"]')!;
+const phase = () => el.bubble!.phase;
+const history = () =>
+  el.querySelectorAll<HTMLElement>('[data-ba="history"] > li');
 const send = () =>
   el.querySelector<HTMLButtonElement>('[data-ba="form"] button')!;
 const last = () => calls[calls.length - 1]!;
-const msgs = (role: string) =>
-  log().querySelectorAll<HTMLElement>(`[data-role="${role}"]`);
+// Every assistant reply in the DOM: the current one first, then the archived ones.
+const msgs = () => el.querySelectorAll<HTMLElement>('[data-role="assistant"]');
+const current = () => clip().querySelector<HTMLElement>(":scope > .ba-msg");
 const submit = (text: string) =>
   el.dispatchEvent(
     new CustomEvent("blob:submit", { bubbles: true, detail: { text } }),
@@ -90,7 +100,6 @@ beforeEach(() => {
   el = holder.querySelector("blob-agent") as BlobAgent;
   calls = [];
   conv = attachConversation(el, { stream });
-  el.open();
 });
 
 afterEach(() => {
@@ -107,28 +116,32 @@ describe("submit and stream", () => {
       { role: "user", content: "Hello Blob" },
     ]);
     expect(last().body.sessionId).toMatch(/^[A-Za-z0-9_-]{8,64}$/);
-    expect(msgs("user")[0]?.textContent).toBe("Hello Blob");
-    const reply = msgs("assistant")[0]!;
+    expect(question().hidden).toBe(false);
+    expect(question().textContent).toBe("Hello Blob");
+    expect(phase()).toBe("asking");
+    expect(
+      clip().querySelector<HTMLElement>('[data-ba="greeting"]')!.hidden,
+    ).toBe(true);
+    expect(el.querySelector<HTMLElement>('[data-ba="starters"]')!.hidden).toBe(
+      true,
+    );
+    const reply = current()!;
     expect(reply.querySelector(".ba-sr")?.textContent).toBe(COPY.thinking);
     expect(mood()).toBe("thinking");
-    expect(avatar().dataset["mood"]).toBe("thinking");
     expect(send().disabled).toBe(true);
     expect(send().getAttribute("aria-disabled")).toBe("true");
 
     last().h.onMood("excited");
     expect(mood()).toBe("excited");
-    expect(avatar().dataset["mood"]).toBe("excited");
-    expect(hero().querySelector(".blob-emoji")?.textContent).toBe(
-      MOOD_EMOJI.excited,
-    );
-    const badge = reply.querySelector<HTMLElement>(".ba-badge")!;
-    expect(badge.textContent).toBe(MOOD_EMOJI.excited);
-    expect(badge.getAttribute("aria-hidden")).toBe("true");
+    // Moods show through the figure only: no emoji element, badge or glyph anywhere.
+    expect(hero().querySelector(".blob-emoji")).toBeNull();
+    expect(reply.querySelector(".ba-badge")).toBeNull();
+    expect(el.textContent).not.toMatch(EMOJI);
 
     last().h.onDelta("Hi ");
     expect(hero().dataset["talking"]).toBe("true");
-    expect(avatar().dataset["talking"]).toBe("true");
-    expect(log().getAttribute("aria-busy")).toBe("true");
+    expect(phase()).toBe("streaming");
+    expect(answer().getAttribute("aria-busy")).toBe("true");
     last().h.onDelta("**there**");
     // Rendering is batched to one animation frame.
     expect(reply.querySelector("strong")).toBeNull();
@@ -141,13 +154,19 @@ describe("submit and stream", () => {
     // Done flushes without waiting for a frame.
     expect(reply.textContent).toContain("<img src=x onerror=alert(1)>");
     expect(reply.querySelector("img")).toBeNull();
-    expect(log().getAttribute("aria-busy")).toBe("false");
+    expect(answer().getAttribute("aria-busy")).toBe("false");
+    expect(phase()).toBe("done");
     expect(hero().dataset["talking"]).toBe("false");
     expect(send().disabled).toBe(false);
     expect(send().hasAttribute("aria-disabled")).toBe(false);
     expect(mood()).toBe("excited");
 
     submit("And then?");
+    expect(phase()).toBe("asking");
+    expect(history()).toHaveLength(1); // turn 1 moved behind "Previous"
+    expect(history()[0]?.querySelector(".ba-prev-q")?.textContent).toBe(
+      "Hello Blob",
+    );
     expect(calls).toHaveLength(2);
     expect(last().body.messages).toEqual([
       { role: "user", content: "Hello Blob" },
@@ -160,13 +179,11 @@ describe("submit and stream", () => {
     expect(last().body.sessionId).toBe(calls[0]!.body.sessionId);
   });
 
-  it("first delta without a mood falls back to happy with a badge", () => {
+  it("first delta without a mood falls back to happy, still with no badge", () => {
     submit("hi");
     last().h.onDelta("Hey");
     expect(mood()).toBe("happy");
-    expect(msgs("assistant")[0]?.querySelector(".ba-badge")?.textContent).toBe(
-      MOOD_EMOJI.happy,
-    );
+    expect(msgs()[0]?.querySelector(".ba-badge")).toBeNull();
   });
 
   it("reset mid-stream keeps only post-reset text in the DOM and history", () => {
@@ -174,7 +191,7 @@ describe("submit and stream", () => {
     last().h.onMood("happy");
     last().h.onDelta("Draft text that gets scrubbed.");
     frame();
-    const reply = msgs("assistant")[0]!;
+    const reply = msgs()[0]!;
     expect(reply.textContent).toContain("Draft");
     last().h.onReset();
     expect(reply.textContent).not.toContain("Draft");
@@ -195,7 +212,7 @@ describe("submit and stream", () => {
     submit("two");
     submit("   ");
     expect(calls).toHaveLength(1);
-    expect(msgs("user")).toHaveLength(1);
+    expect(question().textContent).toBe("one");
     last().h.onDone("ok");
     submit("   ");
     expect(calls).toHaveLength(1);
@@ -204,10 +221,9 @@ describe("submit and stream", () => {
   it("shows the invalid copy without calling the API when buildRequest fails", () => {
     submit("x".repeat(501));
     expect(calls).toHaveLength(0);
-    expect(msgs("assistant")[0]?.textContent).toContain(
-      COPY.errors.invalid.text,
-    );
+    expect(msgs()[0]?.textContent).toContain(COPY.errors.invalid.text);
     expect(mood()).toBe("error");
+    expect(phase()).toBe("error");
     expect(send().disabled).toBe(false);
   });
 
@@ -219,8 +235,8 @@ describe("submit and stream", () => {
     h.onDelta("late");
     h.onError("upstream");
     frame();
-    expect(msgs("assistant")[0]?.textContent).toBe(MOOD_EMOJI.happy + "a");
-    expect(log().getAttribute("aria-busy")).toBe("false");
+    expect(msgs()[0]?.textContent).toBe("a");
+    expect(answer().getAttribute("aria-busy")).toBe("false");
   });
 });
 
@@ -245,7 +261,10 @@ describe("errors", () => {
       submit("second");
       last().h.onDelta("partial");
       last().h.onError(code);
-      const reply = msgs("assistant")[1]!;
+      const reply = current()!;
+      expect(history()).toHaveLength(1);
+      expect(phase()).toBe("error");
+      expect(reply.dataset["error"]).toBe("true");
       const copy = COPY.errors[code];
       expect(reply.textContent).toContain(copy.text);
       expect(reply.textContent).not.toContain("partial");
@@ -257,7 +276,8 @@ describe("errors", () => {
         expect(links).toHaveLength(0);
       }
       expect(mood()).toBe("error");
-      expect(log().getAttribute("aria-busy")).toBe("false");
+      expect(reply.textContent).not.toMatch(EMOJI);
+      expect(answer().getAttribute("aria-busy")).toBe("false");
       expect(hero().dataset["talking"]).toBe("false");
       expect(send().disabled).toBe(false);
       vi.advanceTimersByTime(ERROR_HOLD_MS - 1);
@@ -300,13 +320,13 @@ describe("empty reply", () => {
       for (const d of deltas) last().h.onDelta(d);
       frame();
       last().h.onDone("ok");
-      const reply = msgs("assistant")[1]!;
+      const reply = current()!;
       expect(reply.querySelector(".ba-text")?.textContent).toBe(
         COPY.errors.upstream.text,
       );
       expect(reply.dataset["error"]).toBe("true");
       expect(mood()).toBe("error");
-      expect(log().getAttribute("aria-busy")).toBe("false");
+      expect(answer().getAttribute("aria-busy")).toBe("false");
       expect(send().disabled).toBe(false);
 
       submit("third");
@@ -322,56 +342,107 @@ describe("empty reply", () => {
     submit("hi");
     last().h.onDelta("Hello!");
     last().h.onDone("ok");
-    expect(msgs("assistant")[0]?.textContent).toContain("Hello!");
-    expect(msgs("assistant")[0]?.dataset["error"]).toBeUndefined();
+    expect(msgs()[0]?.textContent).toContain("Hello!");
+    expect(msgs()[0]?.dataset["error"]).toBeUndefined();
+    expect(phase()).toBe("done");
     expect(mood()).not.toBe("error");
   });
 });
 
-describe("auto-scroll", () => {
-  // happy-dom has no layout: fake the metrics the follow logic reads.
-  const metrics = (top: number) => {
-    Object.defineProperty(log(), "scrollHeight", {
+describe("clamp and Show more", () => {
+  const more = () => el.querySelector<HTMLButtonElement>('[data-ba="more"]')!;
+  // happy-dom has no layout: fake the metrics the clamp reads.
+  const metrics = (scroll: number, client: number) => {
+    Object.defineProperty(clip(), "scrollHeight", {
       configurable: true,
-      get: () => 1000,
+      get: () => scroll,
     });
-    Object.defineProperty(log(), "clientHeight", {
+    Object.defineProperty(clip(), "clientHeight", {
       configurable: true,
-      get: () => 200,
+      get: () => client,
     });
-    log().scrollTop = top;
   };
 
-  it("a scrolled-up log keeps its position on a delta", () => {
+  it("short answers show no button; long ones show it and expand in place", () => {
     submit("hi");
-    metrics(100);
-    last().h.onDelta("more text");
+    metrics(100, 100);
+    last().h.onDelta("short");
     frame();
-    expect(log().scrollTop).toBe(100);
+    expect(more().hidden).toBe(true);
+    metrics(900, 448);
+    last().h.onDelta(" and then much longer");
+    frame();
+    expect(more().hidden).toBe(false);
+    expect(more().textContent).toBe(COPY.showMore);
+    expect(more().getAttribute("aria-expanded")).toBe("false");
+    expect(clip().dataset["clamped"]).toBe("true");
+    more().click();
+    expect(more().getAttribute("aria-expanded")).toBe("true");
+    expect(more().textContent).toBe(COPY.showLess);
+    expect(clip().dataset["expanded"]).toBe("true");
+    more().click();
+    expect(clip().dataset["expanded"]).toBe("false");
   });
 
-  it("a log at the bottom (within 32 px) follows", () => {
+  it("a new question collapses it again, and nothing scrolls", () => {
     submit("hi");
-    metrics(1000 - 200 - 32);
-    last().h.onDelta("more text");
-    frame();
-    expect(log().scrollTop).toBe(1000);
-  });
-
-  it("just beyond 32 px from the bottom does not follow", () => {
-    submit("hi");
-    metrics(1000 - 200 - 33);
-    last().h.onDelta("more text");
-    frame();
-    expect(log().scrollTop).toBe(1000 - 200 - 33);
-  });
-
-  it("sending always scrolls to the bottom", () => {
-    submit("hi");
+    metrics(900, 448);
+    last().h.onDelta("long");
     last().h.onDone("ok");
-    metrics(100);
-    submit("again");
-    expect(log().scrollTop).toBe(1000);
+    more().click();
+    metrics(100, 100);
+    submit("next");
+    expect(clip().dataset["expanded"]).toBe("false");
+    expect(more().hidden).toBe(true);
+    expect(clip().scrollTop).toBe(0);
+  });
+});
+
+describe("previous turns", () => {
+  const toggle = () =>
+    el.querySelector<HTMLButtonElement>('[data-ba="previous"]')!;
+  const list = () => el.querySelector<HTMLElement>('[data-ba="history"]')!;
+  const wrap = () =>
+    el.querySelector<HTMLElement>('[data-ba="previous-wrap"]')!;
+  const ask = (q: string, a: string) => {
+    submit(q);
+    last().h.onDelta(a);
+    last().h.onDone("ok");
+  };
+
+  it("hides the control until a turn is archived, then toggles aria-expanded", () => {
+    expect(wrap().hidden).toBe(true);
+    ask("q1", "answer one");
+    expect(wrap().hidden).toBe(true); // the latest turn is the bubble itself
+    ask("q2", "answer two");
+    expect(wrap().hidden).toBe(false);
+    expect(toggle().getAttribute("aria-expanded")).toBe("false");
+    expect(list().hidden).toBe(true);
+    toggle().click();
+    expect(toggle().getAttribute("aria-expanded")).toBe("true");
+    expect(list().hidden).toBe(false);
+    expect(list().textContent).toContain("q1");
+    expect(list().textContent).toContain("answer one");
+    expect(current()?.textContent).toContain("answer two");
+    toggle().click();
+    expect(list().hidden).toBe(true);
+  });
+
+  it("keeps at most the last 10 turns and drops failed ones", () => {
+    for (let i = 1; i <= 12; i++) ask(`q${i}`, `a${i}`);
+    submit("last");
+    last().h.onDelta("a13");
+    last().h.onDone("ok");
+    expect(history()).toHaveLength(9);
+    expect(history()[0]?.textContent).toContain("q4");
+    expect(history()[8]?.textContent).toContain("a12");
+    expect(current()?.textContent).toBe("a13");
+
+    submit("bad");
+    last().h.onError("upstream");
+    submit("after");
+    expect(history()).toHaveLength(9); // the failed turn was not archived
+    expect(list().textContent).not.toContain("bad");
   });
 });
 
@@ -389,9 +460,20 @@ describe("clear chat", () => {
 
     el.querySelector<HTMLButtonElement>('[data-ba="clear"]')!.click();
     expect(inflight.signal.aborted).toBe(true);
-    expect(log().childElementCount).toBe(0);
+    expect(msgs()).toHaveLength(0);
+    expect(phase()).toBe("idle");
+    expect(question().hidden).toBe(true);
+    expect(
+      clip().querySelector<HTMLElement>('[data-ba="greeting"]')!.hidden,
+    ).toBe(false);
+    expect(el.querySelector<HTMLElement>('[data-ba="starters"]')!.hidden).toBe(
+      false,
+    );
+    expect(
+      el.querySelector<HTMLElement>('[data-ba="previous-wrap"]')!.hidden,
+    ).toBe(true);
     expect(mood()).toBe("idle");
-    expect(log().getAttribute("aria-busy")).toBe("false");
+    expect(answer().getAttribute("aria-busy")).toBe("false");
     expect(hero().dataset["talking"]).toBe("false");
     expect(send().disabled).toBe(false);
     expect(document.activeElement).toBe(el.input);
@@ -400,7 +482,7 @@ describe("clear chat", () => {
     inflight.h.onDelta("late");
     inflight.h.onDone("ok");
     frame();
-    expect(log().childElementCount).toBe(0);
+    expect(msgs()).toHaveLength(0);
 
     submit("fresh");
     expect(calls).toHaveLength(3);
@@ -408,15 +490,19 @@ describe("clear chat", () => {
     expect(last().body.sessionId).not.toBe(firstSession);
   });
 
-  it("closing the panel does not abort; pagehide does", () => {
+  it("Esc moves focus to the input and does not abort; pagehide does", () => {
     submit("q");
     const inflight = last();
-    el.close();
+    el.querySelector<HTMLElement>('[data-ba="clear"]')!.focus();
+    el.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
+    );
+    expect(document.activeElement).toBe(el.input);
     expect(inflight.signal.aborted).toBe(false);
     window.dispatchEvent(new Event("pagehide"));
     expect(inflight.signal.aborted).toBe(true);
     expect(send().disabled).toBe(false);
-    expect(log().getAttribute("aria-busy")).toBe("false");
+    expect(answer().getAttribute("aria-busy")).toBe("false");
   });
 });
 
@@ -435,7 +521,6 @@ describe("local moods", () => {
     expect(mood()).toBe("idle");
     vi.advanceTimersByTime(SLEEPY_AFTER_MS - 1000);
     expect(mood()).toBe("sleepy");
-    expect(avatar().dataset["mood"]).toBe("sleepy");
     document.dispatchEvent(new KeyboardEvent("keydown", { key: "a" }));
     expect(mood()).toBe("idle");
     vi.advanceTimersByTime(SLEEPY_AFTER_MS);
@@ -488,7 +573,6 @@ describe("element lifecycle hook", () => {
     const holder = el.parentElement!;
     el.remove();
     holder.append(el); // connect: attaches
-    el.open();
     submit("q");
     expect(calls).toHaveLength(1);
     last().h.onMood("proud");
@@ -497,7 +581,8 @@ describe("element lifecycle hook", () => {
     el.remove(); // disconnect: destroys and aborts
     expect(inflight.signal.aborted).toBe(true);
     holder.append(el);
-    expect(log().childElementCount).toBe(0);
+    expect(msgs()).toHaveLength(0);
+    expect(phase()).toBe("idle");
     expect(mood()).toBe("idle");
     expect(hero().dataset["talking"]).toBe("false");
     expect(send().disabled).toBe(false);
