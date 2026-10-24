@@ -1024,3 +1024,37 @@ describe("bare hosts under any TLD", () => {
     }
   });
 });
+
+// P5-13. Digit-free "tel:" links: the digit-based phone rules never fire, so
+// the scheme itself (after NFKC, entity decoding and tag removal) is what is
+// removed. Each form below is removed as a phone span.
+describe("digit-free obfuscated tel: links", () => {
+  it.each([
+    ["tag inside the scheme", "t<b>e</b>l:abc"],
+    ["full-width colon", "tel\uFF1Aabc"],
+    ["entity-encoded colon", "tel&#58;abc"],
+  ])("%s is removed", (_name, link) => {
+    expect(s(`call ${link} now`)).toBe("call [removed] now");
+    expect(piiSpans(link).map((x) => x.rule)).toEqual(["phone"]);
+  });
+});
+
+// U+A789 (modifier letter colon) is not a colon to NFKC or piiSpans, and
+// browsers do not read it as a scheme separator, so "tel\uA789abc" is plain
+// text: nothing anyone can click or dial. A phone number written after it
+// still has digits and is removed by the phone rules. Deliberately not
+// handled (P5-13): folding it would widen the scheme match for no usable
+// link. This pins the current behaviour.
+describe("tel with U+A789 is plain text", () => {
+  it("a digit-free form is left alone", () => {
+    const t = "tel\uA789abc";
+    expect(piiSpans(t)).toEqual([]);
+    expect(s(`call ${t} now`)).toBe(`call ${t} now`);
+    const tagged = "t<b>e</b>l\uA789abc";
+    expect(s(`call ${tagged} now`)).toBe(`call ${tagged} now`);
+  });
+
+  it("a phone number after it is still removed", () => {
+    expect(s(`tel\uA789${PHONE}`)).not.toContain(EXCH);
+  });
+});
