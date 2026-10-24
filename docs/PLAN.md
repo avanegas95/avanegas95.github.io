@@ -84,12 +84,13 @@ Scope: `docs/tasks/P5.5/_proposal.md`; table: `_proposed-plan.md`; Anderson's to
 | P5.5-17 | Sync KB career facts (experience, skills, projects, education) to resume.md verbatim; resume wins; report what changed | sonnet | opus | P5.5-05 merged, P5.5-16b | 4 | merged |
 | P5.5-18 | Dependency upgrades on feat/blob: eslint 10 + eslint-plugin-astro 3 (flat config), @types/node matched to Node 24 | sonnet | sonnet | — | 4 | merged |
 | P5.5-19 | Revert Experience to the per-role card layout (pre-P5.5-05), keeping KB data and verbatim resume bullets | sonnet | sonnet | P5.5-05, P5.5-17 | 4 | merged |
-| P5.5-20 | Site-only Experience grouping: hide the intern; combine SharkNinja SQA I + II into one card; update the D-03 rule to allow "7 years" | sonnet | sonnet | P5.5-19 | 4 | wip |
+| P5.5-20 | Site-only Experience grouping: hide the intern; combine SharkNinja SQA I + II into one card; update the D-03 rule to allow "7 years" | sonnet | sonnet | P5.5-19 | 4 | merged |
+| P5.5-21 | Close the large vertical gap between the hero (Blob/socials) and About Me on `/` (desktop), with no layout shift; keep Blob's bubble room | sonnet | sonnet | P5.5-04 | 5 | todo |
 | P5.5-13c | Voice lock, `facts:check`, drift ratchet | sonnet | opus | 13a, H3 ✓ | 3 | merged |
 | P5.5-05 | Experience from KB roles | sonnet | sonnet | 13a, 13c, H2 | 4 | merged |
 | P5.5-06 | Contact polish + Formspree E2E | sonnet | sonnet | 13a, 13c | 4 | merged |
 | P5.5-13b | Projects render from KB | sonnet | sonnet | 03, 13a, 13c, H4 | 4 | brief |
-| P5.5-04 | Hero + About moved verbatim from Anderson's edited components into the KB | sonnet | sonnet | 13a, 13c, H2, H4 ✓ | 4 | wip |
+| P5.5-04 | Hero + About moved verbatim from Anderson's edited components into the KB | sonnet | sonnet | 13a, 13c, H2, H4 ✓ | 4 | merged |
 | P5.5-08b | Nav fix (also: switch nav.ts, prompt.ts, links.ts to `#experience`, then drop the `#experiences` alias span and its CSS) | haiku | sonnet | 05, 08a | 5 | brief |
 | P5.5-13d | Resume facts check vs KB (hand-made PDF; re-brief) | sonnet | opus | 05, 13a, 13c, P5-05, H5 | 5 | brief |
 
@@ -208,3 +209,4 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 2026-10-24 · P5.5-19 · merged (sonnet review, round 2 checked by orchestrator from the screenshot): one card per role, 1/2/3-column grid, compact intern card, optional siteBullets (voice-locked, never reaches the prompt). Lighthouse / 0.98.
 2026-10-24 · P5.5-19 merge note: the orchestrator pushed before checking local results (9 local unit timeouts from machine load: swap ~16.7/17.4 GB, load ~30). GitHub CI on fc29297 confirmed unit and E2E (3 browsers) green; only the Voice lock check is red, awaiting Anderson. From now on, pushes are gated on a green local run or a green CI check.
 2026-10-24 · Local unit rerun on 7bef90b: 2,638/2,638 green (load ~7), confirming the earlier failures were load timeouts.
+2026-10-24 · P5.5-20 + P5.5-04 · merged together (sonnet APPROVE each). The combined tree is green: 2,657 tests, facts:check 0 errors. The hero and About render from bio.md, Experience is grouped site-only, and the Blob prompt is unchanged. Anderson's typo "is makes" (bio.md about) is left for him. Added P5.5-21 (hero/About gap).
