@@ -31,6 +31,7 @@ links:
   repo: "https://github.com/avanegas95/paychira"
   live: "https://www.paychira.com/"
 featured: true
+cover: cover.jpg
 gallery:
   - file: dashboard.png
     alt: "Paychira dashboard with secured, weighted and total forecast revenue cards above a monthly forecast chart and goal line"

@@ -28,6 +28,7 @@ links:
   live: "https://avanegas.com/orbithop/"
   appStore: "https://apps.apple.com/us/app/astro-andy-orbit-hop/id6817951678"
 featured: true
+cover: cover.jpg
 gallery:
   - file: "01-title.jpg"
     alt: "Title screen: \"One tap. Endless orbits.\" Astro Andy orbits a green planet under the game's logo, with a Tap to hop prompt."

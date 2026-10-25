@@ -36,7 +36,7 @@ const projects = (await getPublicProjects()).filter((p) => p.data.featured);
               <div class="group overflow-hidden rounded-2xl md:rounded-3xl border border-white/[0.08] bg-[#112240] h-full flex flex-col">
                 {cover && (
                   <div class="relative aspect-video overflow-hidden shrink-0">
-                    <div class="absolute inset-0 bg-[#000000] bg-opacity-0 transition-all duration-300 group-hover:bg-opacity-10 z-10" />
+                    <div class="absolute inset-0 bg-black/0 transition-all duration-300 group-hover:bg-black/10 z-10 pointer-events-none" />
                     <Image
                       src={cover}
                       alt=""
