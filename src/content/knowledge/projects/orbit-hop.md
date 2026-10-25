@@ -1,11 +1,11 @@
 ---
 topic: project
 title: "Astro Andy: Orbit Hop"
-summary: A one-tap arcade game for iPhone. Launch Andy from planet to planet, land Perfects, and collect Stardust to unlock new pilots and trails.
+summary: "One-tap iPhone arcade game"
 updated: 2026-10-24
 public: true
-order: 3
-status: "to be confirmed"
+order: 4
+status: "Live"
 role: "He built it solo, with the assistance of AI. Together they designed, coded, implemented, tested, and published. He is also the support contact."
 techLabel: "Platform and services"
 tech:
@@ -14,6 +14,14 @@ tech:
   - "iCloud"
   - "Google AdMob"
 techNote: "build stack to be confirmed"
+cardTech:
+  - "Swift"
+  - "iOS"
+  - "AI Tools"
+links:
+  repo: "https://github.com/avanegas95/I-Am-Rich"
+  live: "https://avanegas.com/orbithop/"
+featured: true
 ---
 
 ### What it does

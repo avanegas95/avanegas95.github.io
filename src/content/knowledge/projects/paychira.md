@@ -1,11 +1,11 @@
 ---
 topic: project
 title: Paychira
-summary: A full-stack sales-forecasting SaaS for small agencies, developed for Datalily with AI tools and deployed on Vercel, Render and Supabase.
+summary: "Full-stack sales forecasting SaaS for small agencies: deal pipeline, probability-weighted forecasts, org roles, CSV import, PandaDoc sync, and AI chat on pipeline data."
 updated: 2026-10-24
 public: true
-order: 2
-status: "to be confirmed"
+order: 1
+status: "Live"
 role: "Designer and builder (developed for Datalily)"
 tech:
   - "React 18"
@@ -16,6 +16,16 @@ tech:
   - "Supabase"
   - "Vercel"
   - "Render"
+cardTech:
+  - "React"
+  - "FastAPI"
+  - "Supabase"
+  - "Vercel"
+  - "Python"
+links:
+  repo: "https://github.com/avanegas95/paychira"
+  live: "https://www.paychira.com/dashboard"
+featured: true
 ---
 
 ### What it does

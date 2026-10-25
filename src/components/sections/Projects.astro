@@ -1,14 +1,11 @@
 ---
 import { Image } from "astro:assets";
 import { SectionEyebrow } from "@/components/ui/section-eyebrow";
-import { projectStatusLabels, projects } from "@/data/projects";
-import type { Project } from "@/lib/types";
+import { projectLinks } from "@/lib/project-links";
+import { projectImage } from "@/lib/project-images";
+import { getPublicProjects } from "@/lib/site-content";
 
-const featured = projects.filter((p) => p.featured);
-
-function techTags(project: Project) {
-  return project.tech.filter(Boolean);
-}
+const projects = (await getPublicProjects()).filter((p) => p.data.featured);
 ---
 
 <section id="projects" class="py-8 md:py-12 relative overflow-hidden">
@@ -18,107 +15,108 @@ function techTags(project: Project) {
         <SectionEyebrow client:visible className="mb-2 fade-in">
           Selected work
         </SectionEyebrow>
-        <h2
-          class="text-3xl sm:text-4xl md:text-5xl font-medium text-[var(--white)] mb-4 md:mb-6 fade-in"
-        >
+        <h2 class="text-3xl sm:text-4xl md:text-5xl font-medium text-[var(--white)] mb-4 md:mb-6 fade-in">
           Projects
         </h2>
-        <p
-          class="text-[var(--white-icon)] text-sm md:text-base max-w-2xl fade-in"
-        >
+        <p class="text-[var(--white-icon)] text-sm md:text-base max-w-2xl fade-in">
           Personal projects I've been doing outside of work.
         </p>
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
-        {
-          featured.map((project, index) => (
+        {projects.map((project, index) => {
+          const d = project.data;
+          const links = projectLinks(d);
+          const cover = d.cover ? projectImage(project.id, d.cover) : undefined;
+          return (
             <article
               class="max-w-2xl mx-auto w-full fade-in"
               style={`animation-delay: ${index * 0.1}s`}
             >
               <div class="group overflow-hidden rounded-2xl md:rounded-3xl border border-white/[0.08] bg-[#112240] h-full flex flex-col">
-                <div class="relative aspect-video overflow-hidden shrink-0">
-                  <div class="absolute inset-0 bg-[#000000] bg-opacity-0 transition-all duration-300 group-hover:bg-opacity-10 z-10" />
-                  <Image
-                    src={project.image}
-                    alt=""
-                    class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    width={800}
-                    height={450}
-                    loading="lazy"
-                  />
-                </div>
+                {cover && (
+                  <div class="relative aspect-video overflow-hidden shrink-0">
+                    <div class="absolute inset-0 bg-[#000000] bg-opacity-0 transition-all duration-300 group-hover:bg-opacity-10 z-10" />
+                    <Image
+                      src={cover}
+                      alt=""
+                      class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      width={800}
+                      height={450}
+                      loading="lazy"
+                    />
+                  </div>
+                )}
                 <div class="p-4 md:p-6 flex flex-col flex-1">
                   <div class="flex flex-wrap items-center gap-2 mb-2">
                     <span class="text-[10px] md:text-xs uppercase tracking-wide text-[var(--sec)] font-mono">
-                      {projectStatusLabels[project.status]}
+                      {d.status}
                     </span>
                   </div>
                   <h3 class="text-lg md:text-xl font-semibold text-[var(--white)] mb-2">
-                    {project.title}
+                    <a
+                      href={`/projects/${project.id}/`}
+                      class="hover:text-[var(--sec)] transition-colors duration-300"
+                      data-testid="project-title-link"
+                    >
+                      {d.title}
+                    </a>
                   </h3>
                   <p class="text-[var(--white-icon)] text-xs md:text-sm mb-4 flex-1 leading-relaxed">
-                    {project.description}
+                    {d.summary}
                   </p>
-                  {
-                    techTags(project).length > 0 && (
-                      <ul class="flex flex-wrap gap-1.5 mb-4">
-                        {techTags(project).map((tag) => (
-                          <li class="text-[10px] md:text-xs px-2 py-0.5 rounded-md bg-white/[0.03] text-[var(--white-icon)]">
-                            {tag}
-                          </li>
-                        ))}
-                      </ul>
-                    )
-                  }
+                  {(d.cardTech ?? d.tech).length > 0 && (
+                    <ul class="flex flex-wrap gap-1.5 mb-4">
+                      {(d.cardTech ?? d.tech).map((tag) => (
+                        <li class="text-[10px] md:text-xs px-2 py-0.5 rounded-md bg-white/[0.03] text-[var(--white-icon)]">
+                          {tag}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                   <div class="flex gap-3 mt-auto">
-                    {
-                      project.github && (
-                        <a
-                          href={project.github}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          class="p-1.5 md:p-2 rounded-lg bg-white/[0.06] text-[var(--white-icon)] hover:text-[var(--sec)] transition-all duration-300 hover:scale-110 min-h-0 min-w-0"
-                          aria-label={`${project.title} on GitHub`}
+                    {links.repo && (
+                      <a
+                        href={links.repo}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="p-1.5 md:p-2 rounded-lg bg-white/[0.06] text-[var(--white-icon)] hover:text-[var(--sec)] transition-all duration-300 hover:scale-110 min-h-0 min-w-0"
+                        aria-label={`${d.title} on GitHub`}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          class="w-4 h-4 md:w-5 md:h-5"
                         >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                            fill="currentColor"
-                            class="w-4 h-4 md:w-5 md:h-5"
-                          >
-                            <path d="M12.001 2C6.47598 2 2.00098 6.475 2.00098 12C2.00098 16.425 4.86348 20.1625 8.83848 21.4875C9.33848 21.575 9.52598 21.275 9.52598 21.0125C9.52598 20.775 9.51348 19.9875 9.51348 19.15C7.00098 19.6125 6.35098 18.5375 6.15098 17.975C6.03848 17.6875 5.55098 16.8 5.12598 16.5625C4.77598 16.375 4.27598 15.9125 5.11348 15.9C5.90098 15.8875 6.46348 16.625 6.65098 16.925C7.55098 18.4375 8.98848 18.0125 9.56348 17.75C9.65098 17.1 9.91348 16.6625 10.201 16.4125C7.97598 16.1625 5.65098 15.3 5.65098 11.475C5.65098 10.3875 6.03848 9.4875 6.67598 8.7875C6.57598 8.5375 6.22598 7.5125 6.77598 6.1375C6.77598 6.1375 7.61348 5.875 9.52598 7.1625C10.326 6.9375 11.176 6.825 12.026 6.825C12.876 6.825 13.726 6.9375 14.526 7.1625C16.4385 5.8625 17.276 6.1375 17.276 6.1375C17.826 7.5125 17.476 8.5375 17.376 8.7875C18.0135 9.4875 18.401 10.375 18.401 11.475C18.401 15.3125 16.0635 16.1625 13.8385 16.4125C14.201 16.725 14.5135 17.325 14.5135 18.2625C14.5135 19.6 14.501 20.675 14.501 21.0125C14.501 21.275 14.6885 21.5875 15.1885 21.4875C19.259 20.1133 21.9999 16.2963 22.001 12C22.001 6.475 17.526 2 12.001 2Z" />
-                          </svg>
-                        </a>
-                      )
-                    }
-                    {
-                      project.external && (
-                        <a
-                          href={project.external}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          class="p-1.5 md:p-2 rounded-lg bg-white/[0.06] text-[var(--white-icon)] hover:text-[var(--sec)] transition-all duration-300 hover:scale-110 min-h-0 min-w-0"
-                          aria-label={`Visit ${project.title}`}
+                          <path d="M12.001 2C6.47598 2 2.00098 6.475 2.00098 12C2.00098 16.425 4.86348 20.1625 8.83848 21.4875C9.33848 21.575 9.52598 21.275 9.52598 21.0125C9.52598 20.775 9.51348 19.9875 9.51348 19.15C7.00098 19.6125 6.35098 18.5375 6.15098 17.975C6.03848 17.6875 5.55098 16.8 5.12598 16.5625C4.77598 16.375 4.27598 15.9125 5.11348 15.9C5.90098 15.8875 6.46348 16.625 6.65098 16.925C7.55098 18.4375 8.98848 18.0125 9.56348 17.75C9.65098 17.1 9.91348 16.6625 10.201 16.4125C7.97598 16.1625 5.65098 15.3 5.65098 11.475C5.65098 10.3875 6.03848 9.4875 6.67598 8.7875C6.57598 8.5375 6.22598 7.5125 6.77598 6.1375C6.77598 6.1375 7.61348 5.875 9.52598 7.1625C10.326 6.9375 11.176 6.825 12.026 6.825C12.876 6.825 13.726 6.9375 14.526 7.1625C16.4385 5.8625 17.276 6.1375 17.276 6.1375C17.826 7.5125 17.476 8.5375 17.376 8.7875C18.0135 9.4875 18.401 10.375 18.401 11.475C18.401 15.3125 16.0635 16.1625 13.8385 16.4125C14.201 16.725 14.5135 17.325 14.5135 18.2625C14.5135 19.6 14.501 20.675 14.501 21.0125C14.501 21.275 14.6885 21.5875 15.1885 21.4875C19.259 20.1133 21.9999 16.2963 22.001 12C22.001 6.475 17.526 2 12.001 2Z" />
+                        </svg>
+                      </a>
+                    )}
+                    {links.live && (
+                      <a
+                        href={links.live}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="p-1.5 md:p-2 rounded-lg bg-white/[0.06] text-[var(--white-icon)] hover:text-[var(--sec)] transition-all duration-300 hover:scale-110 min-h-0 min-w-0"
+                        aria-label={`Visit ${d.title}`}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          class="w-4 h-4 md:w-5 md:h-5"
                         >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                            fill="currentColor"
-                            class="w-4 h-4 md:w-5 md:h-5"
-                          >
-                            <path d="M16.0037 9.41421L7.39712 18.0208L5.98291 16.6066L14.5895 8H7.00373V6H18.0037V17H16.0037V9.41421Z" />
-                          </svg>
-                        </a>
-                      )
-                    }
+                          <path d="M16.0037 9.41421L7.39712 18.0208L5.98291 16.6066L14.5895 8H7.00373V6H18.0037V17H16.0037V9.41421Z" />
+                        </svg>
+                      </a>
+                    )}
                   </div>
                 </div>
               </div>
             </article>
-          ))
-        }
+          );
+        })}
       </div>
     </div>
   </div>

@@ -1,8 +1,8 @@
 ## Project: Astro Andy: Orbit Hop
 
-A one-tap arcade game for iPhone. Launch Andy from planet to planet, land Perfects, and collect Stardust to unlock new pilots and trails.
+One-tap iPhone arcade game
 
-**Status:** to be confirmed · **Role:** He built it solo, with the assistance of AI. Together they designed, coded, implemented, tested, and published. He is also the support contact. · **Platform and services:** iPhone, Game Center, iCloud, Google AdMob (build stack to be confirmed)
+**Status:** Live · **Role:** He built it solo, with the assistance of AI. Together they designed, coded, implemented, tested, and published. He is also the support contact. · **Platform and services:** iPhone, Game Center, iCloud, Google AdMob (build stack to be confirmed)
 
 ### What it does
 

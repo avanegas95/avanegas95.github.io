@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
+import { PROJECT_SUMMARY_MAX } from "../../src/lib/kb-schema.ts";
 import {
   KB_ROOT,
   buildKb,
@@ -140,7 +141,9 @@ function structureViolations(srcs: readonly KbSource[]): string[] {
       }
     }
     const summary = frontmatter(s.raw)["summary"];
-    if (!summary || summary.length > 200 || /\n/.test(summary)) {
+    // Project summaries are card text and may run to PROJECT_SUMMARY_MAX.
+    const max = s.path.startsWith("projects/") ? PROJECT_SUMMARY_MAX : 200;
+    if (!summary || summary.length > max || /\n/.test(summary)) {
       v.push(`${s.path}: summary empty/long`);
     }
   }

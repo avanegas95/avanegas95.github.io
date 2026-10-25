@@ -1,0 +1,133 @@
+---
+import { Image, getImage } from "astro:assets";
+import { render } from "astro:content";
+import type { CollectionEntry } from "astro:content";
+import BlogHeader from "@/components/blog/BlogHeader.astro";
+import Layout from "@/layouts/Layout.astro";
+import { projectImage } from "@/lib/project-images";
+import { projectLinks } from "@/lib/project-links";
+import { getPublicProjects } from "@/lib/site-content";
+
+export async function getStaticPaths() {
+  const projects = await getPublicProjects();
+  return projects.map((project) => ({
+    params: { slug: project.id },
+    props: project,
+  }));
+}
+
+const project = Astro.props as CollectionEntry<"projects">;
+const d = project.data;
+const { Content } = await render(project);
+const links = projectLinks(d);
+const site = Astro.site ?? new URL("https://avanegas.com");
+const canonicalUrl = new URL(`/projects/${project.id}/`, site).href;
+
+const cover = d.cover ? projectImage(project.id, d.cover) : undefined;
+const ogSource = cover
+  ? await getImage({ src: cover, width: 1200, format: "jpg" })
+  : undefined;
+const ogImage = ogSource ? new URL(ogSource.src, site).href : undefined;
+
+const gallery = d.gallery.flatMap((g) => {
+  const src = projectImage(project.id, g.file);
+  return src ? [{ src, alt: g.alt }] : [];
+});
+---
+
+<Layout
+  title={d.title}
+  description={d.summary}
+  canonicalUrl={canonicalUrl}
+  ogImage={ogImage}
+>
+  <BlogHeader active="none" />
+  <main
+    id="main-content"
+    class="pt-[calc(var(--nav-height)+2rem)] pb-16 max-w-3xl mx-auto px-4 sm:px-6"
+  >
+    <article class="fade-in">
+      <header class="mb-8 pb-8 border-b border-[#ffffff10]">
+        <a
+          href="/#projects"
+          class="text-sm text-[var(--sec)] hover:opacity-80 transition-opacity"
+        >
+          ← Back to projects
+        </a>
+        <p
+          class="mt-4 text-xs uppercase tracking-wide text-[var(--sec)] font-mono"
+          data-testid="project-status"
+        >
+          {d.status}
+        </p>
+        <h1 class="mt-2 text-3xl sm:text-4xl font-bold text-[var(--white)]">
+          {d.title}
+        </h1>
+        <p class="mt-4 text-[var(--white-icon)] leading-relaxed">{d.summary}</p>
+        <p class="mt-4 text-sm text-[var(--white-icon)]">
+          <span class="font-semibold">{d.techLabel}:</span>
+          <span data-testid="project-tech">{d.tech.join(", ")}</span>
+          {d.techNote && <span> ({d.techNote})</span>}
+        </p>
+        {(links.repo || links.live) && (
+          <ul class="mt-4 flex flex-wrap gap-4 list-none p-0">
+            {links.live && (
+              <li>
+                <a
+                  href={links.live}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-sm text-[var(--sec)] hover:opacity-80 underline underline-offset-4"
+                >
+                  Visit {d.title}
+                </a>
+              </li>
+            )}
+            {links.repo && (
+              <li>
+                <a
+                  href={links.repo}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-sm text-[var(--sec)] hover:opacity-80 underline underline-offset-4"
+                >
+                  {d.title} on GitHub
+                </a>
+              </li>
+            )}
+          </ul>
+        )}
+      </header>
+
+      <h2 class="sr-only">Details</h2>
+      <div class="blog-prose">
+        <Content />
+      </div>
+
+      {gallery.length > 0 && (
+        <section class="mt-12" aria-labelledby="gallery-heading">
+          <h2
+            id="gallery-heading"
+            class="text-2xl font-semibold text-[var(--white)] mb-4"
+          >
+            Screenshots
+          </h2>
+          <ul class="grid gap-6 list-none p-0">
+            {gallery.map((g, i) => (
+              <li>
+                <Image
+                  src={g.src}
+                  alt={g.alt}
+                  widths={[480, 768, 1024]}
+                  sizes="(min-width: 768px) 768px, 100vw"
+                  class="w-full h-auto rounded-xl border border-white/[0.08]"
+                  loading={i === 0 ? "eager" : "lazy"}
+                />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+    </article>
+  </main>
+</Layout>

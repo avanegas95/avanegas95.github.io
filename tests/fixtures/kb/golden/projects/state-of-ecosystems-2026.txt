@@ -1,6 +1,6 @@
 ## Project: The State of Ecosystems 2026
 
-An interactive React report experience for HubSpot's State of Ecosystems partner report, built with Figma MCP and handed off to HubSpot's web team.
+Interactive React report for HubSpot’s State of Ecosystems partner study: URL-hash filtering, 17 content variants, JSON-driven copy, WCAG 2.1 AA, and strict performance budgets. Handed off to HubSpot web dev.
 
 **Status:** handed off · **Role:** Builder and handoff coordinator · **Stack:** React, Vite 6, Figma MCP, JSON content layer
 

@@ -1,8 +1,8 @@
 ## Project: Paychira
 
-A full-stack sales-forecasting SaaS for small agencies, developed for Datalily with AI tools and deployed on Vercel, Render and Supabase.
+Full-stack sales forecasting SaaS for small agencies: deal pipeline, probability-weighted forecasts, org roles, CSV import, PandaDoc sync, and AI chat on pipeline data.
 
-**Status:** to be confirmed · **Role:** Designer and builder (developed for Datalily) · **Stack:** React 18, Vite, Tailwind, FastAPI, Pydantic, Supabase, Vercel, Render
+**Status:** Live · **Role:** Designer and builder (developed for Datalily) · **Stack:** React 18, Vite, Tailwind, FastAPI, Pydantic, Supabase, Vercel, Render
 
 ### What it does
 
