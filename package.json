@@ -28,6 +28,7 @@
     "voice:accept": "node scripts/voice-lock.ts accept",
     "voice:init": "node scripts/voice-lock.ts init",
     "facts:check": "node scripts/facts-check.ts",
+    "check:copy": "npm run voice:check && (npm run facts:check || true) && npm run build && npm run guard:pii && PW_PORT=4399 playwright test tests/e2e/hero-about.spec.ts tests/e2e/experience.spec.ts tests/e2e/smoke.spec.ts tests/e2e/a11y-home.spec.ts tests/e2e/legacy-routes.spec.ts tests/e2e/resume-pdf.spec.ts --project=chromium",
     "check:bundle": "node scripts/check-client-bundle.ts",
     "eval": "node evals/run.ts",
     "eval:dry": "node evals/run.ts --dry-run"

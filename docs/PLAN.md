@@ -21,6 +21,7 @@
 - **Process notes:**
   - Merge in a separate detached worktree and push `HEAD:feat/blob`, so Anderson's checkout and dev server are untouched.
   - Push only after a green local run or green CI.
+  - CI has two tiers (2026-10-24). Pushes to feat/blob get the fast tier: chromium E2E, no Lighthouse. Merges don't go through PRs, so after merging any code task, and at every gate, run the full tier with `gh workflow run quality --ref feat/blob` and wait for it to go green. Copy-only pushes need just the fast tier (`npm run check:copy` locally).
   - The machine is often overloaded; rerun timeouts once before judging.
   - Agents never touch `voice.lock.json`.
 
@@ -137,6 +138,7 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 ## Decision log
 | Date | Decision | By |
 |---|---|---|
+| 2026-10-24 | CI split into tiers to cut friction on copy changes: pushes to feat/blob run chromium-only E2E without Lighthouse, while pull requests and manual runs run all three browsers plus Lighthouse (the rule 8 gate). Added `npm run check:copy`, a fast local check. Retired the frozen hero/About text snapshot, since voice:check covers wording changes. | Anderson |
 | 2026-10-24 | D-03 reversed: the hero keeps stated years ("7 years"), replacing the earlier "since 2019" decision. Experience on the site hides the SharkNinja intern and combines SharkNinja SQA Engineer and SQA Engineer II into one card titled "SQA Engineer I/II" (Nov 2019 – Sep 2023). The KB and Blob keep the separate roles, matching the resume (P5.5-20). | Anderson |
 | 2026-10-24 | Experience returns to one card per role in the old site's style. Each role gets an optional `siteBullets` list in experience.md holding Anderson's own short bullets for the site, while Blob keeps the full resume `bullets`. Anderson writes siteBullets himself (P5.5-19 adds the field). | Anderson |
 | 2026-10-24 | Blob's FAQ states the contact form plainly: there is a contact form on the site (Formspree), and messages go to his email. | Anderson |

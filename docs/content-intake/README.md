@@ -6,12 +6,13 @@ Anderson's own words live here (`site-copy.md`, `resume.md`, `about-me-questions
 
 The knowledge base prose (`src/content/knowledge/`) is hashed into `voice.lock.json`. If any locked field changes, CI fails until Anderson accepts it.
 
-| Command                | Who                                    | What it does                                                                                                                                                                        |
-| ---------------------- | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `npm run voice:check`  | anyone, CI                             | Exits 1 and names each changed field, e.g. `experience.md#roles[0].bullets[2]`.                                                                                                     |
-| `npm run voice:accept` | **Anderson only**, in his own terminal | Shows each change as old → new, says whether the new text appears verbatim in `site-copy.md`, and asks you to type `accept`. Then commit `voice.lock.json` with the KB change.      |
-| `npm run voice:init`   | once                                   | Snapshots the current text. Refuses if `voice.lock.json` already exists.                                                                                                            |
-| `npm run facts:check`  | anyone                                 | Report only, writes nothing: DISCREPANCIES rule breaches, KB vs site date/title mismatches, PII, likely typos, and hard-coded facts in section components (the site-drift ratchet). |
+| Command                | Who                                    | What it does                                                                                                                                                                                                            |
+| ---------------------- | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run voice:check`  | anyone, CI                             | Exits 1 and names each changed field, e.g. `experience.md#roles[0].bullets[2]`.                                                                                                                                         |
+| `npm run voice:accept` | **Anderson only**, in his own terminal | Shows each change as old → new, says whether the new text appears verbatim in `site-copy.md`, and asks you to type `accept`. Then commit `voice.lock.json` with the KB change.                                          |
+| `npm run voice:init`   | once                                   | Snapshots the current text. Refuses if `voice.lock.json` already exists.                                                                                                                                                |
+| `npm run facts:check`  | anyone                                 | Report only, writes nothing: DISCREPANCIES rule breaches, KB vs site date/title mismatches, PII, likely typos, and hard-coded facts in section components (the site-drift ratchet).                                     |
+| `npm run check:copy`   | anyone, before pushing copy            | ~30 s: voice and facts checks, build, PII guard, and the chromium E2E tests for the pages copy renders on (hero, About, Experience, home axe, legacy URLs, resume). Uses port 4399, so it runs alongside `npm run dev`. |
 
 Steps when the prose changed on purpose:
 

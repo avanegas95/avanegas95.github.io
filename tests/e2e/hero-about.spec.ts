@@ -1,10 +1,9 @@
 import AxeBuilder from "@axe-core/playwright";
-import { readFileSync } from "node:fs";
 import { KB_ROOT, loadKbSources, parseKbSource } from "../../src/lib/kb.ts";
 import { expect, test } from "./fixtures/guard";
 
 // The KB is the expected value (CLAUDE.md rule 1): the hero and About must show exactly what
-// bio.md says, and bio.md must still hold the text the site showed before P5.5-04.
+// bio.md says. Changes to the wording itself are caught by voice:check, not here.
 function kb(file: string): Record<string, unknown> {
   const src = loadKbSources(KB_ROOT).find((s) => s.path === file);
   if (!src) throw new Error(`${file} not found`);
@@ -51,35 +50,6 @@ test("About shows the bio.md paragraphs and tool list", async ({ page }) => {
   );
   expect(items).toEqual(bio.tools.map((row) => row.join(" / ")));
   for (const tool of bio.tools.flat()) expect(skillItems).toContain(tool);
-});
-
-test("built hero and About text is unchanged from before the move to the KB", async ({
-  page,
-}) => {
-  await page.goto("/");
-  const text = await page.evaluate(() =>
-    ["#home .home-intro", "#about h2", "#about p", "#about ul"]
-      .map((sel) =>
-        [...document.querySelectorAll(sel)]
-          .map((e) => e.textContent)
-          .join(" ")
-          .replace(/\s+/g, " ")
-          .trim(),
-      )
-      .join("\n"),
-  );
-  // Captured from the built site at origin/feat/blob before this task. Two tool-list changes were
-  // decided by Anderson (docs/PLAN.md decision log, 2026-10-24): "Linux" is dropped, and the
-  // tools now come from skills.md, which spells it "TestRail". Anderson also fixed his
-  // "is makes" typo in bio.md (89dcf53). Nothing else may differ.
-  const before = readFileSync(
-    "tests/fixtures/site/hero-about-before.txt",
-    "utf8",
-  )
-    .replace("Linux / Bash / Windows", "Bash / Windows")
-    .replace("TestRails", "TestRail")
-    .replace("software that is makes sense", "software that makes sense");
-  expect(text + "\n").toBe(before);
 });
 
 for (const width of [390, 1280]) {

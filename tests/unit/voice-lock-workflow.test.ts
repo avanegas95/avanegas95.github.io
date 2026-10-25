@@ -29,7 +29,7 @@ describe("quality.yml voice-lock steps", () => {
   it("a red voice check does not skip E2E, Lighthouse or the annotations", () => {
     for (const n of [
       "Voice lock changes",
-      "E2E (chromium, firefox, webkit; includes axe)",
+      "E2E (includes axe)",
       "Lighthouse",
     ]) {
       expect(step(n)).toContain("if: always()");
@@ -40,5 +40,27 @@ describe("quality.yml voice-lock steps", () => {
     expect(step("Facts check (report only)")).toContain(
       "continue-on-error: true",
     );
+  });
+});
+
+describe("quality.yml tiers", () => {
+  it("pushes run the fast tier; pull requests and manual runs run the full tier", () => {
+    expect(yml).toContain("workflow_dispatch:");
+    expect(yml).toContain("FULL: ${{ github.event_name != 'push' }}");
+  });
+
+  it("the fast tier runs chromium E2E only, the full tier all three browsers", () => {
+    expect(step("Install Playwright browsers")).toContain(
+      "chromium ${{ env.FULL == 'true' && 'firefox webkit' || '' }}",
+    );
+    expect(step("E2E (includes axe)")).toContain(
+      "${{ env.FULL != 'true' && '--project=chromium' || '' }}",
+    );
+  });
+
+  it("Lighthouse runs only in the full tier", () => {
+    for (const n of ["Lighthouse", "Lighthouse summary"]) {
+      expect(step(n)).toContain("if: always() && env.FULL == 'true'");
+    }
   });
 });
