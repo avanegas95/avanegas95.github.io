@@ -107,6 +107,65 @@ for (const h of hidden) {
   });
 }
 
+for (const c of cards.filter((c) => c.data.links.appStore)) {
+  test(`${c.slug} links to the App Store on its card and page`, async ({
+    page,
+  }) => {
+    await page.goto("/");
+    const card = page.locator("#projects article", {
+      has: page.getByRole("link", { name: c.data.title, exact: true }),
+    });
+    await expect(card.getByTestId("project-app-store")).toHaveAttribute(
+      "href",
+      c.data.links.appStore!,
+    );
+    await page.goto(`/projects/${c.slug}/`);
+    await expect(page.getByTestId("project-app-store")).toHaveAttribute(
+      "href",
+      c.data.links.appStore!,
+    );
+  });
+}
+
+for (const c of cards.filter((c) => c.data.video)) {
+  test(`${c.slug} video loads lazily, with captions and a text alternative`, async ({
+    page,
+    request,
+  }) => {
+    const v = c.data.video!;
+    await page.goto(`/projects/${c.slug}/`);
+    const video = page.getByTestId("project-video");
+    await expect(video).toHaveAttribute("preload", "none");
+    await expect(video).toHaveAttribute("poster", /.+/);
+    await expect(video.locator("source")).toHaveAttribute(
+      "src",
+      `/media/${c.slug}/${v.file}`,
+    );
+    const track = video.locator('track[kind="captions"]');
+    await expect(track).toHaveAttribute(
+      "src",
+      `/media/${c.slug}/${v.captions}`,
+    );
+    await expect(page.locator("#video-description")).toHaveText(v.description);
+    for (const path of [v.file, v.captions]) {
+      const res = await request.head(`/media/${c.slug}/${path}`);
+      expect(res.status(), path).toBe(200);
+    }
+  });
+
+  test(`a11y: /projects/${c.slug}/ with video and gallery has no axe violations`, async ({
+    page,
+  }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto(`/projects/${c.slug}/`);
+    await page.waitForLoadState("networkidle");
+    const results = await new AxeBuilder({ page })
+      .withTags(WCAG_21_AA_TAGS)
+      .analyze();
+    expect(results.violations).toEqual([]);
+  });
+}
+
 test("a11y: #projects has no axe violations", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");

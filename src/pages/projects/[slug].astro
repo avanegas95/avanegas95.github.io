@@ -33,6 +33,26 @@ const gallery = d.gallery.flatMap((g) => {
   const src = projectImage(project.id, g.file);
   return src ? [{ src, alt: g.alt }] : [];
 });
+// Phone screenshots read better side by side than one per row.
+const portrait =
+  gallery.length > 0 && gallery.every((g) => g.src.height > g.src.width);
+
+const videoPoster = d.video
+  ? projectImage(project.id, d.video.poster)
+  : undefined;
+const video =
+  d.video && videoPoster
+    ? {
+        src: `/media/${project.id}/${d.video.file}`,
+        captions: `/media/${project.id}/${d.video.captions}`,
+        poster: await getImage({
+          src: videoPoster,
+          width: 480,
+          format: "webp",
+        }),
+        description: d.video.description,
+      }
+    : undefined;
 ---
 
 <Layout
@@ -69,8 +89,21 @@ const gallery = d.gallery.flatMap((g) => {
           <span data-testid="project-tech">{d.tech.join(", ")}</span>
           {d.techNote && <span> ({d.techNote})</span>}
         </p>
-        {(links.repo || links.live) && (
+        {(links.repo || links.live || links.appStore) && (
           <ul class="mt-4 flex flex-wrap gap-4 list-none p-0">
+            {links.appStore && (
+              <li>
+                <a
+                  href={links.appStore}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-sm text-[var(--sec)] hover:opacity-80 underline underline-offset-4"
+                  data-testid="project-app-store"
+                >
+                  Download on the App Store
+                </a>
+              </li>
+            )}
             {links.live && (
               <li>
                 <a
@@ -104,6 +137,43 @@ const gallery = d.gallery.flatMap((g) => {
         <Content />
       </div>
 
+      {video && (
+        <section class="mt-12" aria-labelledby="video-heading">
+          <h2
+            id="video-heading"
+            class="text-2xl font-semibold text-[var(--white)] mb-4"
+          >
+            Preview
+          </h2>
+          <video
+            controls
+            playsinline
+            preload="none"
+            poster={video.poster.src}
+            width={video.poster.attributes.width}
+            height={video.poster.attributes.height}
+            aria-describedby="video-description"
+            class="block w-full max-w-xs h-auto mx-auto rounded-xl border border-white/[0.08] bg-black"
+            data-testid="project-video"
+          >
+            <source src={video.src} type="video/mp4" />
+            <track
+              kind="captions"
+              src={video.captions}
+              srclang="en"
+              label="English"
+              default
+            />
+          </video>
+          <p
+            id="video-description"
+            class="mt-4 text-sm text-[var(--white-icon)] leading-relaxed"
+          >
+            {video.description}
+          </p>
+        </section>
+      )}
+
       {gallery.length > 0 && (
         <section class="mt-12" aria-labelledby="gallery-heading">
           <h2
@@ -112,16 +182,25 @@ const gallery = d.gallery.flatMap((g) => {
           >
             Screenshots
           </h2>
-          <ul class="grid gap-6 list-none p-0">
+          <ul
+            class:list={[
+              "grid list-none p-0",
+              portrait ? "grid-cols-2 sm:grid-cols-4 gap-4" : "gap-6",
+            ]}
+          >
             {gallery.map((g, i) => (
               <li>
                 <Image
                   src={g.src}
                   alt={g.alt}
-                  widths={[480, 768, 1024]}
-                  sizes="(min-width: 768px) 768px, 100vw"
+                  widths={portrait ? [240, 360, 480] : [480, 768, 1024]}
+                  sizes={
+                    portrait
+                      ? "(min-width: 640px) 180px, 50vw"
+                      : "(min-width: 768px) 768px, 100vw"
+                  }
                   class="w-full h-auto rounded-xl border border-white/[0.08]"
-                  loading={i === 0 ? "eager" : "lazy"}
+                  loading={!video && i === 0 ? "eager" : "lazy"}
                 />
               </li>
             ))}

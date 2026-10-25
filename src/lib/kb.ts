@@ -24,6 +24,8 @@ export type KbSource = { readonly path: string; readonly raw: string };
 export const KB_ROOT = "src/content/knowledge";
 /** Project screenshots live in <GALLERY_ROOT>/<slug>/ (relative to the repo root). */
 export const GALLERY_ROOT = "src/assets/images/projects";
+/** Project video and captions live in <MEDIA_ROOT>/<slug>/, served at /media/<slug>/. */
+export const MEDIA_ROOT = "public/media";
 export const KB_TOKEN_BUDGET = 15_000;
 
 const BOM = String.fromCharCode(0xfeff);
@@ -153,6 +155,18 @@ export function parseKbSource(src: KbSource): KbFile {
     for (const g of res.data.gallery) {
       if (!existsSync(join(GALLERY_ROOT, slug, g.file))) {
         fail(src.path, `gallery file not found: ${g.file}`);
+      }
+    }
+    const v = res.data.video;
+    if (v) {
+      for (const [root, file] of [
+        [MEDIA_ROOT, v.file],
+        [MEDIA_ROOT, v.captions],
+        [GALLERY_ROOT, v.poster],
+      ] as const) {
+        if (!existsSync(join(root, slug, file))) {
+          fail(src.path, `video file not found: ${file}`);
+        }
       }
     }
   }

@@ -21,7 +21,30 @@ cardTech:
 links:
   repo: "https://github.com/avanegas95/I-Am-Rich"
   live: "https://avanegas.com/orbithop/"
+  appStore: "https://apps.apple.com/us/app/astro-andy-orbit-hop/id6817951678"
 featured: true
+gallery:
+  - file: "01-title.jpg"
+    alt: "Title screen: \"One tap. Endless orbits.\" Astro Andy orbits a green planet under the game's logo, with a Tap to hop prompt."
+  - file: "02-perfect.jpg"
+    alt: "Gameplay: \"Tap on gold for a Perfect.\" Andy launches between planets with a score of 4 and a Perfect x4 combo badge."
+  - file: "03-deep-space.jpg"
+    alt: "Gameplay: \"Hop deeper into space.\" A jellyfish pilot circles a grey moon at a score of 26 with a Perfect x23 combo."
+  - file: "04-trails.jpg"
+    alt: "Gameplay: \"Blaze a trail in style.\" Andy flies between orange and green planets, leaving a sparkling trail."
+  - file: "05-pilots.jpg"
+    alt: "Hangar: \"Unlock 9 quirky pilots.\" The Retro Rocket pilot is equipped, above a grid of pilots, some still locked."
+  - file: "06-rescue.jpg"
+    alt: "Rescue screen: \"Rescue a stranded cat!\" Mr. Whiskers, a cat in a space suit, is rescued from planet 30."
+  - file: "07-share.jpg"
+    alt: "Share card: \"Beat your best. Brag a bit.\" A run summary of 47 planets hopped, 11 Perfects and a best combo of x7."
+  - file: "08-supporter.jpg"
+    alt: "Hangar: \"Suit up in Nebula style.\" Andy wears the Deep Space suit, with colorway choices below him."
+video:
+  file: "preview.mp4"
+  captions: "preview.vtt"
+  poster: "poster.jpg"
+  description: "A 21-second App Store preview with music and game sounds. Andy hops from planet to planet and chains Perfect launches. The Hangar flicks through the pilots and suits. Captions read: One tap. Endless orbits. Tap on gold for a Perfect. Unlock 9 quirky pilots. Blaze a trail in style. Suit up in Nebula style. Tap to hop."
 ---
 
 ### What it does

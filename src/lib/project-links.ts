@@ -26,12 +26,14 @@ export function projectLinks(
 ): {
   repo?: string;
   live?: string;
+  appStore?: string;
 } {
-  const out: { repo?: string; live?: string } = {};
+  const out: { repo?: string; live?: string; appStore?: string } = {};
   if (data.links.repo && data.repoPublic)
     out.repo = stripTracking(data.links.repo);
-  if (data.links.live && !isInDevelopment(data.status)) {
-    out.live = stripTracking(data.links.live);
+  if (!isInDevelopment(data.status)) {
+    if (data.links.live) out.live = stripTracking(data.links.live);
+    if (data.links.appStore) out.appStore = stripTracking(data.links.appStore);
   }
   return out;
 }
