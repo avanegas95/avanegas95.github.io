@@ -71,7 +71,7 @@ describe("voice-lock hashFields", () => {
     expect(keys).toContain("bio.md#summary");
     expect(keys).toContain("faq.md#body");
     expect(keys).toContain("projects/orbit-hop.md#role");
-    expect(keys).toContain("projects/orbit-hop.md#techNote");
+    expect(keys).toContain("projects/orbit-hop.md#summary");
     expect(keys).toContain("projects/orbit-hop.md#body");
     expect(keys).toContain(RENDER_LABELS_KEY);
     // Structure (titles, dates, tech lists) is not prose.

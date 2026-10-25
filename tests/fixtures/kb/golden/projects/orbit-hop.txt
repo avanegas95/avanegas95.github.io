@@ -1,20 +1,32 @@
 ## Project: Astro Andy: Orbit Hop
 
-One-tap iPhone arcade game
+A one-tap iPhone arcade game, live on the App Store. Anderson built it solo with AI agents in SwiftUI and SpriteKit, with 445 automated tests, Game Center and iCloud sync.
 
-**Status:** Live · **Role:** He built it solo, with the assistance of AI. Together they designed, coded, implemented, tested, and published. He is also the support contact. · **Platform and services:** iPhone, Game Center, iCloud, Google AdMob (build stack to be confirmed)
+**Status:** Live · **Role:** He built it solo, with the assistance of AI. Together they designed, coded, implemented, tested, and published. He is also the support contact. · **Stack:** Swift, SwiftUI, SpriteKit, StoreKit, Game Center (GameKit), iCloud sync, Google AdMob, XcodeGen, Claude Code
 
 ### What it does
 
-Astro Andy: Orbit Hop is a one-tap arcade game for iPhone. Andy orbits a planet. A tap launches him toward the next one. Launching when the guide lights up gives a Perfect, which earns extra Stardust and builds a combo. Miss every orbit and the run ends. Stardust unlocks new pilots and trails.
+Astro Andy: Orbit Hop is a one-tap arcade game for iPhone, free on the App Store. Andy orbits a planet, and a tap launches him toward the next one. Tap while the guide dots glow gold for a Perfect, which earns extra Stardust and builds a combo. Planets crumble if Andy lingers, and a missed orbit ends the run. Stardust unlocks nine pilots (including Mr. Whiskers, a cat stranded on a far planet), colorful suits and seven animated trails. No account or demo login is needed: anyone can download it and play, even offline.
 
 ### Highlights
 
-- Progress is saved on the iPhone and, with iCloud on, copied to the player's iCloud account.
+- Shipped to the App Store solo, with AI agents helping on design, code, testing and release.
+- 445 automated tests cover the game and three reusable Swift packages Anderson wrote for future one-tap games: a game core, an ads wrapper and a store wrapper.
+- Privacy-friendly ads: the only ad is optional: a player can watch one to double a run's Stardust. There are no banners or pop-ups, ads are non-personalized and there's no cross-app tracking. A one-time Supporter Pack gives double Stardust without ads.
+- There are no accounts and no personal data is sent to Anderson. Progress stays on the iPhone and, with iCloud on, syncs to the player's other devices.
 - Scores and achievements go to Game Center for signed-in players.
-- The only ad is optional. Players can watch one to double a run's Stardust. There are no pop-up ads. A Supporter Pack gives double Stardust without ads.
-- There are no accounts and no personal data is sent to Anderson. Ads are non-personalized.
+- All art, music and sound effects were made for the game; only the two fonts are third party.
+
+### How it was built
+
+The app is a SwiftUI shell hosting a SpriteKit scene, about 20,000 lines of Swift, targeting iOS 17 and later. Purchases use StoreKit, scores use GameKit, and ads use Google AdMob with Google's consent tool. The Xcode project is generated from a config file with XcodeGen, and every tuning number lives in one file.
+
+Anderson directed a Claude Code orchestrator that handed work to developer and designer agents. Each agent worked in its own git branch, and the orchestrator merged their work after review. Design choices went on a shared design board with a decisions page, where he approved each pick. Features he hadn't approved could only ship in internal test builds, behind a switch that's compiled out of App Store builds.
 
 ### QA angle
 
-The game has a public support page and a privacy policy on this site. Players can report bugs at avanegas95@gmail.com, and replies usually arrive within a few days. The support page also covers restoring purchases and moving to a new phone.
+- Automated tests cover orbit math, planet generation, the Stardust economy, purchases, Game Center, art sizes, trail snapshots and performance budgets.
+- A debug overlay (three-finger tap) shows capture radii, the launch window, frame rate and the run's seed. It exists only in debug and internal builds.
+- Internal TestFlight builds ran with test ads and debug tools on; the App Store build uses a separate archive mode with both off.
+- The App Store screenshots and the preview video are built by scripts. The video is cut on the beat, with sound effects synced to cues the game logs while recording.
+- The game has a public support page and a privacy policy on this site. Players can report bugs at avanegas95@gmail.com, and replies usually arrive within a few days. The support page also covers restoring purchases and moving to a new phone.

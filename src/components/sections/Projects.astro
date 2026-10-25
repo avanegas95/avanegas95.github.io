@@ -93,6 +93,25 @@ const projects = (await getPublicProjects()).filter((p) => p.data.featured);
                         </svg>
                       </a>
                     )}
+                    {links.appStore && (
+                      <a
+                        href={links.appStore}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="p-1.5 md:p-2 rounded-lg bg-white/[0.06] text-[var(--white-icon)] hover:text-[var(--sec)] transition-all duration-300 hover:scale-110 min-h-0 min-w-0"
+                        aria-label={`${d.title} on the App Store`}
+                        data-testid="project-app-store"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          class="w-4 h-4 md:w-5 md:h-5"
+                        >
+                          <path d="M3 19H21V21H3V19ZM13 13.1716L19.0711 7.1005L20.4853 8.51472L12 17L3.51472 8.51472L4.92893 7.1005L11 13.1716V2H13V13.1716Z" />
+                        </svg>
+                      </a>
+                    )}
                     {links.live && (
                       <a
                         href={links.live}

@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   GALLERY_ROOT,
   KB_ROOT,
+  MEDIA_ROOT,
   loadKbSources,
   parseKbSource,
 } from "../../src/lib/kb.ts";
@@ -24,7 +25,9 @@ const publicProjects = projects.filter((p) => p.data.public);
 
 const TRACKING = /wfuid|wfsid|utm_|fbclid|gclid/i;
 const urlsOf = (p: Project) =>
-  [p.links.repo, p.links.live].filter((u): u is string => Boolean(u));
+  [p.links.repo, p.links.live, p.links.appStore].filter((u): u is string =>
+    Boolean(u),
+  );
 
 describe("project KB files", () => {
   it("has public projects", () => {
@@ -61,6 +64,7 @@ describe("project KB files", () => {
     for (const { slug, data } of projects) {
       if (isInDevelopment(data.status)) {
         expect(data.links.live, slug).toBeUndefined();
+        expect(data.links.appStore, slug).toBeUndefined();
       }
     }
   });
@@ -89,6 +93,21 @@ describe("project KB files", () => {
           true,
         );
       }
+    }
+  });
+
+  it("every video's file, captions and poster exist", () => {
+    for (const { slug, data } of projects) {
+      const v = data.video;
+      if (!v) continue;
+      expect(existsSync(`${MEDIA_ROOT}/${slug}/${v.file}`), v.file).toBe(true);
+      expect(
+        existsSync(`${MEDIA_ROOT}/${slug}/${v.captions}`),
+        v.captions,
+      ).toBe(true);
+      expect(existsSync(`${GALLERY_ROOT}/${slug}/${v.poster}`), v.poster).toBe(
+        true,
+      );
     }
   });
 
@@ -161,6 +180,82 @@ describe("gallery schema", () => {
   });
 });
 
+describe("video and App Store schema", () => {
+  const base = {
+    topic: "project",
+    title: "T",
+    summary: "S",
+    updated: new Date("2026-10-24"),
+    public: true,
+    order: 1,
+    status: "Live",
+    role: "r",
+    tech: ["x"],
+  };
+  const video = {
+    file: "v.mp4",
+    captions: "v.vtt",
+    poster: "p.jpg",
+    description: "D",
+  };
+  const parse = (extra: Record<string, unknown>) =>
+    ProjectSchema.safeParse({ ...base, ...extra });
+
+  it("accepts a video with captions, poster and description", () => {
+    expect(parse({ video }).success).toBe(true);
+  });
+  it("rejects a video without captions or with a blank description", () => {
+    const noCaptions: Record<string, unknown> = { ...video };
+    delete noCaptions["captions"];
+    expect(parse({ video: noCaptions }).success).toBe(false);
+    expect(parse({ video: { ...video, description: " " } }).success).toBe(
+      false,
+    );
+  });
+  it("rejects wrong extensions and paths", () => {
+    expect(parse({ video: { ...video, file: "v.mov" } }).success).toBe(false);
+    expect(parse({ video: { ...video, captions: "v.srt" } }).success).toBe(
+      false,
+    );
+    expect(parse({ video: { ...video, file: "../v.mp4" } }).success).toBe(
+      false,
+    );
+  });
+  it("accepts only apps.apple.com App Store links", () => {
+    const ok = "https://apps.apple.com/us/app/x/id1";
+    expect(parse({ links: { appStore: ok } }).success).toBe(true);
+    expect(
+      parse({ links: { appStore: "https://example.com/app" } }).success,
+    ).toBe(false);
+  });
+  it("a missing video file fails to load", () => {
+    expect(() =>
+      parseKbSource({
+        path: "projects/paychira.md",
+        raw: [
+          "---",
+          "topic: project",
+          "title: T",
+          "summary: S",
+          "updated: 2026-10-24",
+          "public: true",
+          "order: 1",
+          "status: Live",
+          "role: r",
+          "tech: [x]",
+          "video:",
+          "  file: nope.mp4",
+          "  captions: nope.vtt",
+          "  poster: nope.jpg",
+          "  description: D",
+          "---",
+          "Body",
+        ].join("\n"),
+      }),
+    ).toThrow(/video file not found/);
+  });
+});
+
 describe("project links", () => {
   it("strips tracking params and keeps the rest", () => {
     expect(stripTracking("https://a.com/x?utm_source=z&k=1&wfuid=3")).toBe(
@@ -177,6 +272,17 @@ describe("project links", () => {
     expect(
       projectLinks({ links, status: "Live", repoPublic: false }).live,
     ).toBe("https://l.com");
+  });
+  it("emits the App Store link unless in development", () => {
+    const links = {
+      appStore: "https://apps.apple.com/us/app/x/id1?utm_source=z",
+    };
+    expect(projectLinks({ links, status: "Live", repoPublic: false })).toEqual({
+      appStore: "https://apps.apple.com/us/app/x/id1",
+    });
+    expect(
+      projectLinks({ links, status: "In development", repoPublic: false }),
+    ).toEqual({});
   });
   it("emits the repo link only when repoPublic is true", () => {
     const links = { repo: "https://github.com/x/y" };

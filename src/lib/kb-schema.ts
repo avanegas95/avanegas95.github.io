@@ -56,6 +56,30 @@ export const GalleryItemSchema = z
   .strict();
 export type GalleryItem = z.infer<typeof GalleryItemSchema>;
 
+const bareFile = (ext: RegExp, what: string) =>
+  text
+    .regex(/^[A-Za-z0-9._-]+$/, "expected a bare file name")
+    .regex(ext, `not ${what}`);
+
+// A short clip for the project page. `file` and `captions` live in
+// public/media/<slug>/ (astro:assets doesn't process video); `poster` is an
+// image in the gallery folder. kb.ts checks that all three exist.
+export const ProjectVideoSchema = z
+  .object({
+    file: bareFile(/\.mp4$/i, "an .mp4 file"),
+    captions: bareFile(/\.vtt$/i, "a .vtt file"),
+    poster: bareFile(GALLERY_EXT, "an image file"),
+    // Text alternative shown under the video.
+    description: text.refine((a) => a.trim() !== "", "must not be empty"),
+  })
+  .strict();
+export type ProjectVideo = z.infer<typeof ProjectVideoSchema>;
+
+const appStore = https.refine(
+  (u) => new URL(u).hostname === "apps.apple.com",
+  "expected an apps.apple.com link",
+);
+
 export const ProjectCardSchema = z.object({
   status: text,
   // Required for public projects (see ProjectSchema); Anderson's own words.
@@ -64,7 +88,11 @@ export const ProjectCardSchema = z.object({
   techLabel: text.default("Stack"),
   techNote: text.optional(),
   links: z
-    .object({ repo: https.optional(), live: https.optional() })
+    .object({
+      repo: https.optional(),
+      live: https.optional(),
+      appStore: appStore.optional(),
+    })
     .strict()
     .default({}),
   // Shorter tag list for the site card; the page and Blob use the full `tech`.
@@ -75,6 +103,7 @@ export const ProjectCardSchema = z.object({
   featured: z.boolean().default(false),
   // Screenshots for the project page, relative to src/assets/images/projects/<slug>/.
   gallery: z.array(GalleryItemSchema).default([]),
+  video: ProjectVideoSchema.optional(),
 });
 export type ProjectCard = z.infer<typeof ProjectCardSchema>;
 
