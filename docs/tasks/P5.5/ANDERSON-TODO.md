@@ -5,8 +5,9 @@
 > - H2 done: D-14 is Staff SQA Engineer; D-11 follows the resume (drop "Linux").
 > - H3 done: every prose field is voice-locked unless Anderson says otherwise.
 > - H5 done: Anderson keeps his hand-made PDF, served and indexed at `/Anderson_Vanegas_Resume.pdf` (P5-17). Option (i) is not being built.
-> - `npm run voice:accept` doesn't exist yet. P5.5-13c adds it; until then there is nothing to run.
-> - Still open: **H4** (fill in `docs/content-intake/site-copy.md`, created by P5.5-13a) and the Blob questionnaire, which Anderson is answering now.
+> - Blob questionnaire done; all answers are in the KB.
+> - H4 changed (decision log): Anderson edits copy where it renders. Hero/About done (P5.5-04). Still open: **projects copy** in `src/data/projects.ts` (unblocks P5.5-13b), and the "to be confirmed" markers in KB `paychira.md` / `orbit-hop.md`.
+> - Ongoing: run `npm run voice:accept` after any KB prose change and commit `voice.lock.json`.
 
 
 Agents never write your prose. They only move your words verbatim, wire them up and check them. Each item says what's waiting on it.

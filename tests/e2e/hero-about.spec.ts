@@ -70,13 +70,15 @@ test("built hero and About text is unchanged from before the move to the KB", as
   );
   // Captured from the built site at origin/feat/blob before this task. Two tool-list changes were
   // decided by Anderson (docs/PLAN.md decision log, 2026-10-24): "Linux" is dropped, and the
-  // tools now come from skills.md, which spells it "TestRail". Nothing else may differ.
+  // tools now come from skills.md, which spells it "TestRail". Anderson also fixed his
+  // "is makes" typo in bio.md (89dcf53). Nothing else may differ.
   const before = readFileSync(
     "tests/fixtures/site/hero-about-before.txt",
     "utf8",
   )
     .replace("Linux / Bash / Windows", "Bash / Windows")
-    .replace("TestRails", "TestRail");
+    .replace("TestRails", "TestRail")
+    .replace("software that is makes sense", "software that makes sense");
   expect(text + "\n").toBe(before);
 });
 

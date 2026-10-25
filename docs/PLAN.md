@@ -5,8 +5,8 @@
 
 ## ▶ Current phase: **P5.5: Portfolio improvement** · Status: `in progress` (2026-10-24). P5 PASSED 2026-10-24. P6 waits on Anderson's explicit approval.
 
-**Handoff (2026-10-24, end of orchestrator session 1):**
-- **Merged:** 03, 04, 05, 06, 08a, 13a, 13c, 15, 16 (rounds 1–3), 17, 18, 19 and 20. All questionnaire answers are in the KB. KB career facts match `docs/content-intake/resume.md`.
+**Handoff (2026-10-24, orchestrator session 2):**
+- **Merged:** 03, 04, 05, 06, 08a, 13a, 13c, 15, 16 (rounds 1–3), 17, 18, 19, 20 and 22. All questionnaire answers are in the KB. KB career facts match `docs/content-intake/resume.md`.
 - **Open tasks, in order:**
   - P5.5-13b: Projects render from the KB. Waits on Anderson saying `src/data/projects.ts` is ready.
   - P5.5-08b: nav: `#experience`, drop the `#experiences` alias in nav.ts, prompt.ts and links.ts.
@@ -14,11 +14,10 @@
   - P5.5-13d: re-brief as a resume facts check (report-only).
   - Then the P5.5 gate.
 - **Waiting on Anderson:**
-  - (1) Run `npm run voice:accept` and commit `voice.lock.json`. The CI "Voice lock check" stays red until he does.
-  - (2) Fix the "is makes" typo in `bio.md` `about`.
-  - (3) Write optional `siteBullets` in experience.md.
-  - (4) Projects copy.
-- **Repo state:** only `main` and `feat/blob` remain; no agent worktrees or stray processes.
+  - Projects copy in `src/data/projects.ts`, then say it's ready (unblocks 13b).
+  - Replace the "to be confirmed" markers in KB `paychira.md` and `orbit-hop.md` (status, Orbit Hop techNote); guard:pii warns on them.
+  - Done 2026-10-24: voice:accept + `voice.lock.json`, "is makes" typo, siteBullets.
+- **Repo state:** only `main` and `feat/blob` remain; no agent worktrees or stray processes. `about-me-flags.md` removed (all flags resolved). Three old stashes from `main`/`Updates-to-new-site` remain, left for Anderson.
 - **Process notes:**
   - Merge in a separate detached worktree and push `HEAD:feat/blob`, so Anderson's checkout and dev server are untouched.
   - Push only after a green local run or green CI.
