@@ -48,6 +48,22 @@ test("desktop: intro on the left, Blob on the right, top-aligned", async ({
   expect(Math.abs(blob!.y - intro!.y)).toBeLessThanOrEqual(1);
 });
 
+// P5.5-21: the hero is sized by its content, so About follows closely even on tall screens.
+for (const [width, height] of [
+  [1280, 800],
+  [1440, 1200],
+]) {
+  test(`About starts close under the hero at ${width}x${height}`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height });
+    await open(page);
+    const blob = await page.locator(".home-blob").boundingBox();
+    const about = await page.locator("#about h2").boundingBox();
+    expect(about!.y - (blob!.y + blob!.height)).toBeLessThanOrEqual(160);
+  });
+}
+
 test("a chip streams the fixture reply into the bubble, and the left column does not move", async ({
   page,
 }) => {

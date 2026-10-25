@@ -7,6 +7,7 @@
 > - H5 done: Anderson keeps his hand-made PDF, served and indexed at `/Anderson_Vanegas_Resume.pdf` (P5-17). Option (i) is not being built.
 > - Blob questionnaire done; all answers are in the KB.
 > - H4 changed (decision log): Anderson edits copy where it renders. Hero/About done (P5.5-04). Still open: **projects copy** in `src/data/projects.ts` (unblocks P5.5-13b), and the "to be confirmed" markers in KB `paychira.md` / `orbit-hop.md`.
+> - Project pages (P5.5-13b): each public project gets `/projects/<slug>/` showing its KB write-up. Optional: write KB bodies for AI Digest and avanegas.com (else they stay hidden), and add screenshots to `src/assets/images/projects/<slug>/` with your own alt text in the file's `gallery` frontmatter.
 > - Ongoing: run `npm run voice:accept` after any KB prose change and commit `voice.lock.json`.
 
 
