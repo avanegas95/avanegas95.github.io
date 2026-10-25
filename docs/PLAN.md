@@ -137,6 +137,7 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 ## Decision log
 | Date | Decision | By |
 |---|---|---|
+| 2026-10-24 | Scoped exception to H3: agents may draft the project KB files (`src/content/knowledge/projects/*.md`) on task branches, one agent per file. Anderson rewrites the drafts in his own voice before running `voice:accept`; he must not accept an unedited draft. Every other prose field stays under H3. | Anderson |
 | 2026-10-24 | Projects (13b answers): Paychira and Orbit Hop are Live; cards show a short `cardTech` list (from his projects.ts) while the page and Blob keep the full KB `tech`; no GitHub links until a repo is marked `repoPublic: true`; State of Ecosystems keeps the KB title "The State of Ecosystems 2026". | Anderson |
 | 2026-10-24 | Each public project gets a static `/projects/<slug>/` page built from its KB file, so the page and Blob share one write-up. Screenshots are optional: Anderson adds the image files and their alt text (`gallery` frontmatter). Blob's scrubber allowlist is unchanged for now (P5.5-13b). | Anderson |
 | 2026-10-24 | CI split into tiers to cut friction on copy changes: pushes to feat/blob run chromium-only E2E without Lighthouse, while pull requests and manual runs run all three browsers plus Lighthouse (the rule 8 gate). Added `npm run check:copy`, a fast local check. Retired the frozen hero/About text snapshot, since voice:check covers wording changes. | Anderson |
