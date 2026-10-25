@@ -67,6 +67,10 @@ export const ProjectCardSchema = z.object({
     .object({ repo: https.optional(), live: https.optional() })
     .strict()
     .default({}),
+  // Shorter tag list for the site card; the page and Blob use the full `tech`.
+  cardTech: z.array(text).min(1).optional(),
+  // Show the repo link only when Anderson has marked the repository public.
+  repoPublic: z.boolean().default(false),
   cover: text.optional(),
   featured: z.boolean().default(false),
   // Screenshots for the project page, relative to src/assets/images/projects/<slug>/.

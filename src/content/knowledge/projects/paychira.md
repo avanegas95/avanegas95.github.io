@@ -5,7 +5,7 @@ summary: "Full-stack sales forecasting SaaS for small agencies: deal pipeline, p
 updated: 2026-10-24
 public: true
 order: 1
-status: "to be confirmed"
+status: "Live"
 role: "Designer and builder (developed for Datalily)"
 tech:
   - "React 18"
@@ -16,6 +16,12 @@ tech:
   - "Supabase"
   - "Vercel"
   - "Render"
+cardTech:
+  - "React"
+  - "FastAPI"
+  - "Supabase"
+  - "Vercel"
+  - "Python"
 links:
   repo: "https://github.com/avanegas95/paychira"
   live: "https://www.paychira.com/dashboard"

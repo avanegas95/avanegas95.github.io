@@ -5,7 +5,7 @@ summary: "One-tap iPhone arcade game"
 updated: 2026-10-24
 public: true
 order: 4
-status: "to be confirmed"
+status: "Live"
 role: "He built it solo, with the assistance of AI. Together they designed, coded, implemented, tested, and published. He is also the support contact."
 techLabel: "Platform and services"
 tech:
@@ -14,6 +14,10 @@ tech:
   - "iCloud"
   - "Google AdMob"
 techNote: "build stack to be confirmed"
+cardTech:
+  - "Swift"
+  - "iOS"
+  - "AI Tools"
 links:
   repo: "https://github.com/avanegas95/I-Am-Rich"
   live: "https://avanegas.com/orbithop/"

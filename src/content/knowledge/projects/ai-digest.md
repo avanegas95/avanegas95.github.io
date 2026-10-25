@@ -10,6 +10,10 @@ tech:
   - "TypeScript"
   - "Vercel"
   - "AI Tools"
+cardTech:
+  - "TypeScript"
+  - "Vercel"
+  - "AI Tools"
 links:
   repo: "https://github.com/avanegas95/ai-digest"
   live: "https://ai-digest-eight-olive.vercel.app"

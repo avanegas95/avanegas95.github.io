@@ -35,6 +35,30 @@ test("one card per public KB project, titled and linked from the KB", async ({
   }
 });
 
+test("no GitHub repo link renders unless the KB marks the repo public", async ({
+  page,
+}) => {
+  const expected = cards.filter((c) => c.data.repoPublic && c.data.links.repo);
+  const scopes: [string, string][] = [
+    ["/", "#projects"],
+    ...cards.map((c): [string, string] => [`/projects/${c.slug}/`, "article"]),
+  ];
+  let found = 0;
+  for (const [url, scope] of scopes) {
+    await page.goto(url);
+    const repos = await page
+      .locator(`${scope} a`)
+      .evaluateAll((as) =>
+        as
+          .map((a) => a.getAttribute("href") ?? "")
+          .filter((h) => /github\.com\/[^/]+\/[^/]+/.test(h)),
+      );
+    found += repos.length;
+  }
+  // Each marked repo shows on its card and on its page; none are marked today.
+  expect(found).toBe(expected.length * 2);
+});
+
 test("no card uses the placeholder image", async ({ page }) => {
   await page.goto("/");
   const srcs = await page

@@ -24,9 +24,7 @@ const publicProjects = projects.filter((p) => p.data.public);
 
 const TRACKING = /wfuid|wfsid|utm_|fbclid|gclid/i;
 const urlsOf = (p: Project) =>
-  [p.links.repo, p.links.live, ...(p.cover ? [] : [])].filter(
-    (u): u is string => Boolean(u),
-  );
+  [p.links.repo, p.links.live].filter((u): u is string => Boolean(u));
 
 describe("project KB files", () => {
   it("has public projects", () => {
@@ -173,9 +171,25 @@ describe("project links", () => {
   });
   it("hides the live link while in development", () => {
     const links = { repo: "https://g.com/r", live: "https://l.com" };
-    expect(projectLinks({ links, status: "In development" })).toEqual({
-      repo: "https://g.com/r",
-    });
-    expect(projectLinks({ links, status: "Live" }).live).toBe("https://l.com");
+    expect(
+      projectLinks({ links, status: "In development", repoPublic: true }),
+    ).toEqual({ repo: "https://g.com/r" });
+    expect(
+      projectLinks({ links, status: "Live", repoPublic: false }).live,
+    ).toBe("https://l.com");
+  });
+  it("emits the repo link only when repoPublic is true", () => {
+    const links = { repo: "https://github.com/x/y" };
+    expect(
+      projectLinks({ links, status: "Live", repoPublic: false }).repo,
+    ).toBeUndefined();
+    expect(projectLinks({ links, status: "Live", repoPublic: true }).repo).toBe(
+      links.repo,
+    );
+  });
+  it("no KB project is marked repoPublic yet", () => {
+    for (const { slug, data } of projects) {
+      expect(data.repoPublic, slug).toBe(false);
+    }
   });
 });

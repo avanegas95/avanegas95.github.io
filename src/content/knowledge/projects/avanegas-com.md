@@ -10,6 +10,10 @@ tech:
   - "Astro"
   - "React"
   - "Tailwind"
+cardTech:
+  - "Astro"
+  - "React"
+  - "Tailwind"
 links:
   repo: "https://github.com/avanegas95/avanegas95.github.io"
   live: "https://avanegas.com"

@@ -65,9 +65,9 @@ const projects = (await getPublicProjects()).filter((p) => p.data.featured);
                   <p class="text-[var(--white-icon)] text-xs md:text-sm mb-4 flex-1 leading-relaxed">
                     {d.summary}
                   </p>
-                  {d.tech.length > 0 && (
+                  {(d.cardTech ?? d.tech).length > 0 && (
                     <ul class="flex flex-wrap gap-1.5 mb-4">
-                      {d.tech.map((tag) => (
+                      {(d.cardTech ?? d.tech).map((tag) => (
                         <li class="text-[10px] md:text-xs px-2 py-0.5 rounded-md bg-white/[0.03] text-[var(--white-icon)]">
                           {tag}
                         </li>

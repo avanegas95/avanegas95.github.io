@@ -21,12 +21,15 @@ export function isInDevelopment(status: string): boolean {
   return /in[\s-]development/i.test(status);
 }
 
-export function projectLinks(data: Pick<Project, "links" | "status">): {
+export function projectLinks(
+  data: Pick<Project, "links" | "status" | "repoPublic">,
+): {
   repo?: string;
   live?: string;
 } {
   const out: { repo?: string; live?: string } = {};
-  if (data.links.repo) out.repo = stripTracking(data.links.repo);
+  if (data.links.repo && data.repoPublic)
+    out.repo = stripTracking(data.links.repo);
   if (data.links.live && !isInDevelopment(data.status)) {
     out.live = stripTracking(data.links.live);
   }

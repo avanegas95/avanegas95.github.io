@@ -12,6 +12,11 @@ tech:
   - "Vite 6"
   - "Figma MCP"
   - "JSON content layer"
+cardTech:
+  - "React"
+  - "Vite"
+  - "HTML"
+  - "CSS"
 links:
   live: "https://www.hubspot.com/state-of-ecosystems-2026"
 featured: true
