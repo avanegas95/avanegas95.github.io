@@ -218,7 +218,7 @@ describe("evals/cases.yaml", () => {
       ).toBeGreaterThan(0);
     });
 
-    it("orbit-hop.md states Anderson built it and keeps the stack unconfirmed (status is Live, per Anderson)", () => {
+    it("orbit-hop.md states Anderson built it, status Live and the confirmed stack (Anderson, 2026-10-24)", () => {
       const raw = readFileSync(
         "src/content/knowledge/projects/orbit-hop.md",
         "utf8",
@@ -229,7 +229,8 @@ describe("evals/cases.yaml", () => {
         "**Role:** He built it solo, with the assistance of AI. Together they designed, coded, implemented, tested, and published. He is also the support contact.",
       );
       expect(section).toContain("**Status:** Live");
-      expect(section).toContain("(build stack to be confirmed)");
+      expect(section).toContain("**Stack:** Swift, SwiftUI, SpriteKit");
+      expect(section).not.toMatch(/to be confirmed/i);
       expect(raw).toContain("updated: 2026-10-24");
       expect(raw).not.toMatch(/ai[- ]assisted/i);
     });
