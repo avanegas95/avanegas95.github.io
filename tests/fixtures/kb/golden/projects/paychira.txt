@@ -1,15 +1,16 @@
 ## Project: Paychira
 
-Full-stack sales forecasting SaaS for small agencies: deal pipeline, probability-weighted forecasts, org roles, CSV import, PandaDoc sync, and AI chat on pipeline data.
+Sales forecasting, realized revenue and profitability for agencies, in production at Datalily: deal pipeline, PandaDoc sync, P&L by project, and an AI ask bar.
 
-**Status:** Live · **Role:** Designer and builder (developed for Datalily) · **Stack:** React 18, Vite, Tailwind, FastAPI, Pydantic, Supabase, Vercel, Render
+**Status:** Live · **Role:** Designer and builder (developed for Datalily) · **Stack:** React 18, TypeScript, Vite 7, Tailwind, Radix UI, Recharts, Python, FastAPI, Pydantic, Supabase, Vercel, OpenAI API, PandaDoc API
 
 ### What it does
 
-Paychira is a sales-forecasting tool for small agencies. Anderson used AI tools to design, build and deploy it. It tracks deals and turns them into revenue forecasts, so agencies can see what the pipeline is likely to bring in.
+Paychira is a sales forecasting, revenue and profitability app for agencies. Anderson used AI tools to design, build and deploy it for Datalily, which runs on it in production. It turns the deal pipeline and signed PandaDoc contracts into a probability-weighted forecast, realized revenue by month, and a margin for every project.
 
 ### Highlights
 
-- Leveraged AI tools to design, build, and deploy a sales-forecasting tool for small agencies: features a deal pipeline, probability-weighted revenue forecasts, org/team roles, CSV import, PandaDoc contract synchronization, and AI chat, on the pipeline data.
-- Front end: React 18, Vite, Tailwind (Hosted on Vercel); Backend: FastAPI, Pydantic REST API (Hosted on Render); Database: Supabase
-- Automated PR process; Implemented Gemini Code Review and CodeRabbit in the repository to provide feedback and improve code quality. Pulled deployment status from Vercel and Render as checks to confirm success status, before merging.
+- Leveraged AI tools to design, build, and deploy it: a deal pipeline with probability-weighted forecasts and stale-deal flags, PandaDoc contract and line-item sync, realized revenue by month, revenue-exclusion rules, a monthly P&L with margin by project and deliverable, org/team roles, CSV import, and an AI ask bar that answers about pipeline, costs and margins and asks for confirmation before changing data.
+- Front end: React 18, TypeScript, Vite, Tailwind. Back end: FastAPI and Pydantic REST API. Both are hosted on one Vercel project, with Vercel Cron for the PandaDoc sync. Database and auth: Supabase. The API moved from Render to Vercel in September 2026.
+- Automated PR process: Gemini Code Assist and CodeRabbit review pull requests. GitHub Actions runs lint, typecheck, unit, API and end-to-end tests on every PR, and Vercel preview deployments are checked before merging.
+- Testing: more than 700 API tests run against fake database connections, alongside Vitest unit tests and Playwright end-to-end tests on desktop and mobile. A seeded demo organization with hand-computed totals is verified on every seed.
