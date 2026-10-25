@@ -16,8 +16,8 @@ export const projects: Project[] = [
   {
     title: "Paychira",
     description:
-      "Full-stack sales forecasting SaaS for small agencies (paychira): deal pipeline, probability-weighted forecasts, org roles, CSV import, PandaDoc sync, and AI chat on pipeline data.",
-    tech: ["React", "FastAPI", "Supabase", "Vercel", "Render"],
+      "Full-stack sales forecasting SaaS for small agencies: deal pipeline, probability-weighted forecasts, org roles, CSV import, PandaDoc sync, and AI chat on pipeline data.",
+    tech: ["React", "FastAPI", "Supabase", "Vercel", "Python"],
     image: cover,
     status: "shipped",
     github: "https://github.com/avanegas95/paychira",
@@ -59,7 +59,7 @@ export const projects: Project[] = [
   {
     title: "avanegas.com",
     description:
-      "This site — Astro portfolio with blog, project index, and Orbit Hop support pages.",
+      "This site — Astro portfolio with AI Blob, blog, project index, and Orbit Hop support pages.",
     tech: ["Astro", "React", "Tailwind"],
     image: cover,
     status: "shipped",
