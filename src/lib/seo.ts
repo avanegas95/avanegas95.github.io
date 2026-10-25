@@ -37,12 +37,3 @@ export function currentRoleFromSummary(
   const m = /^(.+?) at (.+?) who\b/.exec(summary);
   return m?.[1] && m[2] ? { title: m[1], employer: m[2] } : null;
 }
-
-/** Finds the URL of a "- Label: [text](url)" list item in KB markdown. */
-export function kbLink(markdown: string, label: string): string | null {
-  const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const m = new RegExp(`^- ${escaped}: \\[[^\\]]*\\]\\(([^)]+)\\)`, "m").exec(
-    markdown,
-  );
-  return m?.[1] ?? null;
-}

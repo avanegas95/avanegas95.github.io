@@ -2,18 +2,16 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
   currentRoleFromSummary,
-  kbLink,
   personJsonLd,
   serializeJsonLd,
 } from "../../src/lib/seo";
-import { renderKbSection } from "../../src/lib/kb.ts";
+import { parseKbSource } from "../../src/lib/kb.ts";
 
-// The contact links live in frontmatter; kbLink reads the rendered section.
-const contact =
-  renderKbSection({
-    path: "contact.md",
-    raw: readFileSync("src/content/knowledge/contact.md", "utf8"),
-  }) ?? "";
+// The contact links live in frontmatter.
+const contact = parseKbSource({
+  path: "contact.md",
+  raw: readFileSync("src/content/knowledge/contact.md", "utf8"),
+}).data;
 const bio = readFileSync("src/content/knowledge/bio.md", "utf8");
 
 describe("serializeJsonLd", () => {
@@ -27,10 +25,10 @@ describe("serializeJsonLd", () => {
 });
 
 describe("personJsonLd", () => {
-  const sameAs = [
-    kbLink(contact, "LinkedIn"),
-    kbLink(contact, "GitHub"),
-  ].filter((v): v is string => !!v);
+  const links = contact.topic === "contact" ? contact.links : undefined;
+  const sameAs = [links?.linkedin, links?.github].filter(
+    (v): v is string => !!v,
+  );
   const ld = personJsonLd({
     name: "Anderson Vanegas",
     jobTitle: "Staff SQA Engineer",
@@ -72,8 +70,5 @@ describe("KB parsing", () => {
   });
   it("returns null when the summary has no 'X at Y' role", () => {
     expect(currentRoleFromSummary("Tests robots.")).toBeNull();
-  });
-  it("kbLink returns null for a missing label", () => {
-    expect(kbLink(contact, "Fax")).toBeNull();
   });
 });

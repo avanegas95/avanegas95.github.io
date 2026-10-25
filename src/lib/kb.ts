@@ -1,6 +1,6 @@
 // Server/tooling only. Must run under plain `node` (type stripping): erasable TS only.
 import { createHash } from "node:crypto";
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
   isScalar,
@@ -22,6 +22,8 @@ import {
 export type KbSource = { readonly path: string; readonly raw: string };
 
 export const KB_ROOT = "src/content/knowledge";
+/** Project screenshots live in <GALLERY_ROOT>/<slug>/ (relative to the repo root). */
+export const GALLERY_ROOT = "src/assets/images/projects";
 export const KB_TOKEN_BUDGET = 15_000;
 
 const BOM = String.fromCharCode(0xfeff);
@@ -146,6 +148,14 @@ export function parseKbSource(src: KbSource): KbFile {
       .join("; ");
     fail(src.path, `invalid frontmatter (${why})`);
   }
+  if (src.path.startsWith("projects/") && res.data.topic === "project") {
+    const slug = src.path.replace(/^projects\//, "").replace(/\.md$/, "");
+    for (const g of res.data.gallery) {
+      if (!existsSync(join(GALLERY_ROOT, slug, g.file))) {
+        fail(src.path, `gallery file not found: ${g.file}`);
+      }
+    }
+  }
   const body = lines
     .slice(end + 1)
     .join("\n")
@@ -216,8 +226,9 @@ function renderStructured(d: Knowledge | Project): string[] {
     }
     case "project": {
       const note = d.techNote ? ` (${d.techNote})` : "";
+      const role = d.role === undefined ? "" : ` · **Role:** ${d.role}`;
       return [
-        `**Status:** ${d.status} · **Role:** ${d.role} · **${d.techLabel}:** ${d.tech.join(", ")}${note}`,
+        `**Status:** ${d.status}${role} · **${d.techLabel}:** ${d.tech.join(", ")}${note}`,
       ];
     }
     default:

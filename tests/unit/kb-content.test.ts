@@ -140,7 +140,9 @@ function structureViolations(srcs: readonly KbSource[]): string[] {
       }
     }
     const summary = frontmatter(s.raw)["summary"];
-    if (!summary || summary.length > 200 || /\n/.test(summary)) {
+    // Project summaries are card text and may run to PROJECT_SUMMARY_MAX.
+    const max = s.path.startsWith("projects/") ? 240 : 200;
+    if (!summary || summary.length > max || /\n/.test(summary)) {
       v.push(`${s.path}: summary empty/long`);
     }
   }

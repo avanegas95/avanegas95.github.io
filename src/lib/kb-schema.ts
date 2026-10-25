@@ -43,9 +43,23 @@ export const ContactLinksSchema = z
   .strict();
 export type ContactLinks = z.infer<typeof ContactLinksSchema>;
 
+// Image extensions astro:assets can process. Existence of the file is checked
+// by kb.ts (it knows the slug) and by the project page's build.
+const GALLERY_EXT = /\.(?:avif|gif|jpe?g|png|webp)$/i;
+export const GalleryItemSchema = z
+  .object({
+    file: text
+      .regex(/^[A-Za-z0-9._-]+$/, "expected a bare file name")
+      .regex(GALLERY_EXT, "not an image file"),
+    alt: text.refine((a) => a.trim() !== "", "alt must not be empty"),
+  })
+  .strict();
+export type GalleryItem = z.infer<typeof GalleryItemSchema>;
+
 export const ProjectCardSchema = z.object({
   status: text,
-  role: text,
+  // Required for public projects (see ProjectSchema); Anderson's own words.
+  role: text.optional(),
   tech: z.array(text).min(1),
   techLabel: text.default("Stack"),
   techNote: text.optional(),
@@ -55,6 +69,8 @@ export const ProjectCardSchema = z.object({
     .default({}),
   cover: text.optional(),
   featured: z.boolean().default(false),
+  // Screenshots for the project page, relative to src/assets/images/projects/<slug>/.
+  gallery: z.array(GalleryItemSchema).default([]),
 });
 export type ProjectCard = z.infer<typeof ProjectCardSchema>;
 
@@ -112,14 +128,22 @@ export const KnowledgeSchema = z.discriminatedUnion("topic", [
 ]);
 export type Knowledge = z.infer<typeof KnowledgeSchema>;
 
+// Project summaries are the card text, so they may run longer than other topics'.
+export const PROJECT_SUMMARY_MAX = 240;
+
 export const ProjectSchema = z
   .object({
     topic: z.literal("project"),
     ...base,
+    summary: text.max(PROJECT_SUMMARY_MAX),
     order: z.number().int().min(1),
     ...ProjectCardSchema.shape,
   })
-  .strict();
+  .strict()
+  .refine((p) => !p.public || p.role !== undefined, {
+    path: ["role"],
+    message: "role is required for a public project",
+  });
 export type Project = z.infer<typeof ProjectSchema>;
 
 // Anderson-owned prose (voice lock, P5.5-13c). `[]` means every array item.
