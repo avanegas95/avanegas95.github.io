@@ -8,12 +8,12 @@
 **Handoff (2026-10-24, orchestrator session 2):**
 - **Merged:** 03, 04, 05, 06, 08a, 13a, 13c, 15, 16 (rounds 1–3), 17, 18, 19, 20 and 22. All questionnaire answers are in the KB. KB career facts match `docs/content-intake/resume.md`.
 - **Open tasks, in order:**
-  - P5.5-13b: Projects render from the KB, plus `/projects/<slug>/` detail pages with optional screenshots (re-briefed 2026-10-24). Waits on Anderson saying `src/data/projects.ts` is ready.
   - P5.5-08b: nav: `#experience`, drop the `#experiences` alias in nav.ts, prompt.ts and links.ts.
   - P5.5-13d: re-brief as a resume facts check (report-only).
   - Then the P5.5 gate.
 - **Waiting on Anderson:**
-  - Projects copy in `src/data/projects.ts`, then say it's ready (unblocks 13b).
+  - Run `npm run voice:accept` for the 13b project summaries and commit `voice.lock.json` (CI Voice lock check is red until then).
+  - Optional: KB bodies for AI Digest and avanegas.com (`public: false` until written); screenshots + alt text via `gallery`; set `repoPublic: true` on any repo he wants linked.
   - Replace the "to be confirmed" markers in KB `paychira.md` and `orbit-hop.md` (status, Orbit Hop techNote); guard:pii warns on them.
   - Done 2026-10-24: voice:accept + `voice.lock.json`, "is makes" typo, siteBullets.
 - **Repo state:** only `main` and `feat/blob` remain; no agent worktrees or stray processes. `about-me-flags.md` removed (all flags resolved). Three old stashes from `main`/`Updates-to-new-site` remain, left for Anderson.
@@ -109,7 +109,7 @@ Scope: `docs/tasks/P5.5/_proposal.md`; table: `_proposed-plan.md`; Anderson's to
 | P5.5-13c | Voice lock, `facts:check`, drift ratchet | sonnet | opus | 13a, H3 ✓ | 3 | merged |
 | P5.5-05 | Experience from KB roles | sonnet | sonnet | 13a, 13c, H2 | 4 | merged |
 | P5.5-06 | Contact polish + Formspree E2E | sonnet | sonnet | 13a, 13c | 4 | merged |
-| P5.5-13b | Projects render from KB + `/projects/<slug>/` detail pages with optional screenshots | sonnet | opus | 03, 13a, 13c, H4 | 4 | brief |
+| P5.5-13b | Projects render from KB + `/projects/<slug>/` detail pages with optional screenshots | sonnet | opus | 03, 13a, 13c, H4 | 4 | merged |
 | P5.5-04 | Hero + About moved verbatim from Anderson's edited components into the KB | sonnet | sonnet | 13a, 13c, H2, H4 ✓ | 4 | merged |
 | P5.5-08b | Nav fix (also: switch nav.ts, prompt.ts, links.ts to `#experience`, then drop the `#experiences` alias span and its CSS) | haiku | sonnet | 05, 08a | 5 | brief |
 | P5.5-13d | Resume facts check vs KB (hand-made PDF; re-brief) | sonnet | opus | 05, 13a, 13c, P5-05, H5 | 5 | brief |
@@ -137,6 +137,7 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 ## Decision log
 | Date | Decision | By |
 |---|---|---|
+| 2026-10-24 | Projects (13b answers): Paychira and Orbit Hop are Live; cards show a short `cardTech` list (from his projects.ts) while the page and Blob keep the full KB `tech`; no GitHub links until a repo is marked `repoPublic: true`; State of Ecosystems keeps the KB title "The State of Ecosystems 2026". | Anderson |
 | 2026-10-24 | Each public project gets a static `/projects/<slug>/` page built from its KB file, so the page and Blob share one write-up. Screenshots are optional: Anderson adds the image files and their alt text (`gallery` frontmatter). Blob's scrubber allowlist is unchanged for now (P5.5-13b). | Anderson |
 | 2026-10-24 | CI split into tiers to cut friction on copy changes: pushes to feat/blob run chromium-only E2E without Lighthouse, while pull requests and manual runs run all three browsers plus Lighthouse (the rule 8 gate). Added `npm run check:copy`, a fast local check. Retired the frozen hero/About text snapshot, since voice:check covers wording changes. | Anderson |
 | 2026-10-24 | D-03 reversed: the hero keeps stated years ("7 years"), replacing the earlier "since 2019" decision. Experience on the site hides the SharkNinja intern and combines SharkNinja SQA Engineer and SQA Engineer II into one card titled "SQA Engineer I/II" (Nov 2019 – Sep 2023). The KB and Blob keep the separate roles, matching the resume (P5.5-20). | Anderson |
@@ -234,3 +235,4 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 2026-10-24 · P5.5-20 + P5.5-04 · merged together (sonnet APPROVE each). The combined tree is green: 2,657 tests, facts:check 0 errors. The hero and About render from bio.md, Experience is grouped site-only, and the Blob prompt is unchanged. Anderson's typo "is makes" (bio.md about) is left for him. Added P5.5-21 (hero/About gap).
 2026-10-24 · P5.5-22 · merged (verified by orchestrator: unit suite green, chromium E2E experience + a11y-home green). Anderson's siteBullets are live, and the SQA I/II card reads Nov 2019 – Sep 2023.
 2026-10-24 · P5.5-21 · done in the orchestrator session: the hero is sized by its content (the 80vh/90vh minimum is gone) and has lighter bottom padding. The desktop gap went from ~300 px to ~116 px, mobile 68 px. New E2E test caps it at 160 px (fails on the old layout). Left column still fixed while replies stream; chromium hero/Blob/a11y suites green.
+2026-10-24 · P5.5-13b · merged (opus CHANGES_REQUESTED → round 2 verified by orchestrator: repo links gated on repoPublic, cardTech, Live status). Full-tier CI 40148969394 green except Voice lock (awaiting Anderson). src/data/projects.ts deleted; AI Digest and avanegas.com are KB files with public: false. KB ~6k tokens.
