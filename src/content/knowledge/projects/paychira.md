@@ -2,11 +2,12 @@
 topic: project
 title: Paychira
 summary: "Sales forecasting, realized revenue and profitability for agencies, in production at Datalily: deal pipeline, PandaDoc sync, P&L by project, and an AI ask bar."
-updated: 2026-10-24
+updated: 2026-11-5
 public: true
+firstPerson: true
 order: 1
 status: "Live"
-role: "Designer and builder (developed for Datalily)"
+role: "Solo designer and builder, for Datalily"
 tech:
   - "React 18"
   - "TypeScript"
@@ -55,11 +56,67 @@ gallery:
 
 ### What it does
 
-Paychira is a sales forecasting, revenue and profitability app for agencies. Anderson used AI tools to design, build and deploy it for Datalily, which runs on it in production. It turns the deal pipeline and signed PandaDoc contracts into a probability-weighted forecast, realized revenue by month, and a margin for every project.
+Paychira is a sales forecasting, revenue and profitability app built with Datalily for small agencies. I used AI tools to design, build and deploy it for Datalily, which runs on it in production. It turns a deal pipeline into a visual probability-weighted forecast, realized revenue by month, and a margin for every project.
 
-### Highlights
+::shot[dashboard.png]
 
-- Leveraged AI tools to design, build, and deploy it: a deal pipeline with probability-weighted forecasts and stale-deal flags, PandaDoc contract and line-item sync, realized revenue by month, revenue-exclusion rules, a monthly P&L with margin by project and deliverable, org/team roles, CSV import, and an AI ask bar that answers about pipeline, costs and margins and asks for confirmation before changing data.
-- Front end: React 18, TypeScript, Vite, Tailwind. Back end: FastAPI and Pydantic REST API. Both are hosted on one Vercel project, with Vercel Cron for the PandaDoc sync. Database and auth: Supabase. The API moved from Render to Vercel in September 2026.
-- Automated PR process: Gemini Code Assist and CodeRabbit review pull requests. GitHub Actions runs lint, typecheck, unit, API and end-to-end tests on every PR, and Vercel preview deployments are checked before merging.
-- Testing: more than 700 API tests run against fake database connections, alongside Vitest unit tests and Playwright end-to-end tests on desktop and mobile. A seeded demo organization with hand-computed totals is verified on every seed.
+### The problem
+
+Datalily tracked deals in Google Sheets, which needed manual updates every month. It was a wall of numbers, so seeing how they were trending month to month meant interpreting the data by hand.
+
+### My role
+
+I began work on this by myself from start to finish (and it's never really finished as I continue to update it!). I started by converting the spreadsheet into a Python script that would take the data and calculate the value correctly.
+
+Once that was set, I had to figure out next steps. I had no prior experience with front ends, databases or hosting, so I used AI-assisted development to learn each step as I went. In the end, I put the front end on Vercel, the back end on Render (since retired; it now lives on Vercel too) and the database on Supabase.
+
+As I implemented, I learned new workflows, new terminology, and how to design and build directly for a client. 
+
+### Features
+
+**Pipeline and forecast.** Deals carry A to D probability grades that weight the forecast, and deals that haven't moved get a stale flag. This helps the team estimate where the weak months are and where more sales are needed, and the stale flags prompt follow-ups with clients.
+
+::shot[sales-forecast.png wins.png]{pair}
+
+**Realized revenue.** Using PandaDoc APIs, signed contracts and their line items sync automatically with their status, so won work becomes revenue by month. Line items can be individually tracked to closely monitor realized revenue. 
+
+::shot[revenue.png]
+
+**Profitability.** A monthly P&L shows margin by project and deliverable. Freelancer and subscription costs can be allocated to projects or to overhead.
+
+::shot[profit-and-loss.png costs.png]{pair}
+
+**Ask bar.** An AI ask bar answers questions about pipeline, costs and margins, and asks for confirmation before it changes any data.
+
+::shot[ask-bar.png]
+
+It also has org and team roles, CSV import and goal-pace insights.
+
+### How it was built
+
+The front end is React 18, TypeScript, Vite and Tailwind. The back end is a FastAPI and Pydantic REST API. Both are hosted on one Vercel project, with Vercel Cron running the PandaDoc sync. Supabase handles the database and auth.
+
+::shot[integrations.png]
+
+### Key decisions
+
+Datalily set the requirements; most of the key decisions were in the implementation.
+
+- Consolidation: the initial workflow of Vercel, Render and Supabase meant more time waiting for builds on several platforms. Consolidating allowed the process to move quicker, and every PR gets a Vercel preview to test before it merges to production. 
+- Testing infrastructure: from the get-go, every major change was built to be testable, and I reviewed and approved each one. A consistent seed of data allowed for both demoing and explaining product features to Datalily, and confirming nothing was broken as new features were added. 
+
+### Quality and testing
+
+- More than 700 API tests run against fake database connections, alongside Vitest unit tests and Playwright end-to-end tests on desktop and mobile.
+- A seeded demo organization with hand-computed totals is verified on every seed.
+- Every pull request gets reviews from Gemini Code Assist and CodeRabbit. GitHub Actions runs lint, typecheck, unit, API and end-to-end tests, and the Vercel preview deployment is checked before merging.
+
+### Outcome
+
+While developing, Datalily used Google Sheets and Paychira to verify things were correct. Once the numbers matched, they retired the sheet. 
+
+Since moving into Paychira they save time by no longer needing to manually track, import, and keep an eye on signed deals in PandaDoc.
+
+They can quickly and visually see where they need to improve in sales, and they can balance their workload and make strategic choices on when to work with freelancers, where their money is going, and have financial awareness. 
+
+::shot[insights.png]
