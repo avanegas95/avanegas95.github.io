@@ -161,7 +161,9 @@ export function progressLine(
   else if (run.errorClass) verdict = `ERROR (${run.errorClass})`;
   else if (casePassed(run)) verdict = "PASS";
   else {
-    const failed = run.grade.checks.filter((c) => !c.pass).map((c) => c.id);
+    const failed: string[] = run.grade.checks
+      .filter((c) => !c.pass)
+      .map((c) => c.id);
     if (run.grade.needsJudge && run.judge?.faithful !== true)
       failed.push("judge");
     verdict = `FAIL (${failed.join(", ")})`;
