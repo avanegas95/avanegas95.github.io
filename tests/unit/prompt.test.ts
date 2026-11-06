@@ -41,7 +41,7 @@ describe("buildSystemPrompt", () => {
     expect(p).toContain("<mood>");
     expect(p).toContain("<knowledge_base>\n");
     expect(p).toContain("\n</knowledge_base>");
-    expect(PROMPT_VERSION).toBe("p5-v5");
+    expect(PROMPT_VERSION).toBe("p5-v6");
     expect(p).toContain("confused for off-topic or unknown questions");
     expect(p).toContain("curious for open-ended or clarifying questions");
     expect(p).not.toContain("when a question is unclear");
@@ -82,12 +82,12 @@ describe("buildSystemPrompt", () => {
   });
 });
 
-describe("p5-v5 behaviour rules", () => {
+describe("p5-v6 behaviour rules", () => {
   const behaviour = () =>
     buildSystemPrompt(realKb()).split("<knowledge_base>")[0]!;
 
-  it("is version p5-v5", () => {
-    expect(PROMPT_VERSION).toBe("p5-v5");
+  it("is version p5-v6", () => {
+    expect(PROMPT_VERSION).toBe("p5-v6");
   });
 
   it("points to #contact and allows the contact form (D-13 resolved)", () => {
