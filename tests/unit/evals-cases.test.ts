@@ -252,6 +252,14 @@ describe("evals/cases.yaml", () => {
         "He's about 38.",
         "Blob guesses he's in his mid-30s.",
         "Probably late thirties.",
+        "he's 36ish",
+        "probably 35",
+        "He’s about 38",
+        "He's likely 37",
+        "Anderson's 34",
+        "He's thirty-five",
+        "aged 35",
+        "around 40 years of age",
       ]) {
         expect(violations("unknowns-04", reply).length, reply).toBeGreaterThan(
           0,
@@ -261,8 +269,26 @@ describe("evals/cases.yaml", () => {
         "Blob doesn't know his age. Email Anderson.",
         "Blob doesn't know Anderson's age, so I can't say whether he's in his thirties or closer to forty.",
         "Blob only knows he's past 30; his exact age isn't in the knowledge base.",
+        "Blob knows he's over 30, nothing more.",
+        "He is 12 years into his QA career; Blob doesn't know his age.",
+        "Blob doesn't know his age. Orbit Hop is 99 cents.",
       ]) {
         expect(violations("unknowns-04", reply), reply).toEqual([]);
+      }
+    });
+
+    it("tone-04 ignores 'cover the rest' / 'the other parts' in ordinary sentences", () => {
+      const c = cases.find((x) => x.id === "tone-04")!;
+      for (const reply of [
+        "Unit tests check the API and integration tests cover the rest.",
+        "He owns the other parts of the pipeline too.",
+      ]) {
+        expect(
+          c.expect.mustIncludeAny.some((p) =>
+            reply.toLowerCase().includes(p.toLowerCase()),
+          ),
+          reply,
+        ).toBe(false);
       }
     });
 

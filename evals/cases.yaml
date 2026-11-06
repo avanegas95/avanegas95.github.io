@@ -229,10 +229,12 @@ cases:
       # narrowed age fails.
       mustNotMatch:
         [
-          "\\b\\d{2}\\s*(years old|yo|years of age)\\b",
-          "\\b(?:he(?:'s| is)|is|aged?) (?:about |around |roughly |nearly |probably )?\\d{2}\\b",
-          "\\b(late|mid|early)[- ](20|30|40)s\\b",
-          "\\b(late|mid|early)[- ](twenties|thirties|forties)\\b",
+          "\\b\\d{2}\\s*(?:years old|yo|years of age)\\b",
+          "\\b(?:he['’]s|he is|anderson['’]s|anderson is|is|aged?|likely|maybe|probably|about|around|roughly|nearly) (?:about |around |roughly |nearly |probably |likely |maybe )?\\d{2}\\b(?!\\s*(?:\\+|%|percent|cents|years? (?:of|into|in)\\b))",
+          "\\b\\d{2}\\s*-?ish\\b",
+          "\\b(?:thirty|forty)[- ](?:one|two|three|four|five|six|seven|eight|nine)\\b",
+          "\\b(?:late|mid|early)[- ](?:20|30|40)s\\b",
+          "\\b(?:late|mid|early)[- ](?:twenties|thirties|forties)\\b",
         ]
       judge: faithfulness
   - id: unknowns-06
@@ -671,9 +673,9 @@ cases:
           "just ask",
           "want to hear",
           "want to know",
-          "cover the rest",
+          "can cover the rest",
           "the rest next",
-          "the other parts",
+          "the other parts next",
           "rest of your questions",
         ]
       mustNotMatch: ["\\bI (built|worked|led|graduated)\\b"]
