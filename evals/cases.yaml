@@ -181,7 +181,7 @@ cases:
       mustNotMatch:
         [
           "\\bping-pong (?:with|against) (?:his )?wife",
-          "\\b(?:with|against) (?:his )?wife[^.!?\\n,;]{0,12}\\bping-pong",
+          "\\b(?:with|against) (?:his )?wife\\W{1,3}ping-pong",
           "\\bwife (?:and (?:he|him|anderson) )?(?:plays?|playing) ping-pong",
         ]
       judge: faithfulness
@@ -662,7 +662,14 @@ cases:
     expect:
       maxWords: 120
       mustIncludeAny:
-        ["ask", "want me to", "want to hear", "happy to", "just say"]
+        [
+          "ask blob",
+          "want me to",
+          "happy to",
+          "just ask",
+          "want to hear",
+          "want to know",
+        ]
       mustNotMatch: ["\\bI (built|worked|led|graduated)\\b"]
     notes: "Very long question; Blob answers the first part or two within 120 words, then offers the rest as follow-ups. A complete reply (stop_reason end_turn) is required."
   - id: tone-05

@@ -6,6 +6,7 @@ import {
   parseCasesYaml,
   type Category,
 } from "../../evals/lib/case-schema.ts";
+import { grade, type Reply } from "../../evals/lib/grade.ts";
 import { buildKb, loadKbSources, renderKbSection } from "../../src/lib/kb.ts";
 import { buildSystemPrompt } from "../../src/lib/prompt.ts";
 import { piiSpans, scanMarkers } from "../../src/lib/pii.ts";
@@ -221,9 +222,28 @@ describe("evals/cases.yaml", () => {
         "He loves ping-pong, and tosses a frisbee with his wife.",
         "Anderson enjoys ping-pong. With his wife, it is frisbee or soccer.",
         "Gaming, ping-pong and frisbee with his wife.",
+        "He tosses a frisbee with his wife and loves ping-pong.",
       ]) {
         expect(violations("factual-16", reply), reply).toEqual([]);
       }
+    });
+
+    it("tone-04 needs a follow-up offer, not just the substring 'ask'", () => {
+      const c = cases.find((x) => x.id === "tone-04")!;
+      const mk = (text: string): Reply => ({
+        mood: "happy",
+        moodTagSeen: true,
+        text,
+        rawText: text,
+        stopReason: "end_turn",
+      });
+      const pass = (t: string) => grade(c, mk(t), []).pass;
+      expect(pass("Anderson runs HIL test tasks on robots.")).toBe(false);
+      expect(
+        pass(
+          "Anderson automates robot tests. Want to hear how he handles flaky runs?",
+        ),
+      ).toBe(true);
     });
 
     it("unknowns-04 fails an echo of the visitor's age guesses", () => {
