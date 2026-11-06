@@ -7,6 +7,7 @@ export const SITE_PATHS: readonly string[] = [
   "#home",
   "#about",
   "#experience",
+  "#skills",
   "#projects",
   "#contact",
   "/",

@@ -816,6 +816,7 @@ describe("v1 same-site allowlist", () => {
       "#home",
       "#about",
       "#experience",
+      "#skills",
       "#projects",
       "#contact",
       "/",
@@ -826,7 +827,7 @@ describe("v1 same-site allowlist", () => {
     ]);
   });
 
-  for (const path of ["#experience", "/blob-privacy/"]) {
+  for (const path of ["#experience", "#skills", "/blob-privacy/"]) {
     it(`keeps ${path}`, () => {
       for (const x of [`[x](${path})`, `[x]: ${path}`]) {
         expect(scrub(x, OPTS)).toBe(x);
@@ -835,9 +836,10 @@ describe("v1 same-site allowlist", () => {
   }
 
   // #experiences is only a page alias now (P5.5-08b); Blob links #experience.
+  // #skills became a real anchor in P6-01; #education still has no section.
   for (const path of [
     "#experiences",
-    "#skills",
+    "#education",
     "/Anderson_Vanegas_Resume.pdf",
   ]) {
     it(`strips ${path}`, () => {

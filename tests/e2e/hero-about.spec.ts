@@ -1,5 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { KB_ROOT, loadKbSources, parseKbSource } from "../../src/lib/kb.ts";
+import { SITE_PATHS } from "../../src/scripts/blob/links";
 import { expect, test } from "./fixtures/guard";
 
 // The KB is the expected value (CLAUDE.md rule 1): the hero and About must show exactly what
@@ -84,4 +85,18 @@ test("hero and About have no axe violations", async ({ page }) => {
     .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
     .analyze();
   expect(results.violations).toEqual([]);
+});
+
+// Blob may link only these anchors (ALLOWED_SITE_PATHS); each must land on a real target on /,
+// or a visitor clicks a dead link. #skills is the About tool list (P6-01).
+test("every same-site anchor Blob may link exists exactly once on /", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const anchors = SITE_PATHS.filter((p) => p.startsWith("#"));
+  expect(anchors).toContain("#skills");
+  for (const a of anchors) {
+    await expect(page.locator(`[id="${a.slice(1)}"]`), a).toHaveCount(1);
+  }
+  await expect(page.locator("#about #skills li").first()).toBeVisible();
 });
