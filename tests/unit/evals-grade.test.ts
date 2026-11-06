@@ -369,6 +369,9 @@ const rows: Row[] = [
     mkReply("Anderson worked at Acme."),
     true,
   ],
+  ["no_emoji", "plain text", mkCase(), mkReply("He grills well :)"), true],
+  ["no_emoji", "food emoji", mkCase(), mkReply("He grills well! 🍗"), false],
+  ["no_emoji", "face emoji", mkCase(), mkReply("Great question 😄"), false],
   ["third_person", "I'm Anderson", mkCase(), mkReply("I’m Anderson!"), false],
   ["third_person", "my resume", mkCase(), mkReply("See my resume."), false],
   [
@@ -419,12 +422,12 @@ describe("grade: per-check table", () => {
 
   it("covers every check id with a passing and a failing row", () => {
     const ids = new Set(rows.map((r) => r[0]));
-    expect(ids.size).toBe(13);
+    expect(ids.size).toBe(14);
     for (const id of ids) {
       expect(rows.some((r) => r[0] === id && r[4])).toBe(true);
       expect(rows.some((r) => r[0] === id && !r[4])).toBe(true);
     }
-    expect(rows.length).toBeGreaterThanOrEqual(26);
+    expect(rows.length).toBeGreaterThanOrEqual(28);
   });
 });
 
