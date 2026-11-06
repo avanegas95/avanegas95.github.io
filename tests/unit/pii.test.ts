@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  ALLOWED_APP_STORE_URL,
   ALLOWED_EMAIL,
   ALLOWED_URL_PREFIXES,
   mask,
@@ -756,5 +757,29 @@ describe("line joins after an allowed profile URL (P4-07)", () => {
     const text = `${GH}\n${j("5-", EXCH, "-", LINE)}`;
     expect(scanText(text, "x.md").map((f) => f.rule)).toContain("phone");
     expect(piiSpans(text, ["phone"]).length).toBeGreaterThan(0);
+  });
+});
+
+describe("the allowed App Store URL", () => {
+  const url = `https://${ALLOWED_APP_STORE_URL}`;
+  const phones = (t: string) =>
+    scanText(t, "f.md").filter((f) => f.rule === "phone");
+
+  it("passes in markdown, YAML and an href", () => {
+    expect(phones(`appStore: "${url}"`)).toEqual([]);
+    expect(phones(`[App Store](${url})`)).toEqual([]);
+    expect(phones(`<a href="${url}">Download</a>`)).toEqual([]);
+    expect(phones(`${url}?mt=8`)).toEqual([]);
+  });
+  it("still flags the bare id and the id anywhere else", () => {
+    expect(phones("Call 6817951678")).toHaveLength(1);
+    expect(
+      phones("https://apps.apple.com/us/app/other/id6817951678"),
+    ).toHaveLength(1);
+    expect(phones(`https://evil${ALLOWED_APP_STORE_URL}`)).toHaveLength(1);
+    expect(phones(`${url} 617-555-0123`)).toHaveLength(1);
+  });
+  it("still flags a phone split across a line break after it", () => {
+    expect(phones(`${url} or 617-555-\n0123`)).toHaveLength(1);
   });
 });

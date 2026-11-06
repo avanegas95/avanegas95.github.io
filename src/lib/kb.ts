@@ -18,12 +18,23 @@ import {
   type Project,
   type Role,
 } from "./kb-schema.ts";
+import { checkShotMarkers, stripShotMarkers } from "./project-shots.ts";
 
 export type KbSource = { readonly path: string; readonly raw: string };
 
 export const KB_ROOT = "src/content/knowledge";
 /** Project screenshots live in <GALLERY_ROOT>/<slug>/ (relative to the repo root). */
 export const GALLERY_ROOT = "src/assets/images/projects";
+/** Project video and captions live in <MEDIA_ROOT>/<slug>/, served at /media/<slug>/. */
+export const MEDIA_ROOT = "public/media";
+/** Video for a hidden (public: false) project waits here, outside public/, so it
+ * never ships; move its folder to MEDIA_ROOT when the project is published. */
+export const MEDIA_DRAFTS_ROOT = "media-drafts";
+
+/** Where a project's video and captions must live, by whether it is public. */
+export function mediaRootFor(isPublic: boolean): string {
+  return isPublic ? MEDIA_ROOT : MEDIA_DRAFTS_ROOT;
+}
 export const KB_TOKEN_BUDGET = 15_000;
 
 const BOM = String.fromCharCode(0xfeff);
@@ -155,11 +166,31 @@ export function parseKbSource(src: KbSource): KbFile {
         fail(src.path, `gallery file not found: ${g.file}`);
       }
     }
+    const v = res.data.video;
+    if (v) {
+      for (const [root, file] of [
+        [mediaRootFor(res.data.public), v.file],
+        [mediaRootFor(res.data.public), v.captions],
+        [GALLERY_ROOT, v.poster],
+      ] as const) {
+        if (!existsSync(join(root, slug, file))) {
+          fail(src.path, `video file not found: ${file}`);
+        }
+      }
+    }
   }
-  const body = lines
+  let body = lines
     .slice(end + 1)
     .join("\n")
     .trim();
+  if (src.path.startsWith("projects/") && res.data.topic === "project") {
+    // Screenshot markers place gallery images on the project page; Blob's
+    // prompt gets the prose only (project-shots.ts).
+    const gallery = res.data.gallery.map((g) => g.file);
+    const problems = checkShotMarkers(body, gallery);
+    if (problems.length > 0) fail(src.path, problems.join("; "));
+    body = stripShotMarkers(body);
+  }
   return { path: src.path, data: res.data, body };
 }
 
@@ -236,6 +267,10 @@ function renderStructured(d: Knowledge | Project): string[] {
   }
 }
 
+/** Put before a section Anderson wrote in his own first person (`firstPerson: true`). */
+export const FIRST_PERSON_LABEL =
+  '_Written by Anderson in the first person: "I", "me" and "my" in this section mean Anderson._';
+
 /** One file's prompt section, or null when the file is not public. */
 export function renderKbSection(src: KbSource): string | null {
   const { data, body } = parseKbSource(src);
@@ -244,7 +279,8 @@ export function renderKbSection(src: KbSource): string | null {
   if (!data.public) return null;
   const heading =
     data.topic === "project" ? `Project: ${data.title}` : data.title;
-  return `## ${heading}\n\n${data.summary}\n\n${content.join("\n\n")}\n`;
+  const label = data.firstPerson ? `${FIRST_PERSON_LABEL}\n\n` : "";
+  return `## ${heading}\n\n${label}${data.summary}\n\n${content.join("\n\n")}\n`;
 }
 
 export function buildKb(sources: readonly KbSource[]): string {

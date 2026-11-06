@@ -35,6 +35,39 @@ test("one card per public KB project, titled and linked from the KB", async ({
   }
 });
 
+test("clicking anywhere on a card opens its project page; icon links keep their own target", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  const first = cards[0]!;
+  const card = page
+    .locator("#projects article")
+    .filter({ has: page.getByRole("link", { name: first.data.title }) })
+    .locator(":scope > div");
+  // Click where the summary text is, not the title: the stretched title link
+  // covers the whole card, so Playwright's own click() would refuse (covered).
+  await card.scrollIntoViewIfNeeded();
+  const summary = await card.getByText(first.data.summary).boundingBox();
+  await page.mouse.click(
+    summary!.x + summary!.width / 2,
+    summary!.y + summary!.height / 2,
+  );
+  await expect(page).toHaveURL(new RegExp(`/projects/${first.slug}/$`));
+
+  await page.goto("/");
+  const icon = page.locator("#projects a[target=_blank]").first();
+  await icon.scrollIntoViewIfNeeded();
+  const href = await icon.getAttribute("href");
+  const box = await icon.boundingBox();
+  const topHref = await page.evaluate(
+    ([x, y]) =>
+      document.elementFromPoint(x!, y!)?.closest("a")?.getAttribute("href"),
+    [box!.x + box!.width / 2, box!.y + box!.height / 2],
+  );
+  expect(topHref).toBe(href);
+});
+
 test("no GitHub repo link renders unless the KB marks the repo public", async ({
   page,
 }) => {
@@ -107,6 +140,65 @@ for (const h of hidden) {
   });
 }
 
+for (const c of cards.filter((c) => c.data.links.appStore)) {
+  test(`${c.slug} links to the App Store on its card and page`, async ({
+    page,
+  }) => {
+    await page.goto("/");
+    const card = page.locator("#projects article", {
+      has: page.getByRole("link", { name: c.data.title, exact: true }),
+    });
+    await expect(card.getByTestId("project-app-store")).toHaveAttribute(
+      "href",
+      c.data.links.appStore!,
+    );
+    await page.goto(`/projects/${c.slug}/`);
+    await expect(page.getByTestId("project-app-store")).toHaveAttribute(
+      "href",
+      c.data.links.appStore!,
+    );
+  });
+}
+
+for (const c of cards.filter((c) => c.data.video)) {
+  test(`${c.slug} video loads lazily, with captions and a text alternative`, async ({
+    page,
+    request,
+  }) => {
+    const v = c.data.video!;
+    await page.goto(`/projects/${c.slug}/`);
+    const video = page.getByTestId("project-video");
+    await expect(video).toHaveAttribute("preload", "none");
+    await expect(video).toHaveAttribute("poster", /.+/);
+    await expect(video.locator("source")).toHaveAttribute(
+      "src",
+      `/media/${c.slug}/${v.file}`,
+    );
+    const track = video.locator('track[kind="captions"]');
+    await expect(track).toHaveAttribute(
+      "src",
+      `/media/${c.slug}/${v.captions}`,
+    );
+    await expect(page.locator("#video-description")).toHaveText(v.description);
+    for (const path of [v.file, v.captions]) {
+      const res = await request.head(`/media/${c.slug}/${path}`);
+      expect(res.status(), path).toBe(200);
+    }
+  });
+
+  test(`a11y: /projects/${c.slug}/ with video and gallery has no axe violations`, async ({
+    page,
+  }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto(`/projects/${c.slug}/`);
+    await page.waitForLoadState("networkidle");
+    const results = await new AxeBuilder({ page })
+      .withTags(WCAG_21_AA_TAGS)
+      .analyze();
+    expect(results.violations).toEqual([]);
+  });
+}
+
 test("a11y: #projects has no axe violations", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
@@ -164,4 +256,35 @@ test.describe("375 px", () => {
     );
     expect(overflow).toBe(false);
   });
+});
+
+test("a screenshot opens large in a dialog; Esc and Close return focus to it", async ({
+  page,
+}) => {
+  const withShots = cards.find((c) => c.data.gallery.length > 0);
+  test.skip(!withShots, "no public project has screenshots");
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto(`/projects/${withShots!.slug}/`);
+  const viewer = page.locator("#shot-viewer");
+  const trigger = page.locator(".shot-zoom").first();
+  await expect(trigger).toHaveAccessibleName(/^Enlarge screenshot: .+/);
+
+  await trigger.focus();
+  await page.keyboard.press("Enter");
+  await expect(viewer).toBeVisible();
+  await expect(viewer.locator("img")).toHaveAttribute("src", /.+/);
+  await expect(viewer.getByRole("button", { name: "Close" })).toBeFocused();
+  expect(
+    (await new AxeBuilder({ page }).include("#shot-viewer").analyze())
+      .violations,
+  ).toEqual([]);
+  await page.keyboard.press("Escape");
+  await expect(viewer).toBeHidden();
+  await expect(trigger).toBeFocused();
+
+  await page.keyboard.press("Enter");
+  await expect(viewer).toBeVisible();
+  await viewer.getByRole("button", { name: "Close" }).click();
+  await expect(viewer).toBeHidden();
+  await expect(trigger).toBeFocused();
 });

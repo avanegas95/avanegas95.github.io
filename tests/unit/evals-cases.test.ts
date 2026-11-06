@@ -197,7 +197,7 @@ describe("evals/cases.yaml", () => {
   });
 
   describe("P4-13c case hardening", () => {
-    it.each(["factual-10", "unknowns-08"])(
+    it.each(["unknowns-10", "unknowns-08"])(
       "%s accepts the D-12 authorship resolution (2026-10-23)",
       (id) => {
         for (const reply of [
@@ -211,48 +211,80 @@ describe("evals/cases.yaml", () => {
       },
     );
 
-    it("factual-10 still fails Orbit Hop made with AI-assisted tools", () => {
+    it.each(["factual-13", "factual-14"])(
+      "%s fails a reply that echoes Anderson's first person and passes the third person",
+      (id) => {
+        for (const reply of [
+          "I built Paychira with AI tools.",
+          "I've been running it in production at Datalily.",
+          "It is my app for agencies.",
+          "My tests run on every PR.",
+        ]) {
+          expect(
+            violations(id, reply).length,
+            `${id}: ${reply}`,
+          ).toBeGreaterThan(0);
+        }
+        for (const reply of [
+          "Anderson built Paychira with AI tools; he runs it at Datalily.",
+          "Blob thinks his AI ask bar is neat. I can tell you more about it!",
+        ]) {
+          expect(violations(id, reply), `${id}: ${reply}`).toEqual([]);
+        }
+      },
+    );
+
+    it("unknowns-10 still fails Orbit Hop made with AI-assisted tools", () => {
       expect(
-        violations("factual-10", "Orbit Hop was made with AI-assisted tools.")
+        violations("unknowns-10", "Orbit Hop was made with AI-assisted tools.")
           .length,
       ).toBeGreaterThan(0);
     });
 
-    it("orbit-hop.md states Anderson built it and keeps the stack unconfirmed (status is Live, per Anderson)", () => {
+    it("orbit-hop.md states Anderson built it, status Live and the confirmed stack (Anderson, 2026-10-24)", () => {
       const raw = readFileSync(
         "src/content/knowledge/projects/orbit-hop.md",
         "utf8",
       );
+      // Orbit Hop is hidden until Anderson relaunches it (public: false, 2026-11-05);
+      // render it as public so its facts stay checked for the relaunch.
       const section =
-        renderKbSection({ path: "projects/orbit-hop.md", raw }) ?? "";
+        renderKbSection({
+          path: "projects/orbit-hop.md",
+          // Its video waits in media-drafts/ while hidden, so drop it here.
+          raw: raw
+            .replace(/^public: false$/m, "public: true")
+            .replace(/^video:\n(?: {2}.*\n)+/m, ""),
+        }) ?? "";
       expect(section).toContain(
         "**Role:** He built it solo, with the assistance of AI. Together they designed, coded, implemented, tested, and published. He is also the support contact.",
       );
       expect(section).toContain("**Status:** Live");
-      expect(section).toContain("(build stack to be confirmed)");
+      expect(section).toContain("**Stack:** Swift, SwiftUI, SpriteKit");
+      expect(section).not.toMatch(/to be confirmed/i);
       expect(raw).toContain("updated: 2026-10-24");
       expect(raw).not.toMatch(/ai[- ]assisted/i);
     });
 
-    it("factual-10 fails an Orbit Hop + AI-assisted stack conflation (P4-13e)", () => {
+    it("unknowns-10 fails an Orbit Hop + AI-assisted stack conflation (P4-13e)", () => {
       for (const reply of [
         "Orbit Hop is a one-tap iPhone game made with AI-assisted tools.",
         "<mood>excited</mood> Astro Andy: Orbit Hop was built with AI assisted tooling!",
         "Using AI-assisted development, Orbit Hop came together as an iPhone game.",
       ]) {
         expect(
-          violations("factual-10", reply).length,
-          `factual-10: ${reply}`,
+          violations("unknowns-10", reply).length,
+          `unknowns-10: ${reply}`,
         ).toBeGreaterThan(0);
       }
     });
 
-    it("factual-10 keeps AI-assisted claims about other projects in other sentences", () => {
+    it("unknowns-10 keeps AI-assisted claims about other projects in other sentences", () => {
       for (const reply of [
         "Orbit Hop is a one-tap arcade game for iPhone; its build stack is still being confirmed.",
         "Orbit Hop is an iPhone game. His web projects use AI-assisted tools.",
       ]) {
-        expect(violations("factual-10", reply), reply).toEqual([]);
+        expect(violations("unknowns-10", reply), reply).toEqual([]);
       }
     });
 

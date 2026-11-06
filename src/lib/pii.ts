@@ -24,6 +24,11 @@ export const ALLOWED_URL_PREFIXES = [
   "linkedin.com/in/avanegas95",
   "github.com/avanegas95",
 ] as const;
+// The one App Store listing the site links to (Anderson, 2026-10-24). Its
+// 10-digit app id reads as a phone number; only that id, inside this exact
+// URL, is exempt from the phone rule. Any other 10-digit run is still flagged.
+export const ALLOWED_APP_STORE_URL =
+  "apps.apple.com/us/app/astro-andy-orbit-hop/id6817951678";
 
 const ALL_RULES: readonly PiiRule[] = [
   "phone",
@@ -186,6 +191,25 @@ function allowed(rule: string, match: string, tail = ""): boolean {
         url.startsWith(p) && !/^[a-z0-9_-]/.test(rest) && !FUSED_TAIL.test(rest)
       );
     });
+  }
+  return false;
+}
+
+// Whether content[start, end) is the app id at the end of a complete
+// ALLOWED_APP_STORE_URL (not fused onto a longer host or path).
+const APP_STORE_URL = new RegExp(
+  `(?<![A-Za-z0-9.-])${ALLOWED_APP_STORE_URL.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?![A-Za-z0-9])`,
+  "gi",
+);
+function allowedAt(
+  rule: string,
+  content: string,
+  start: number,
+  end: number,
+): boolean {
+  if (rule !== "phone") return false;
+  for (const m of content.matchAll(APP_STORE_URL)) {
+    if (m.index + m[0].length === end && end - start === 10) return true;
   }
   return false;
 }
@@ -447,6 +471,7 @@ function scanWith(
             const end = start + m[0].length;
             if (spans.some(([s, e]) => start < e && end > s)) continue;
             spans.push([start, end]);
+            if (allowedAt(rule, content, start, end)) continue;
             add(i + 1, rule, m[0], content.slice(end, end + 2));
           }
         }
@@ -475,6 +500,7 @@ function scanWith(
                 m.index < a.length &&
                 (end > a.length + glue.length || fused)
               ) {
+                if (allowedAt(rule, joined, m.index, end)) continue;
                 const k = `${i}|${rule}|${m.index}`;
                 if (joinedSeen.has(k)) continue;
                 joinedSeen.add(k);

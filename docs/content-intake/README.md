@@ -49,3 +49,18 @@ roles:
 - Only Anderson runs `voice:accept` and `voice:init`, in his own terminal. Agents must never run them and must never edit `voice.lock.json` by hand.
 - Both commands refuse non-interactive shells (no TTY, or `CI` set), and stamp the lock with `meta` (when, and which fields changed).
 - The TTY check is a speed bump, not a security boundary: a hand-edited lock still passes `voice:check`. The real gate is review of the visible lock diff. CI prints every changed field as a GitHub annotation and in the job summary (the "Voice lock changes" step), so a lock change is always visible on the PR.
+
+## Screenshots inside a project page
+
+List every screenshot under `gallery:` in the project's KB file (`src/content/knowledge/projects/<slug>.md`) with your alt text. The image files go in `src/assets/images/projects/<slug>/`. Then place any of them in the body with a marker on its own line, with a blank line before and after:
+
+| Marker                                | Result                                                         |
+| ------------------------------------- | -------------------------------------------------------------- |
+| `::shot[dashboard.png]`               | Full width (phone screenshots are capped at 20rem)             |
+| `::shot[wins.png]{left}`              | Floats left; the next paragraphs and bullets wrap on the right |
+| `::shot[wins.png]{right}`             | Floats right                                                   |
+| `::shot[revenue.png costs.png]{pair}` | Two side by side                                               |
+
+On phones, every layout stacks full width. Headings clear floats, so a floated image never runs into the next section. Gallery images you don't place show in a "More screenshots" grid at the end of the page.
+
+Markers are layout, not prose: Blob never sees them, and moving one needs no `voice:accept`. A typo (a file not in `gallery:`, an unknown layout, a missing blank line) fails the build with the line number, so `npm run dev` shows it right away.

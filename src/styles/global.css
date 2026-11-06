@@ -243,6 +243,71 @@ html.has-fade-in .fade-in--slow:not(.visible) {
   margin-bottom: 0.5rem;
 }
 
+/* Tailwind's reset removes list markers; prose gets them back. */
+.blog-prose ul {
+  list-style: disc;
+}
+.blog-prose ol {
+  list-style: decimal;
+}
+.blog-prose ul ul {
+  list-style: circle;
+}
+.blog-prose li::marker {
+  color: var(--sec);
+}
+.blog-prose li > ul,
+.blog-prose li > ol {
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+}
+
+.blog-prose h4 {
+  color: var(--white);
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.blog-prose em {
+  font-style: italic;
+}
+
+.blog-prose blockquote {
+  border-left: 3px solid var(--sec);
+  padding-left: 1rem;
+  margin: 1.5rem 0;
+  color: var(--white);
+  font-style: italic;
+}
+
+.blog-prose hr {
+  border: 0;
+  border-top: 1px solid #ffffff1a;
+  margin: 2rem 0;
+}
+
+.blog-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.9em;
+  display: block;
+  overflow-x: auto;
+}
+.blog-prose th,
+.blog-prose td {
+  border: 1px solid #ffffff1a;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+.blog-prose th {
+  color: var(--white);
+  font-weight: 600;
+  background: #ffffff08;
+}
+
 .blog-prose a {
   color: var(--sec);
   text-decoration: underline;
@@ -251,6 +316,137 @@ html.has-fade-in .fade-in--slow:not(.visible) {
 
 .blog-prose a:hover {
   opacity: 0.85;
+}
+
+/* Project pages: floated screenshots (::shot[...]{left|right}) never run
+   into the next section, and lists sit beside a float instead of under it. */
+.project-body h2,
+.project-body h3 {
+  clear: both;
+}
+.project-body ul,
+.project-body ol {
+  display: flow-root;
+}
+.project-body::after {
+  content: "";
+  display: block;
+  clear: both;
+}
+.project-body .shot img {
+  display: block;
+  margin: 0;
+  width: 100%;
+  height: auto;
+  border-radius: 0.75rem;
+  border: 1px solid rgb(255 255 255 / 0.08);
+}
+.project-body .shot--full,
+.project-body .shot--pair {
+  clear: both;
+  margin: 2rem auto;
+}
+.project-body .shot--pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+/* Before each floated shot: the shot and the text that wraps it start below
+   any earlier float, so two floats never squeeze the text into a sliver. */
+.project-body .shot-clear {
+  clear: both;
+}
+/* The small top margin lines a floated shot up with the first line of text
+   beside it (half the line-height's extra leading). */
+.project-body .shot--left,
+.project-body .shot--right {
+  margin: 0.3rem auto 1.5rem;
+}
+/* Screenshots open larger on click ([slug].astro). */
+.shot-zoom {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  border-radius: 0.75rem;
+  cursor: zoom-in;
+}
+.shot-zoom:focus-visible {
+  outline: 2px solid var(--sec);
+  outline-offset: 3px;
+}
+.shot-viewer {
+  /* Tailwind's reset zeroes margins; auto restores the native modal centering. */
+  margin: auto;
+  max-width: 95vw;
+  max-height: 95vh;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  overflow: visible;
+  cursor: zoom-out;
+}
+.shot-viewer::backdrop {
+  background: rgb(2 6 23 / 0.85);
+}
+.shot-viewer__img {
+  display: block;
+  max-width: 95vw;
+  max-height: 90vh;
+  width: auto;
+  height: auto;
+  border-radius: 0.75rem;
+}
+.shot-viewer__close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 9999px;
+  background: rgb(2 6 23 / 0.7);
+  color: var(--white);
+  cursor: pointer;
+}
+.shot-viewer__close:focus-visible {
+  outline: 2px solid var(--sec);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .shot-viewer[open] {
+    animation: shot-viewer-in 150ms ease-out;
+  }
+  @keyframes shot-viewer-in {
+    from {
+      opacity: 0;
+      transform: scale(0.97);
+    }
+  }
+}
+
+.project-body .shot--portrait {
+  max-width: 20rem;
+}
+@media (min-width: 640px) {
+  .project-body .shot--left,
+  .project-body .shot--right {
+    width: 45%;
+    margin-bottom: 1rem;
+  }
+  .project-body .shot--left {
+    float: left;
+    margin-right: 1.5rem;
+  }
+  .project-body .shot--right {
+    float: right;
+    margin-left: 1.5rem;
+  }
+  .project-body .shot--left.shot--portrait,
+  .project-body .shot--right.shot--portrait {
+    width: 35%;
+    max-width: 16rem;
+  }
 }
 
 .blog-prose strong {

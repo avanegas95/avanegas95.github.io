@@ -41,7 +41,7 @@ describe("buildSystemPrompt", () => {
     expect(p).toContain("<mood>");
     expect(p).toContain("<knowledge_base>\n");
     expect(p).toContain("\n</knowledge_base>");
-    expect(PROMPT_VERSION).toBe("p5-v2");
+    expect(PROMPT_VERSION).toBe("p5-v3");
     expect(p).toContain("confused for off-topic or unknown questions");
     expect(p).toContain("curious for open-ended or clarifying questions");
     expect(p).not.toContain("when a question is unclear");
@@ -82,12 +82,12 @@ describe("buildSystemPrompt", () => {
   });
 });
 
-describe("p5-v2 behaviour rules", () => {
+describe("p5-v3 behaviour rules", () => {
   const behaviour = () =>
     buildSystemPrompt(realKb()).split("<knowledge_base>")[0]!;
 
-  it("is version p5-v2", () => {
-    expect(PROMPT_VERSION).toBe("p5-v2");
+  it("is version p5-v3", () => {
+    expect(PROMPT_VERSION).toBe("p5-v3");
   });
 
   it("points to #contact and allows the contact form (D-13 resolved)", () => {
@@ -95,6 +95,15 @@ describe("p5-v2 behaviour rules", () => {
     expect(b).toContain("#contact");
     expect(b).toMatch(/or the contact form in this page's contact section/i);
     expect(b).not.toMatch(/never mention or offer a contact form/i);
+  });
+
+  it("has the first-person rule: Blob restates Anderson's own words in the third person", () => {
+    const b = behaviour();
+    const rule = b.split("\n").find((l) => /first person/i.test(l))!;
+    expect(rule).toMatch(/"I", "me" and "my" mean Anderson/);
+    expect(rule).toMatch(/restate them in the third person/);
+    expect(rule).toMatch(/Never copy "I" or "my"/);
+    expect(b).not.toContain("Anderson built");
   });
 
   it("has the no-echo rule", () => {

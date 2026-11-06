@@ -3,8 +3,12 @@ import { describe, expect, it } from "vitest";
 import {
   GALLERY_ROOT,
   KB_ROOT,
+  MEDIA_ROOT,
+  mediaRootFor,
   loadKbSources,
   parseKbSource,
+  renderKbSection,
+  FIRST_PERSON_LABEL,
 } from "../../src/lib/kb.ts";
 import { ProjectSchema } from "../../src/lib/kb-schema.ts";
 import {
@@ -24,7 +28,9 @@ const publicProjects = projects.filter((p) => p.data.public);
 
 const TRACKING = /wfuid|wfsid|utm_|fbclid|gclid/i;
 const urlsOf = (p: Project) =>
-  [p.links.repo, p.links.live].filter((u): u is string => Boolean(u));
+  [p.links.repo, p.links.live, p.links.appStore].filter((u): u is string =>
+    Boolean(u),
+  );
 
 describe("project KB files", () => {
   it("has public projects", () => {
@@ -61,6 +67,7 @@ describe("project KB files", () => {
     for (const { slug, data } of projects) {
       if (isInDevelopment(data.status)) {
         expect(data.links.live, slug).toBeUndefined();
+        expect(data.links.appStore, slug).toBeUndefined();
       }
     }
   });
@@ -89,6 +96,29 @@ describe("project KB files", () => {
           true,
         );
       }
+    }
+  });
+
+  it("no hidden project's video ships in public/", () => {
+    for (const { slug, data } of projects) {
+      if (data.public) continue;
+      expect(existsSync(`${MEDIA_ROOT}/${slug}`), slug).toBe(false);
+    }
+  });
+
+  it("every video's file, captions and poster exist", () => {
+    for (const { slug, data } of projects) {
+      const v = data.video;
+      if (!v) continue;
+      // Hidden projects keep their video outside public/ so it never ships.
+      const root = mediaRootFor(data.public);
+      expect(existsSync(`${root}/${slug}/${v.file}`), v.file).toBe(true);
+      expect(existsSync(`${root}/${slug}/${v.captions}`), v.captions).toBe(
+        true,
+      );
+      expect(existsSync(`${GALLERY_ROOT}/${slug}/${v.poster}`), v.poster).toBe(
+        true,
+      );
     }
   });
 
@@ -161,6 +191,82 @@ describe("gallery schema", () => {
   });
 });
 
+describe("video and App Store schema", () => {
+  const base = {
+    topic: "project",
+    title: "T",
+    summary: "S",
+    updated: new Date("2026-10-24"),
+    public: true,
+    order: 1,
+    status: "Live",
+    role: "r",
+    tech: ["x"],
+  };
+  const video = {
+    file: "v.mp4",
+    captions: "v.vtt",
+    poster: "p.jpg",
+    description: "D",
+  };
+  const parse = (extra: Record<string, unknown>) =>
+    ProjectSchema.safeParse({ ...base, ...extra });
+
+  it("accepts a video with captions, poster and description", () => {
+    expect(parse({ video }).success).toBe(true);
+  });
+  it("rejects a video without captions or with a blank description", () => {
+    const noCaptions: Record<string, unknown> = { ...video };
+    delete noCaptions["captions"];
+    expect(parse({ video: noCaptions }).success).toBe(false);
+    expect(parse({ video: { ...video, description: " " } }).success).toBe(
+      false,
+    );
+  });
+  it("rejects wrong extensions and paths", () => {
+    expect(parse({ video: { ...video, file: "v.mov" } }).success).toBe(false);
+    expect(parse({ video: { ...video, captions: "v.srt" } }).success).toBe(
+      false,
+    );
+    expect(parse({ video: { ...video, file: "../v.mp4" } }).success).toBe(
+      false,
+    );
+  });
+  it("accepts only apps.apple.com App Store links", () => {
+    const ok = "https://apps.apple.com/us/app/x/id1";
+    expect(parse({ links: { appStore: ok } }).success).toBe(true);
+    expect(
+      parse({ links: { appStore: "https://example.com/app" } }).success,
+    ).toBe(false);
+  });
+  it("a missing video file fails to load", () => {
+    expect(() =>
+      parseKbSource({
+        path: "projects/paychira.md",
+        raw: [
+          "---",
+          "topic: project",
+          "title: T",
+          "summary: S",
+          "updated: 2026-10-24",
+          "public: true",
+          "order: 1",
+          "status: Live",
+          "role: r",
+          "tech: [x]",
+          "video:",
+          "  file: nope.mp4",
+          "  captions: nope.vtt",
+          "  poster: nope.jpg",
+          "  description: D",
+          "---",
+          "Body",
+        ].join("\n"),
+      }),
+    ).toThrow(/video file not found/);
+  });
+});
+
 describe("project links", () => {
   it("strips tracking params and keeps the rest", () => {
     expect(stripTracking("https://a.com/x?utm_source=z&k=1&wfuid=3")).toBe(
@@ -178,6 +284,17 @@ describe("project links", () => {
       projectLinks({ links, status: "Live", repoPublic: false }).live,
     ).toBe("https://l.com");
   });
+  it("emits the App Store link unless in development", () => {
+    const links = {
+      appStore: "https://apps.apple.com/us/app/x/id1?utm_source=z",
+    };
+    expect(projectLinks({ links, status: "Live", repoPublic: false })).toEqual({
+      appStore: "https://apps.apple.com/us/app/x/id1",
+    });
+    expect(
+      projectLinks({ links, status: "In development", repoPublic: false }),
+    ).toEqual({});
+  });
   it("emits the repo link only when repoPublic is true", () => {
     const links = { repo: "https://github.com/x/y" };
     expect(
@@ -191,5 +308,92 @@ describe("project links", () => {
     for (const { slug, data } of projects) {
       expect(data.repoPublic, slug).toBe(false);
     }
+  });
+});
+
+describe("inline screenshot markers in a project body", () => {
+  const raw = (body: string) =>
+    [
+      "---",
+      "topic: project",
+      "title: T",
+      "summary: S",
+      "updated: 2026-10-24",
+      "public: true",
+      "order: 1",
+      "status: Live",
+      "role: r",
+      "tech: [x]",
+      "gallery:",
+      "  - file: dashboard.png",
+      "    alt: Dashboard",
+      "---",
+      body,
+    ].join("\n");
+  const src = (body: string) => ({
+    path: "projects/paychira.md",
+    raw: raw(body),
+  });
+
+  it("are stripped from Blob's prompt, leaving the prose", () => {
+    const out = renderKbSection(
+      src("Intro.\n\n::shot[dashboard.png]{right}\n\nMore."),
+    );
+    expect(out).not.toContain("::shot");
+    expect(out).not.toContain("dashboard.png");
+    expect(out).toContain("Intro.\n\nMore.");
+  });
+
+  it("fail the load when they name a file outside the gallery", () => {
+    expect(() =>
+      parseKbSource(src("Intro.\n\n::shot[wins.png]\n\nMore.")),
+    ).toThrow(/not in gallery: wins\.png/);
+  });
+
+  it("fail the load when malformed, so they never show as text", () => {
+    expect(() => parseKbSource(src("Intro.\n\n::shot dashboard.png"))).toThrow(
+      /malformed/,
+    );
+  });
+});
+
+describe("first-person sections", () => {
+  const raw = (firstPerson: string) =>
+    [
+      "---",
+      "topic: project",
+      "title: T",
+      "summary: I built it.",
+      "updated: 2026-10-24",
+      "public: true",
+      ...(firstPerson ? [firstPerson] : []),
+      "order: 1",
+      "status: Live",
+      "role: r",
+      "tech: [x]",
+      "---",
+      "I built this for a client.",
+    ].join("\n");
+  const render = (fp: string) =>
+    renderKbSection({ path: "projects/paychira.md", raw: raw(fp) }) ?? "";
+
+  it("are labelled in Blob's prompt, right under the heading", () => {
+    expect(render("firstPerson: true")).toMatch(
+      new RegExp(
+        `^## Project: T\\n\\n${FIRST_PERSON_LABEL.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\n\\nI built it\\.`,
+      ),
+    );
+  });
+
+  it("are not labelled by default", () => {
+    expect(render("")).not.toContain(FIRST_PERSON_LABEL);
+    expect(render("firstPerson: false")).not.toContain(FIRST_PERSON_LABEL);
+  });
+
+  it("paychira.md is written in the first person and labelled", () => {
+    const src = loadKbSources(KB_ROOT).find(
+      (s) => s.path === "projects/paychira.md",
+    )!;
+    expect(renderKbSection(src)).toContain(FIRST_PERSON_LABEL);
   });
 });
