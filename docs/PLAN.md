@@ -5,18 +5,18 @@
 
 ## ▶ Current phase: **P5.5: Portfolio improvement** · Status: `in progress` (2026-10-24). P5 PASSED 2026-10-24. P6 waits on Anderson's explicit approval.
 
-**Handoff (2026-10-24, orchestrator session 2):**
-- **Merged:** 03, 04, 05, 06, 08a, 13a, 13c, 15, 16 (rounds 1–3), 17, 18, 19, 20 and 22. All questionnaire answers are in the KB. KB career facts match `docs/content-intake/resume.md`.
+**Handoff (2026-11-05, orchestrator session 3):**
+- **Merged:** 03, 04, 05, 06, 08a, 13a, 13b, 13c, 15, 16 (rounds 1–3), 17, 18, 19, 20, 21, 22, and task/projects-content (Paychira first-person page, inline screenshots, viewer, clickable cards, wider pages, prompt p5-v3).
+- **Launch scope:** Paychira is the only public project. Orbit Hop and State of Ecosystems are `public: false` until Anderson rewrites them after the Vercel cutover (Orbit Hop's video waits in `media-drafts/`).
 - **Open tasks, in order:**
+  - P5.5-23: eval gate green (see table). Must pass before the P5.5 gate.
   - P5.5-08b: nav: `#experience`, drop the `#experiences` alias in nav.ts, prompt.ts and links.ts.
   - P5.5-13d: re-brief as a resume facts check (report-only).
-  - Then the P5.5 gate.
+  - Then the P5.5 gate, then P6 on Anderson's approval.
 - **Waiting on Anderson:**
-  - Run `npm run voice:accept` for the 13b project summaries and commit `voice.lock.json` (CI Voice lock check is red until then).
-  - Optional: KB bodies for AI Digest and avanegas.com (`public: false` until written); screenshots + alt text via `gallery`; set `repoPublic: true` on any repo he wants linked.
-  - Replace the "to be confirmed" markers in KB `paychira.md` and `orbit-hop.md` (status, Orbit Hop techNote); guard:pii warns on them.
-  - Done 2026-10-24: voice:accept + `voice.lock.json`, "is makes" typo, siteBullets.
-- **Repo state:** only `main` and `feat/blob` remain; no agent worktrees or stray processes. `about-me-flags.md` removed (all flags resolved). Three old stashes from `main`/`Updates-to-new-site` remain, left for Anderson.
+  - Rotate the Anthropic API key (it was printed in a terminal on 2026-11-05) and update it in Vercel.
+  - Optional, after the cutover: rewrite Orbit Hop and SoE, then `public: true` (and move `media-drafts/orbit-hop/` back to `public/media/`).
+- **Repo state:** `main`, `feat/blob` and `task/projects-content` (merged; safe to delete). Three old stashes remain, left for Anderson.
 - **Process notes:**
   - Merge in a separate detached worktree and push `HEAD:feat/blob`, so Anderson's checkout and dev server are untouched.
   - Push only after a green local run or green CI.
@@ -105,6 +105,7 @@ Scope: `docs/tasks/P5.5/_proposal.md`; table: `_proposed-plan.md`; Anderson's to
 | P5.5-19 | Revert Experience to the per-role card layout (pre-P5.5-05), keeping KB data and verbatim resume bullets | sonnet | sonnet | P5.5-05, P5.5-17 | 4 | merged |
 | P5.5-20 | Site-only Experience grouping: hide the intern; combine SharkNinja SQA I + II into one card; update the D-03 rule to allow "7 years" | sonnet | sonnet | P5.5-19 | 4 | merged |
 | P5.5-21 | Close the large vertical gap between the hero (Blob/socials) and About Me on `/` (desktop), with no layout shift; keep Blob's bubble room | sonnet | sonnet | P5.5-04 | 5 | merged |
+| P5.5-23 | Eval gate green: update unknowns-05/07/08 to the current KB; prompt rules for not echoing a visitor's guesses (unknowns-04), pairing people only as the KB does (ping-pong mix-up), never playing along with a requested persona (injection-01); check off_topic-04's wording check; long multi-part questions answer the first parts and offer the rest as follow-ups (tone-04). Bump PROMPT_VERSION; Anderson runs the spend eval | sonnet | opus | projects-content | 5 | todo |
 | P5.5-22 | Tests robust to Anderson's siteBullets; restore the "SQA Engineer II" title and unhide the SQA Engineer role (conflict-resolution slips) | sonnet | — | — | 4 | merged |
 | P5.5-13c | Voice lock, `facts:check`, drift ratchet | sonnet | opus | 13a, H3 ✓ | 3 | merged |
 | P5.5-05 | Experience from KB roles | sonnet | sonnet | 13a, 13c, H2 | 4 | merged |
@@ -137,6 +138,8 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 ## Decision log
 | Date | Decision | By |
 |---|---|---|
+| 2026-11-05 | Long multi-part questions: Blob answers the first part or two within the normal reply length, then offers the rest as follow-up questions the visitor can ask, instead of raising the token limit (settles the tone-04 question deferred since P4). | Anderson |
+| 2026-11-05 | First spend eval in this repo (p5-v3, haiku-low): 47/54, gate FAIL. The four cases for this change pass (factual-13/14, unknowns-09/10); the seven failures predate it (stale unknowns cases after P5.5-16/17, three small prompt slips, tone-04). Fixed in P5.5-23 before the P5.5 gate. | orchestrator |
 | 2026-11-05 | Project write-ups are in Anderson's own first person. A KB file with `firstPerson: true` gets a fixed label in Blob's prompt ("I/me/my mean Anderson"), and a new Voice rule tells Blob to restate it in the third person (PROMPT_VERSION p5-v3; eval cases factual-13/14). Paychira is the first. | Anderson |
 | 2026-11-05 | Launch with Paychira as the only project. Orbit Hop and State of Ecosystems are `public: false` (hidden from the site and Blob) until Anderson rewrites them after the Vercel cutover; their eval cases are parked as unknowns-09/10 (restore from git history on relaunch). | Anderson |
 | 2026-11-05 | Project and blog pages use the home page's width (max-w-7xl) for the header and content. Project pages get inline `::shot[...]` screenshots, click-to-enlarge, fully clickable cards, and full Markdown styling (lists, quotes, tables, dividers). | Anderson |
@@ -240,3 +243,4 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 2026-10-24 · P5.5-22 · merged (verified by orchestrator: unit suite green, chromium E2E experience + a11y-home green). Anderson's siteBullets are live, and the SQA I/II card reads Nov 2019 – Sep 2023.
 2026-10-24 · P5.5-21 · done in the orchestrator session: the hero is sized by its content (the 80vh/90vh minimum is gone) and has lighter bottom padding. The desktop gap went from ~300 px to ~116 px, mobile 68 px. New E2E test caps it at 160 px (fails on the old layout). Left column still fixed while replies stream; chromium hero/Blob/a11y suites green.
 2026-10-24 · P5.5-13b · merged (opus CHANGES_REQUESTED → round 2 verified by orchestrator: repo links gated on repoPublic, cardTech, Live status). Full-tier CI 40148969394 green except Voice lock (awaiting Anderson). src/data/projects.ts deleted; AI Digest and avanegas.com are KB files with public: false. KB ~6k tokens.
+2026-11-05 · task/projects-content · merged (opus CHANGES_REQUESTED → round 2 fixed by orchestrator: hidden page dropped from Lighthouse, hidden video moved to media-drafts/, viewer E2E, marker file-name check). Full-tier CI 42144462845 green incl. Lighthouse and voice:check. Anderson ran voice:accept. CI install step now times out after 8 min (a stalled apt mirror hung it 27 min).
