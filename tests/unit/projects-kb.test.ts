@@ -6,6 +6,8 @@ import {
   MEDIA_ROOT,
   loadKbSources,
   parseKbSource,
+  renderKbSection,
+  FIRST_PERSON_LABEL,
 } from "../../src/lib/kb.ts";
 import { ProjectSchema } from "../../src/lib/kb-schema.ts";
 import {
@@ -297,5 +299,92 @@ describe("project links", () => {
     for (const { slug, data } of projects) {
       expect(data.repoPublic, slug).toBe(false);
     }
+  });
+});
+
+describe("inline screenshot markers in a project body", () => {
+  const raw = (body: string) =>
+    [
+      "---",
+      "topic: project",
+      "title: T",
+      "summary: S",
+      "updated: 2026-10-24",
+      "public: true",
+      "order: 1",
+      "status: Live",
+      "role: r",
+      "tech: [x]",
+      "gallery:",
+      "  - file: dashboard.png",
+      "    alt: Dashboard",
+      "---",
+      body,
+    ].join("\n");
+  const src = (body: string) => ({
+    path: "projects/paychira.md",
+    raw: raw(body),
+  });
+
+  it("are stripped from Blob's prompt, leaving the prose", () => {
+    const out = renderKbSection(
+      src("Intro.\n\n::shot[dashboard.png]{right}\n\nMore."),
+    );
+    expect(out).not.toContain("::shot");
+    expect(out).not.toContain("dashboard.png");
+    expect(out).toContain("Intro.\n\nMore.");
+  });
+
+  it("fail the load when they name a file outside the gallery", () => {
+    expect(() =>
+      parseKbSource(src("Intro.\n\n::shot[wins.png]\n\nMore.")),
+    ).toThrow(/not in gallery: wins\.png/);
+  });
+
+  it("fail the load when malformed, so they never show as text", () => {
+    expect(() => parseKbSource(src("Intro.\n\n::shot dashboard.png"))).toThrow(
+      /malformed/,
+    );
+  });
+});
+
+describe("first-person sections", () => {
+  const raw = (firstPerson: string) =>
+    [
+      "---",
+      "topic: project",
+      "title: T",
+      "summary: I built it.",
+      "updated: 2026-10-24",
+      "public: true",
+      ...(firstPerson ? [firstPerson] : []),
+      "order: 1",
+      "status: Live",
+      "role: r",
+      "tech: [x]",
+      "---",
+      "I built this for a client.",
+    ].join("\n");
+  const render = (fp: string) =>
+    renderKbSection({ path: "projects/paychira.md", raw: raw(fp) }) ?? "";
+
+  it("are labelled in Blob's prompt, right under the heading", () => {
+    expect(render("firstPerson: true")).toMatch(
+      new RegExp(
+        `^## Project: T\\n\\n${FIRST_PERSON_LABEL.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\n\\nI built it\\.`,
+      ),
+    );
+  });
+
+  it("are not labelled by default", () => {
+    expect(render("")).not.toContain(FIRST_PERSON_LABEL);
+    expect(render("firstPerson: false")).not.toContain(FIRST_PERSON_LABEL);
+  });
+
+  it("paychira.md is written in the first person and labelled", () => {
+    const src = loadKbSources(KB_ROOT).find(
+      (s) => s.path === "projects/paychira.md",
+    )!;
+    expect(renderKbSection(src)).toContain(FIRST_PERSON_LABEL);
   });
 });

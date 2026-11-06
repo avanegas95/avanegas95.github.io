@@ -3,7 +3,7 @@ topic: project
 title: The State of Ecosystems 2026
 summary: "Interactive, eight-page React report for HubSpot's State of Ecosystems partner study, hosted on HubSpot CMS: 17 shareable filter views, JSON-driven copy, partner audio and video, built to WCAG 2.1 AA and handed off to HubSpot's web team."
 updated: 2026-10-24
-public: true
+public: false
 order: 2
 status: "Handed off"
 role: "Front-end builder and handoff coordinator (external agency developer for HubSpot)"

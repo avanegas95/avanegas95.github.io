@@ -112,6 +112,9 @@ const base = {
   summary: text.max(200),
   updated: z.date(),
   public: z.boolean(),
+  // Anderson wrote the body in his own first person ("I built..."). The prompt
+  // labels the section so Blob restates it in the third person (kb.ts).
+  firstPerson: z.boolean().default(false),
 };
 
 const plain = <T extends string>(topic: T) =>

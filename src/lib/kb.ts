@@ -18,6 +18,7 @@ import {
   type Project,
   type Role,
 } from "./kb-schema.ts";
+import { checkShotMarkers, stripShotMarkers } from "./project-shots.ts";
 
 export type KbSource = { readonly path: string; readonly raw: string };
 
@@ -170,10 +171,18 @@ export function parseKbSource(src: KbSource): KbFile {
       }
     }
   }
-  const body = lines
+  let body = lines
     .slice(end + 1)
     .join("\n")
     .trim();
+  if (src.path.startsWith("projects/") && res.data.topic === "project") {
+    // Screenshot markers place gallery images on the project page; Blob's
+    // prompt gets the prose only (project-shots.ts).
+    const gallery = res.data.gallery.map((g) => g.file);
+    const problems = checkShotMarkers(body, gallery);
+    if (problems.length > 0) fail(src.path, problems.join("; "));
+    body = stripShotMarkers(body);
+  }
   return { path: src.path, data: res.data, body };
 }
 
@@ -250,6 +259,10 @@ function renderStructured(d: Knowledge | Project): string[] {
   }
 }
 
+/** Put before a section Anderson wrote in his own first person (`firstPerson: true`). */
+export const FIRST_PERSON_LABEL =
+  '_Written by Anderson in the first person: "I", "me" and "my" in this section mean Anderson._';
+
 /** One file's prompt section, or null when the file is not public. */
 export function renderKbSection(src: KbSource): string | null {
   const { data, body } = parseKbSource(src);
@@ -258,7 +271,8 @@ export function renderKbSection(src: KbSource): string | null {
   if (!data.public) return null;
   const heading =
     data.topic === "project" ? `Project: ${data.title}` : data.title;
-  return `## ${heading}\n\n${data.summary}\n\n${content.join("\n\n")}\n`;
+  const label = data.firstPerson ? `${FIRST_PERSON_LABEL}\n\n` : "";
+  return `## ${heading}\n\n${label}${data.summary}\n\n${content.join("\n\n")}\n`;
 }
 
 export function buildKb(sources: readonly KbSource[]): string {

@@ -3,7 +3,7 @@ topic: project
 title: "Astro Andy: Orbit Hop"
 summary: "A one-tap iPhone arcade game, live on the App Store. Anderson built it solo with AI agents in SwiftUI and SpriteKit, with 445 automated tests, Game Center and iCloud sync."
 updated: 2026-10-24
-public: true
+public: false
 order: 4
 status: "Live"
 role: "He built it solo, with the assistance of AI. Together they designed, coded, implemented, tested, and published. He is also the support contact."
@@ -55,7 +55,7 @@ video:
 
 ### What it does
 
-Astro Andy: Orbit Hop is a one-tap arcade game for iPhone, free on the App Store. Andy orbits a planet, and a tap launches him toward the next one. Tap while the guide dots glow gold for a Perfect, which earns extra Stardust and builds a combo. Planets crumble if Andy lingers, and a missed orbit ends the run. Stardust unlocks nine pilots (including Mr. Whiskers, a cat stranded on a far planet), colorful suits and seven animated trails. No account or demo login is needed: anyone can download it and play, even offline.
+Astro Andy: Orbit Hop is a one-tap arcade game for iPhone, free on the App Store. Andy orbits a planet, and a tap launches him toward the next one. Tap while the guide dots glow gold for a Perfect, which earns extra Stardust and builds a combo. Planets crumble if Andy lingers, and a missed orbit ends the run. Stardust unlocks nine pilots (including Mr. Whiskers, a cat stranded on a far planet), colorful suits and seven animated trails.
 
 ### Highlights
 

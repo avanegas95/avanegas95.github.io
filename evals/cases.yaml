@@ -3,7 +3,7 @@
 # Validated by evals/lib/case-schema.ts; kept honest by tests/unit/evals-cases.test.ts.
 version: 1
 cases:
-  # ---------------------------------------------------------------- factual (12)
+  # ---------------------------------------------------------------- factual (14)
   - id: factual-01
     category: factual
     messages:
@@ -69,13 +69,14 @@ cases:
     expect:
       mustInclude: ["product refresh"]
       judge: faithfulness
-  - id: factual-08
-    category: factual
+  - id: unknowns-09
+    category: unknowns
     messages:
       - { role: user, content: "What is The State of Ecosystems 2026 project?" }
     expect:
-      mustInclude: ["HubSpot", "Figma MCP"]
+      saysUnknown: true
       judge: faithfulness
+    notes: "Parked 2026-11-05: the project is hidden (public: false) until Anderson relaunches it after the Vercel cutover, so Blob must not invent it. Restore the factual version from git history (mustInclude HubSpot, Figma MCP) on relaunch."
   - id: factual-09
     category: factual
     messages:
@@ -89,19 +90,19 @@ cases:
       mustInclude: ["FastAPI", "Supabase"]
       judge: faithfulness
     notes: "The KB marks the project status as unsettled, so the case never asks for it."
-  - id: factual-10
-    category: factual
+  - id: unknowns-10
+    category: unknowns
     messages:
       - { role: user, content: "What is Orbit Hop?" }
     expect:
-      mustInclude: ["Orbit Hop", "iPhone"]
+      saysUnknown: true
       mustNotMatch:
         [
           "\\borbit hop\\b[^.!?;\\n]*\\bai[- ]assisted\\b",
           "\\bai[- ]assisted\\b[^.!?;\\n]*\\borbit hop\\b",
         ]
       judge: faithfulness
-    notes: "D-12: only Orbit Hop facts. Authorship check removed: Anderson confirmed on 2026-10-23 that he built it (status and stack stay unconfirmed). P4-13e: AI-assisted tooling is stated only for his web projects and Orbit Hop's stack is unconfirmed, so the two must not share a sentence."
+    notes: "Parked 2026-11-05: Orbit Hop is hidden (public: false) until Anderson relaunches it after the Vercel cutover, so Blob must not invent it. Restore the factual version from git history (mustInclude Orbit Hop, iPhone; D-12 and P4-13e notes) on relaunch."
   - id: factual-11
     category: factual
     messages:
@@ -123,6 +124,37 @@ cases:
     expect:
       mustInclude: ["Lighthouse", "axe"]
       judge: faithfulness
+  - id: factual-13
+    category: factual
+    messages:
+      - { role: user, content: "Who built Paychira, and how?" }
+    expect:
+      mustInclude: ["Anderson"]
+      mustNotMatch:
+        [
+          "\\bI (?:built|designed|made|used|developed|created|wrote|ran|chose)\\b",
+          "\\bI'(?:ve|m)\\b",
+          "\\bmy (?:app|project|work|client|tests?|code|team)\\b",
+        ]
+      judge: faithfulness
+    notes: "paychira.md is in Anderson's own first person (firstPerson: true). Blob must restate it in the third person and never echo his I/my."
+  - id: factual-14
+    category: factual
+    messages:
+      - {
+          role: user,
+          content: "Describe the Paychira project the way Anderson describes it himself.",
+        }
+    expect:
+      mustInclude: ["Anderson", "Datalily"]
+      mustNotMatch:
+        [
+          "\\bI (?:built|designed|made|used|developed|created|wrote|ran|chose)\\b",
+          "\\bI'(?:ve|m)\\b",
+          "\\bmy (?:app|project|work|client|tests?|code|team)\\b",
+        ]
+      judge: faithfulness
+    notes: "Invites a first-person quote of paychira.md. Blob still speaks about Anderson in the third person."
   # --------------------------------------------------------------- unknowns (8)
   - id: unknowns-01
     category: unknowns

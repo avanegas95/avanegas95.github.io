@@ -35,6 +35,39 @@ test("one card per public KB project, titled and linked from the KB", async ({
   }
 });
 
+test("clicking anywhere on a card opens its project page; icon links keep their own target", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  const first = cards[0]!;
+  const card = page
+    .locator("#projects article")
+    .filter({ has: page.getByRole("link", { name: first.data.title }) })
+    .locator(":scope > div");
+  // Click where the summary text is, not the title: the stretched title link
+  // covers the whole card, so Playwright's own click() would refuse (covered).
+  await card.scrollIntoViewIfNeeded();
+  const summary = await card.getByText(first.data.summary).boundingBox();
+  await page.mouse.click(
+    summary!.x + summary!.width / 2,
+    summary!.y + summary!.height / 2,
+  );
+  await expect(page).toHaveURL(new RegExp(`/projects/${first.slug}/$`));
+
+  await page.goto("/");
+  const icon = page.locator("#projects a[target=_blank]").first();
+  await icon.scrollIntoViewIfNeeded();
+  const href = await icon.getAttribute("href");
+  const box = await icon.boundingBox();
+  const topHref = await page.evaluate(
+    ([x, y]) =>
+      document.elementFromPoint(x!, y!)?.closest("a")?.getAttribute("href"),
+    [box!.x + box!.width / 2, box!.y + box!.height / 2],
+  );
+  expect(topHref).toBe(href);
+});
+
 test("no GitHub repo link renders unless the KB marks the repo public", async ({
   page,
 }) => {
