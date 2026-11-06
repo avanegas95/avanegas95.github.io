@@ -1,0 +1,21 @@
+name: Setup
+description: Node from .nvmrc plus node_modules restored from cache, or npm ci on a miss.
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version-file: .nvmrc
+
+    # Caching node_modules itself (not just npm's download cache) skips npm ci
+    # entirely when package-lock.json and the Node version are unchanged.
+    - id: nm
+      uses: actions/cache@v4
+      with:
+        path: node_modules
+        key: node-modules-${{ runner.os }}-${{ hashFiles('.nvmrc', 'package-lock.json') }}
+
+    - name: Install
+      if: steps.nm.outputs.cache-hit != 'true'
+      shell: bash
+      run: npm ci

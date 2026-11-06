@@ -2,6 +2,13 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const yml = readFileSync(".github/workflows/quality.yml", "utf8");
+/** One job's block, from `  <id>:` to the next job. */
+const jobBlock = (id: string): string => {
+  const i = yml.indexOf(`\n  ${id}:\n`);
+  expect(i, id).toBeGreaterThan(-1);
+  const next = yml.slice(i + 1).search(/\n {2}[a-z-]+:\n/);
+  return next === -1 ? yml.slice(i) : yml.slice(i, i + 1 + next);
+};
 const step = (name: string): string => {
   const i = yml.indexOf(`- name: ${name}`);
   expect(i).toBeGreaterThan(-1);
@@ -27,12 +34,17 @@ describe("quality.yml voice-lock steps", () => {
   });
 
   it("a red voice check does not skip E2E, Lighthouse or the annotations", () => {
+    // Voice lives in the checks job; E2E and Lighthouse are separate jobs that
+    // depend only on the build, so a red voice check can't skip them.
     for (const n of [
       "Voice lock changes",
-      "E2E (includes axe)",
-      "Lighthouse",
+      "Voice lock check",
+      "Facts check (report only)",
     ]) {
       expect(step(n)).toContain("if: always()");
+    }
+    for (const job of ["e2e", "lighthouse"]) {
+      expect(jobBlock(job)).toMatch(/\n {4}needs: build\n/);
     }
   });
 
@@ -46,21 +58,39 @@ describe("quality.yml voice-lock steps", () => {
 describe("quality.yml tiers", () => {
   it("pushes run the fast tier; pull requests and manual runs run the full tier", () => {
     expect(yml).toContain("workflow_dispatch:");
-    expect(yml).toContain("FULL: ${{ github.event_name != 'push' }}");
+    expect(jobBlock("e2e")).toContain(
+      `browser: \${{ fromJSON(github.event_name == 'push' && '["chromium"]' || '["chromium","firefox","webkit"]') }}`,
+    );
+    expect(jobBlock("lighthouse")).toContain("if: github.event_name != 'push'");
   });
 
-  it("the fast tier runs chromium E2E only, the full tier all three browsers", () => {
-    expect(step("Install Playwright browsers")).toContain(
-      "chromium ${{ env.FULL == 'true' && 'firefox webkit' || '' }}",
-    );
+  it("each E2E job runs only its own browser", () => {
     expect(step("E2E (includes axe)")).toContain(
-      "${{ env.FULL != 'true' && '--project=chromium' || '' }}",
+      "--project=${{ matrix.browser }}",
+    );
+    expect(jobBlock("e2e")).toContain("browser: ${{ matrix.browser }}");
+    expect(step("E2E (includes axe)")).toContain(
+      "${{ matrix.browser == 'webkit' && '--workers=2' || '' }}",
     );
   });
+});
 
-  it("Lighthouse runs only in the full tier", () => {
-    for (const n of ["Lighthouse", "Lighthouse summary"]) {
-      expect(step(n)).toContain("if: always() && env.FULL == 'true'");
+describe("quality.yml parallel jobs", () => {
+  it("builds once and shares the output with unit, E2E and Lighthouse", () => {
+    expect(jobBlock("build")).toContain("name: build-output");
+    for (const job of ["unit", "e2e", "lighthouse"]) {
+      expect(jobBlock(job)).toMatch(/\n {4}needs: build\n/);
+      expect(jobBlock(job)).toContain("actions/download-artifact@v4");
+    }
+  });
+
+  it("checks start without waiting for the build", () => {
+    expect(jobBlock("checks")).not.toContain("needs:");
+  });
+
+  it("every job has a short timeout so a stalled install fails fast", () => {
+    for (const job of ["build", "checks", "unit", "e2e", "lighthouse"]) {
+      expect(jobBlock(job)).toContain("timeout-minutes: 15");
     }
   });
 });

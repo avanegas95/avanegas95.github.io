@@ -7,6 +7,10 @@ name: quality
 # Pushes to feat/blob run the fast tier: everything except firefox/webkit E2E and Lighthouse.
 # Pull requests and manual runs (`gh workflow run quality --ref feat/blob`) run the full tier,
 # which is the rule 8 gate.
+#
+# Parallel jobs: checks start at once; unit, E2E (one job per browser) and Lighthouse start as
+# soon as the single build is done, and reuse its output. Wall time is setup + the slowest
+# job, not the sum.
 on:
   pull_request:
   push:
@@ -23,49 +27,42 @@ permissions:
   contents: read
 
 jobs:
-  quality:
-    name: Quality pipeline
+  build:
+    name: Build
     runs-on: ubuntu-latest
-    timeout-minutes: 30
-    env:
-      FULL: ${{ github.event_name != 'push' }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+
+      - name: Build
+        run: npm run build
+
+      # The site for E2E and Lighthouse, and the outputs the unit tests inspect.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: |
+            .vercel/output/
+            dist/
+          include-hidden-files: true
+          retention-days: 1
+
+  checks:
+    name: Lint, typecheck and voice lock
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-          cache: npm
-
-      - name: Install
-        run: npm ci
-
-      # Normally ~20 s. A stalled apt mirror once hung this for 27 min; fail fast
-      # instead and re-run.
-      - name: Install Playwright browsers
-        timeout-minutes: 8
-        run: npx playwright install --with-deps chromium ${{ env.FULL == 'true' && 'firefox webkit' || '' }}
+      - uses: ./.github/actions/setup
 
       - name: Lint
         run: npm run lint
 
       - name: Typecheck
         run: npm run typecheck
-
-      # Build before unit tests: the CSP-hash and build-output tests skip without a build.
-      - name: Build
-        run: npm run build
-
-      - name: Unit tests
-        run: npm test
-
-      - name: Client bundle check
-        run: npm run check:bundle
-
-      - name: PII guard
-        run: npm run guard:pii
 
       # Visibility, not the gate: any voice.lock.json change in the pushed range
       # or PR is printed as annotations and in the job summary.
@@ -78,6 +75,7 @@ jobs:
       # Blocking: locked prose must match voice.lock.json. Red here is intended
       # until Anderson accepts the change himself.
       - name: Voice lock check
+        if: always()
         shell: bash
         run: |
           if ! npm run voice:check; then
@@ -90,6 +88,7 @@ jobs:
 
       # Non-blocking until P5.5-04/05/06 fix the known findings.
       - name: Facts check (report only)
+        if: always()
         continue-on-error: true
         shell: bash
         run: |
@@ -99,32 +98,91 @@ jobs:
           { echo '### facts:check'; echo '```'; cat facts.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
           exit $code
 
-      # Fast tier: chromium only. Full tier: chromium, firefox and webkit.
-      - name: E2E (includes axe)
+  unit:
+    name: Unit tests, bundle and PII guard
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - uses: actions/download-artifact@v4
+        with:
+          name: build-output
+
+      # Needs the build: the CSP-hash and build-output tests skip without one.
+      - name: Unit tests
+        run: npm test
+
+      - name: Client bundle check
         if: always()
-        run: npm run test:e2e -- ${{ env.FULL != 'true' && '--project=chromium' || '' }}
+        run: npm run check:bundle
+
+      - name: PII guard
+        if: always()
+        run: npm run guard:pii
+
+  e2e:
+    name: E2E (${{ matrix.browser }})
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        # Fast tier: chromium only. Full tier: chromium, firefox and webkit.
+        browser: ${{ fromJSON(github.event_name == 'push' && '["chromium"]' || '["chromium","firefox","webkit"]') }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - uses: actions/download-artifact@v4
+        with:
+          name: build-output
+      - uses: ./.github/actions/playwright
+        with:
+          browser: ${{ matrix.browser }}
+
+      - name: E2E (includes axe)
+        # WebKit timed out on networkidle with 4 workers on the 4-vCPU runner; it
+        # gets 2 (as before), chromium and firefox the config's 4.
+        run: npm run test:e2e -- --project=${{ matrix.browser }} ${{ matrix.browser == 'webkit' && '--workers=2' || '' }}
         env:
           CI: "true"
-
-      - name: Lighthouse
-        if: always() && env.FULL == 'true'
-        run: |
-          export CHROME_PATH="$(node -e "console.log(require('@playwright/test').chromium.executablePath())")"
-          npm run lhci
-
-      - name: Lighthouse summary
-        if: always() && env.FULL == 'true'
-        run: node scripts/ci/summary.mjs
 
       - name: Upload Playwright report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report
+          name: playwright-report-${{ matrix.browser }}
           path: |
             playwright-report/
             test-results/
           if-no-files-found: ignore
+
+  lighthouse:
+    name: Lighthouse
+    needs: build
+    if: github.event_name != 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - uses: actions/download-artifact@v4
+        with:
+          name: build-output
+      - uses: ./.github/actions/playwright
+        with:
+          browser: chromium
+
+      - name: Lighthouse
+        run: |
+          export CHROME_PATH="$(node -e "console.log(require('@playwright/test').chromium.executablePath())")"
+          npm run lhci
+
+      - name: Lighthouse summary
+        if: always()
+        run: node scripts/ci/summary.mjs
 
       - name: Upload Lighthouse results
         if: always()
