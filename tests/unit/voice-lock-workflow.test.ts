@@ -68,7 +68,6 @@ describe("quality.yml tiers", () => {
     expect(step("E2E (includes axe)")).toContain(
       "--project=${{ matrix.browser }}",
     );
-    expect(jobBlock("e2e")).toContain("browser: ${{ matrix.browser }}");
     expect(step("E2E (includes axe)")).toContain(
       "${{ matrix.browser == 'webkit' && '--workers=2' || '' }}",
     );
@@ -92,5 +91,24 @@ describe("quality.yml parallel jobs", () => {
     for (const job of ["build", "checks", "unit", "e2e", "lighthouse"]) {
       expect(jobBlock(job)).toContain("timeout-minutes: 15");
     }
+  });
+});
+
+describe("quality.yml Playwright container", () => {
+  it("E2E and Lighthouse run in the Playwright image matching @playwright/test", () => {
+    const version = JSON.parse(
+      readFileSync("node_modules/@playwright/test/package.json", "utf8"),
+    ).version as string;
+    for (const job of ["e2e", "lighthouse"]) {
+      expect(jobBlock(job)).toContain(
+        `image: mcr.microsoft.com/playwright:v${version}-noble`,
+      );
+      expect(jobBlock(job)).toContain("HOME: /root");
+    }
+  });
+
+  it("never installs browsers or apt packages in CI", () => {
+    expect(yml).not.toContain("playwright install");
+    expect(yml).not.toContain("actions/playwright");
   });
 });
