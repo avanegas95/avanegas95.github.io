@@ -5,6 +5,14 @@
 
 ## ▶ Current phase: **P6: Production on Vercel and domain cutover** · Status: `waiting on Anderson's explicit approval`. P5.5 PASSED 2026-11-05. P5 PASSED 2026-10-24.
 
+**Session 4 (2026-11-06, orchestrator):**
+- Merged into feat/blob (squashed, opus-reviewed): **P6-01** real `#skills` anchor on the About tool list, in ALLOWED_SITE_PATHS and SITE_PATHS (prompt **p5-v8**; the scrubber is unchanged, and `fix/same-site-link-label` stays unmerged). **P6-02** bubble: Previous / Next cycle the turns in place instead of stacking below; three thinking dots; no "Show more" before any text (the pop-in transform overflowed the clip).
+- `docs/CUTOVER.md` drafted: the order, checks and rollback. Key trap: `deploy.yml` publishes `dist/` but feat/blob builds `.vercel/output/`, so the merge to main must make the Pages workflow manual-only in the same commit.
+- **Waiting on Anderson:** spend eval on p5-v8; a real Blob message on the Preview; approve CUTOVER.md; Phase 1 dashboard steps (N-1 Preview DB, key and bypass rotation, DNS TTL); delete `fix/same-site-link-label` and the merged task branches; D-16 and D-17.
+- Seen on the Preview: Blob sometimes writes a bare `#experience` instead of a markdown link (the prompt asks for links). Candidate follow-up: the client renderer could link bare allowed paths.
+
+<details><summary>Handoff from session 3 (2026-11-05)</summary>
+
 **Handoff (2026-11-05, end of orchestrator session 3; next: P6 cutover with a new agent):**
 - **State:** P5.5 PASSED. feat/blob is green and is the release candidate. Prompt p5-v7; spend eval gate PASS twice. Paychira is the only public project; Orbit Hop and SoE are `public: false` (Orbit Hop video in `media-drafts/`).
 - **Do before the cutover:**
@@ -20,6 +28,8 @@
   - The machine is often overloaded; rerun timeouts once before judging.
   - After merging anything that touches the KB, prompt or chat server, send one real message to Blob on the Preview. CI mocks /api/chat, so it can't catch a server-side failure (2026-11-05: every chat failed on the Preview with "gallery file not found" for about an hour).
   - Agents never touch `voice.lock.json`.
+
+</details>
 
 **Status legend:** `todo` · `brief` · `wip` · `review` · `changes` · `merged` · `blocked`
 
@@ -112,7 +122,14 @@ Scope: `docs/tasks/P5.5/_proposal.md`; table: `_proposed-plan.md`; Anderson's to
 | P5.5-08b | Nav fix (also: switch nav.ts, prompt.ts, links.ts to `#experience`; the `#experiences` alias span stays for old live-site links) | haiku | sonnet | 05, 08a | 5 | merged |
 | P5.5-13d | Resume facts check vs KB (hand-made PDF; re-brief) | sonnet | opus | 05, 13a, 13c, P5-05, H5 | 5 | merged |
 
-## P6: Production on Vercel and domain cutover (NOT planned; only on Anderson's explicit final approval)
+## P6: Production on Vercel and domain cutover (steps in `docs/CUTOVER.md`; outward steps only on Anderson's explicit approval)
+
+| ID | Task | Model | Reviewer | Status |
+|---|---|---|---|---|
+| P6-01 | Real `#skills` anchor + allowlist (p5-v8) | opus | opus | merged |
+| P6-02 | Bubble Previous / Next pager, thinking dots, no early Show more | opus | opus | merged |
+| P6-03 | `docs/CUTOVER.md` | opus | Anderson | review |
+
 Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNAME`, the Pages workflow or Vercel domain settings, until Anderson approves in a message. Then:
 - write and review `docs/CUTOVER.md` (Vercel domain + DNS steps, pre/post checks, rollback to GitHub Pages);
 - merge `feat/blob` into v1 `main`;
