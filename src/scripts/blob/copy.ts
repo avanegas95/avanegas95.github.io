@@ -16,7 +16,10 @@ export const COPY: {
   send: string;
   clear: string;
   previous: string;
-  previousHide: string;
+  next: string;
+  of: string;
+  answer: string;
+  pagerLabel: string;
   showMore: string;
   showLess: string;
   disclaimer: { before: string; linkLabel: string; after: string };
@@ -41,8 +44,11 @@ export const COPY: {
   inputPlaceholder: "Ask about Anderson's work",
   send: "Send",
   clear: "Clear chat",
-  previous: "Previous answers",
-  previousHide: "Hide previous answers",
+  previous: "Previous",
+  next: "Next",
+  of: "of",
+  answer: "Answer",
+  pagerLabel: "Answers",
   showMore: "Show more",
   showLess: "Show less",
   disclaimer: {

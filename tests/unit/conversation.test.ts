@@ -39,9 +39,10 @@ const MARKUP = `
     <button type="button" data-ba="more" aria-expanded="false" hidden>Show more</button>
     <ul data-ba="starters"><li><button type="button" data-ba="chip">Show me his projects</button></li></ul>
   </div>
-  <div data-ba="previous-wrap" hidden>
-    <button type="button" data-ba="previous" aria-expanded="false" aria-controls="blob-history">Previous answers</button>
-    <ol id="blob-history" data-ba="history" hidden></ol>
+  <div data-ba="pager" role="group" aria-label="Answers" hidden>
+    <button type="button" data-ba="prev" aria-disabled="true">Previous</button>
+    <span data-ba="position"></span>
+    <button type="button" data-ba="next" aria-disabled="true">Next</button>
   </div>
 </blob-agent>`;
 
@@ -67,8 +68,9 @@ const answer = () => el.answer;
 const clip = () => el.querySelector<HTMLElement>('[data-ba="clip"]')!;
 const question = () => el.querySelector<HTMLElement>('[data-ba="question"]')!;
 const phase = () => el.bubble!.phase;
-const history = () =>
-  el.querySelectorAll<HTMLElement>('[data-ba="history"] > li');
+// "n of total" under the bubble: how many turns Previous / Next can cycle through.
+const position = () =>
+  el.querySelector<HTMLElement>('[data-ba="position"]')!.textContent;
 const send = () =>
   el.querySelector<HTMLButtonElement>('[data-ba="form"] button')!;
 const last = () => calls[calls.length - 1]!;
@@ -163,10 +165,7 @@ describe("submit and stream", () => {
 
     submit("And then?");
     expect(phase()).toBe("asking");
-    expect(history()).toHaveLength(1); // turn 1 moved behind "Previous"
-    expect(history()[0]?.querySelector(".ba-prev-q")?.textContent).toBe(
-      "Hello Blob",
-    );
+    expect(position()).toBe("2 of 2"); // turn 1 is one Previous away
     expect(calls).toHaveLength(2);
     expect(last().body.messages).toEqual([
       { role: "user", content: "Hello Blob" },
@@ -262,7 +261,7 @@ describe("errors", () => {
       last().h.onDelta("partial");
       last().h.onError(code);
       const reply = current()!;
-      expect(history()).toHaveLength(1);
+      expect(position()).toBe("2 of 2");
       expect(phase()).toBe("error");
       expect(reply.dataset["error"]).toBe("true");
       const copy = COPY.errors[code];
@@ -398,34 +397,64 @@ describe("clamp and Show more", () => {
   });
 });
 
-describe("previous turns", () => {
-  const toggle = () =>
-    el.querySelector<HTMLButtonElement>('[data-ba="previous"]')!;
-  const list = () => el.querySelector<HTMLElement>('[data-ba="history"]')!;
-  const wrap = () =>
-    el.querySelector<HTMLElement>('[data-ba="previous-wrap"]')!;
-  const ask = (q: string, a: string) => {
-    submit(q);
+describe("previous / next", () => {
+  const prev = () => el.querySelector<HTMLButtonElement>('[data-ba="prev"]')!;
+  const next = () => el.querySelector<HTMLButtonElement>('[data-ba="next"]')!;
+  const pager = () => el.querySelector<HTMLElement>('[data-ba="pager"]')!;
+  const q = () => el.querySelector<HTMLElement>('[data-ba="question"]')!;
+  const msgs = () => clip().querySelectorAll(":scope > .ba-msg");
+  const off = (b: HTMLButtonElement) => b.getAttribute("aria-disabled");
+  const ask = (text: string, a: string) => {
+    submit(text);
     last().h.onDelta(a);
     last().h.onDone("ok");
   };
 
-  it("hides the control until a turn is archived, then toggles aria-expanded", () => {
-    expect(wrap().hidden).toBe(true);
+  it("hides the pager until there are two turns, then cycles them in the bubble", () => {
+    expect(pager().hidden).toBe(true);
     ask("q1", "answer one");
-    expect(wrap().hidden).toBe(true); // the latest turn is the bubble itself
+    expect(pager().hidden).toBe(true); // the latest turn is the bubble itself
     ask("q2", "answer two");
-    expect(wrap().hidden).toBe(false);
-    expect(toggle().getAttribute("aria-expanded")).toBe("false");
-    expect(list().hidden).toBe(true);
-    toggle().click();
-    expect(toggle().getAttribute("aria-expanded")).toBe("true");
-    expect(list().hidden).toBe(false);
-    expect(list().textContent).toContain("q1");
-    expect(list().textContent).toContain("answer one");
+    expect(pager().hidden).toBe(false);
+    expect(position()).toBe("2 of 2");
+    expect(off(prev())).toBe("false");
+    expect(off(next())).toBe("true");
+
+    prev().click();
+    expect(position()).toBe("1 of 2");
+    expect(q().textContent).toBe("q1");
+    expect(msgs()).toHaveLength(1); // one answer at a time, in the same place
+    expect(current()?.textContent).toContain("answer one");
+    expect(off(prev())).toBe("true");
+    prev().click(); // already at the first: nothing moves
+    expect(position()).toBe("1 of 2");
+
+    next().click();
+    expect(position()).toBe("2 of 2");
+    expect(q().textContent).toBe("q2");
     expect(current()?.textContent).toContain("answer two");
-    toggle().click();
-    expect(list().hidden).toBe(true);
+  });
+
+  it("a new question from an earlier turn jumps to the new latest turn", () => {
+    ask("q1", "a1");
+    ask("q2", "a2");
+    prev().click();
+    submit("q3");
+    expect(position()).toBe("3 of 3");
+    expect(q().textContent).toBe("q3");
+    expect(msgs()).toHaveLength(1);
+  });
+
+  it("is disabled while an answer is on its way", () => {
+    ask("q1", "a1");
+    submit("q2");
+    expect(off(prev())).toBe("true");
+    prev().click();
+    expect(position()).toBe("2 of 2");
+    last().h.onDelta("a2");
+    expect(off(prev())).toBe("true");
+    last().h.onDone("ok");
+    expect(off(prev())).toBe("false");
   });
 
   it("keeps at most the last 10 turns and drops failed ones", () => {
@@ -433,16 +462,23 @@ describe("previous turns", () => {
     submit("last");
     last().h.onDelta("a13");
     last().h.onDone("ok");
-    expect(history()).toHaveLength(9);
-    expect(history()[0]?.textContent).toContain("q4");
-    expect(history()[8]?.textContent).toContain("a12");
+    expect(position()).toBe("10 of 10");
     expect(current()?.textContent).toBe("a13");
+    for (let i = 0; i < 9; i++) prev().click();
+    expect(position()).toBe("1 of 10");
+    expect(q().textContent).toBe("q4");
 
+    next().click();
     submit("bad");
     last().h.onError("upstream");
+    expect(position()).toBe("10 of 10"); // q4 made room for it
     submit("after");
-    expect(history()).toHaveLength(9); // the failed turn was not archived
-    expect(list().textContent).not.toContain("bad");
+    last().h.onDelta("ok");
+    last().h.onDone("ok");
+    expect(position()).toBe("10 of 10"); // the failed turn was not kept
+    for (let i = 0; i < 9; i++) prev().click();
+    expect(q().textContent).toBe("q5");
+    expect(clip().textContent).not.toContain("bad");
   });
 });
 
@@ -469,9 +505,9 @@ describe("clear chat", () => {
     expect(el.querySelector<HTMLElement>('[data-ba="starters"]')!.hidden).toBe(
       false,
     );
-    expect(
-      el.querySelector<HTMLElement>('[data-ba="previous-wrap"]')!.hidden,
-    ).toBe(true);
+    expect(el.querySelector<HTMLElement>('[data-ba="pager"]')!.hidden).toBe(
+      true,
+    );
     expect(mood()).toBe("idle");
     expect(answer().getAttribute("aria-busy")).toBe("false");
     expect(hero().dataset["talking"]).toBe("false");

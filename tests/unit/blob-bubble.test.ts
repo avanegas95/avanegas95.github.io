@@ -34,9 +34,10 @@ const MARKUP = `
       <li><button type="button" data-ba="chip">Show me his projects</button></li>
     </ul>
   </div>
-  <div data-ba="previous-wrap" hidden>
-    <button type="button" data-ba="previous" aria-expanded="false" aria-controls="blob-history">Previous answers</button>
-    <ol id="blob-history" data-ba="history" hidden></ol>
+  <div data-ba="pager" role="group" aria-label="Answers" hidden>
+    <button type="button" data-ba="prev" aria-disabled="true">Previous</button>
+    <span data-ba="position"></span>
+    <button type="button" data-ba="next" aria-disabled="true">Next</button>
   </div>
 </blob-agent>`;
 
@@ -102,7 +103,7 @@ describe("bubble controller", () => {
     a = mount();
   });
 
-  it("starts idle: greeting and chips visible, question and Previous hidden", () => {
+  it("starts idle: greeting and chips visible, question and pager hidden", () => {
     expect(a.bubble?.phase).toBe("idle");
     expect(q(a, "bubble").dataset["phase"]).toBe("idle");
     expect(q(a, "greeting").hidden).toBe(false);
@@ -111,7 +112,7 @@ describe("bubble controller", () => {
     );
     expect(q(a, "starters").hidden).toBe(false);
     expect(q(a, "question").hidden).toBe(true);
-    expect(q(a, "previous-wrap").hidden).toBe(true);
+    expect(q(a, "pager").hidden).toBe(true);
     expect(q(a, "more").hidden).toBe(true);
   });
 
@@ -127,7 +128,7 @@ describe("bubble controller", () => {
     expect(q(a, "bubble").dataset["phase"]).toBe("done");
   });
 
-  it("an error turn is replaced, not archived; a done turn is archived in order", () => {
+  it("an error turn is replaced, not kept; a done turn stays one Previous away", () => {
     const b = a.bubble!;
     b.ask("one").setMarkdown("first");
     b.delta();
@@ -136,11 +137,25 @@ describe("bubble controller", () => {
     b.fail();
     expect(b.phase).toBe("error");
     b.ask("three").setMarkdown("third");
-    const items = a.querySelectorAll('[data-ba="history"] > li');
-    expect(items).toHaveLength(1);
-    expect(items[0]?.textContent).toContain("one");
-    expect(items[0]?.textContent).toContain("first");
-    expect(q(a, "previous-wrap").hidden).toBe(false);
+    expect(q(a, "position").textContent).toBe(`2 ${COPY.of} 2`);
+    expect(q(a, "pager").hidden).toBe(false);
+    b.done();
+    b.page(-1);
+    expect(q(a, "question").textContent).toBe("one");
+    expect(q(a, "clip").textContent).toContain("first");
+    expect(q(a, "clip").textContent).not.toContain("third");
+  });
+
+  it("never offers Show more for the thinking dots", () => {
+    const clip = q(a, "clip");
+    // A pop-in animation can overflow the clip for a moment before any text arrives.
+    Object.defineProperty(clip, "scrollHeight", { value: 130 });
+    Object.defineProperty(clip, "clientHeight", { value: 120 });
+    a.bubble!.ask("hi");
+    a.bubble!.sync();
+    expect(q(a, "more").hidden).toBe(true);
+    expect(clip.dataset["clamped"]).toBe("false");
+    expect(clip.querySelectorAll(".ba-dots > span")).toHaveLength(3);
   });
 
   it("Show more points at the clip and keeps aria-expanded in sync", () => {
@@ -184,25 +199,26 @@ describe("bubble controller", () => {
     expect(q(a, "more").hidden).toBe(true);
   });
 
-  it("Previous toggles aria-expanded and hidden on the list", () => {
+  it("Previous / Next use aria-disabled at the ends, so focus stays on them", () => {
     const b = a.bubble!;
     for (const t of ["a", "b"]) {
       b.ask(t).setMarkdown(t);
       b.delta();
       b.done();
     }
-    const btn = q<HTMLButtonElement>(a, "previous");
-    const list = q(a, "history");
-    expect(btn.getAttribute("aria-controls")).toBe(list.id);
-    expect(btn.getAttribute("aria-expanded")).toBe("false");
-    expect(list.hidden).toBe(true);
-    btn.click();
-    expect(btn.getAttribute("aria-expanded")).toBe("true");
-    expect(list.hidden).toBe(false);
-    expect(btn.textContent).toContain(COPY.previousHide);
-    btn.click();
-    expect(btn.getAttribute("aria-expanded")).toBe("false");
-    expect(list.hidden).toBe(true);
+    const prev = q<HTMLButtonElement>(a, "prev");
+    const next = q<HTMLButtonElement>(a, "next");
+    expect(prev.disabled).toBe(false);
+    expect(next.getAttribute("aria-disabled")).toBe("true");
+    prev.click();
+    expect(prev.getAttribute("aria-disabled")).toBe("true");
+    expect(next.getAttribute("aria-disabled")).toBe("false");
+    const status = q(a, "pager").querySelector('[role="status"]')!;
+    expect(status.textContent).toBe(`${COPY.answer} 1 ${COPY.of} 2: a`);
+    next.click();
+    expect(status.textContent).toBe(`${COPY.answer} 2 ${COPY.of} 2: b`);
+    b.ask("c");
+    expect(status.textContent).toBe(`${COPY.answer} 2 ${COPY.of} 2: b`); // a new ask is not paging
   });
 
   it("keeps at most MAX_TURNS turns in total", () => {
@@ -212,9 +228,11 @@ describe("bubble controller", () => {
       b.delta();
       b.done();
     }
-    expect(a.querySelectorAll('[data-ba="history"] > li')).toHaveLength(
-      MAX_TURNS - 1,
+    expect(q(a, "position").textContent).toBe(
+      `${MAX_TURNS} ${COPY.of} ${MAX_TURNS}`,
     );
+    b.page(-MAX_TURNS);
+    expect(q(a, "question").textContent).toBe("q5");
   });
 
   it("clear restores the idle bubble", () => {
@@ -228,7 +246,7 @@ describe("bubble controller", () => {
     expect(q(a, "greeting").hidden).toBe(false);
     expect(q(a, "starters").hidden).toBe(false);
     expect(q(a, "question").hidden).toBe(true);
-    expect(q(a, "previous-wrap").hidden).toBe(true);
+    expect(q(a, "pager").hidden).toBe(true);
     expect(a.querySelector(".ba-msg")).toBeNull();
   });
 });

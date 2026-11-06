@@ -46,7 +46,7 @@ test("idle: greeting bubble, starter chips and a visible input, no open step", a
     page.locator("blob-agent").getByRole("link", { name: "contact" }),
   ).toHaveAttribute("href", "#contact");
   // Earlier-turn and clamp controls only exist once they are needed.
-  await expect(page.locator('[data-ba="previous-wrap"]')).toBeHidden();
+  await expect(page.locator('[data-ba="pager"]')).toBeHidden();
   await expect(page.locator('[data-ba="more"]')).toBeHidden();
   expect(blocked).toEqual([]);
   expect(errors()).toEqual([]);

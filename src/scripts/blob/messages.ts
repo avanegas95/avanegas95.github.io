@@ -24,7 +24,7 @@ export function appendAssistant(log: HTMLElement): {
   const dots = doc.createElement("span");
   dots.className = "ba-dots";
   dots.setAttribute("aria-hidden", "true");
-  dots.textContent = "…";
+  for (let i = 0; i < 3; i++) dots.append(doc.createElement("span"));
   const sr = doc.createElement("span");
   sr.className = "ba-sr";
   sr.textContent = COPY.thinking;

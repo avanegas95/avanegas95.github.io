@@ -84,17 +84,32 @@ const RESUME_HREF = "https://www.linkedin.com/in/avanegas95";
           ))}
         </ul>
       </div>
-      <div class="ba-prev" data-ba="previous-wrap" hidden>
+      <div
+        class="ba-pager"
+        data-ba="pager"
+        role="group"
+        aria-label={COPY.pagerLabel}
+        hidden
+      >
         <button
           type="button"
-          class="ba-prev-toggle"
-          data-ba="previous"
-          aria-expanded="false"
-          aria-controls="blob-history"
+          class="ba-page"
+          data-ba="prev"
+          aria-disabled="true"
         >
+          <span aria-hidden="true">‹</span>
           {COPY.previous}
         </button>
-        <ol class="ba-history" id="blob-history" data-ba="history" hidden></ol>
+        <span class="ba-position" data-ba="position"></span>
+        <button
+          type="button"
+          class="ba-page"
+          data-ba="next"
+          aria-disabled="true"
+        >
+          {COPY.next}
+          <span aria-hidden="true">›</span>
+        </button>
       </div>
     </div>
   </div>

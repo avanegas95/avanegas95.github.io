@@ -27,12 +27,14 @@ const bubble = (page: Page) => page.locator('[data-ba="bubble"]');
 const answer = (page: Page) => page.locator('[data-ba="answer"]');
 const clip = (page: Page) => page.locator('[data-ba="clip"]');
 const question = (page: Page) => page.locator('[data-ba="question"]');
-// The reply shown in the bubble (earlier ones live in the Previous list).
+// The reply shown in the bubble (earlier ones are a Previous click away, in the same place).
 const lastReply = (page: Page) => clip(page).locator(":scope > .ba-msg");
 const hero = (page: Page) => page.locator('[data-ba="figure"] .blob-figure');
 const more = (page: Page) => page.locator('[data-ba="more"]');
-const previous = (page: Page) => page.locator('[data-ba="previous"]');
-const history = (page: Page) => page.locator('[data-ba="history"] > li');
+const prev = (page: Page) => page.locator('[data-ba="prev"]');
+const next = (page: Page) => page.locator('[data-ba="next"]');
+const pager = (page: Page) => page.locator('[data-ba="pager"]');
+const position = (page: Page) => page.locator('[data-ba="position"]');
 // Browsers log a non-2xx fetch as a "Failed to load resource ... 429|503" console error. The
 // 429/503 tests expect exactly that one network line, filter nothing else, and assert at
 // most one such line was dropped.
@@ -312,32 +314,53 @@ test("a long reply is clamped with Show more, and nothing scrolls", async ({
   expect(errors()).toEqual([]);
 });
 
-test("Previous reveals turn 1 after turn 2", async ({ page }) => {
+test("Previous / Next cycle the turns in the same place", async ({ page }) => {
   const { api, errors, go } = await setup(page);
   await mockChat(page, { events: FIXTURES.happy });
   await go();
   await ask(page, "First question");
   await expect(lastReply(page)).toContainText("Ask me about Anderson.");
-  await expect(page.locator('[data-ba="previous-wrap"]')).toBeHidden();
+  await expect(pager(page)).toBeHidden();
   await mockChat(page, { events: FIXTURES.excited });
   await ask(page, "Second question");
   await expect(lastReply(page)).toContainText("Ooh, fun project!");
 
-  await expect(previous(page)).toBeVisible();
-  await expect(previous(page)).toHaveAttribute("aria-expanded", "false");
-  await expect(history(page)).toHaveCount(1);
-  await expect(history(page).first()).toBeHidden();
-  await previous(page).click();
-  await expect(previous(page)).toHaveAttribute("aria-expanded", "true");
-  await expect(history(page).first()).toBeVisible();
-  await expect(history(page).first()).toContainText("First question");
-  await expect(history(page).first()).toContainText("Ask me about Anderson.");
-  // The latest answer is still the bubble's.
+  await expect(pager(page)).toBeVisible();
+  await expect(position(page)).toHaveText("2 of 2");
+  await expect(next(page)).toHaveAttribute("aria-disabled", "true");
+  const top = (await bubble(page).boundingBox())!.y;
+  // Keyboard, not a mouse click: Safari never focuses a clicked button.
+  await prev(page).focus();
+  await page.keyboard.press("Enter");
+  await expect(question(page)).toHaveText("First question");
+  await expect(lastReply(page)).toHaveCount(1);
+  await expect(lastReply(page)).toContainText("Ask me about Anderson.");
+  await expect(position(page)).toHaveText("1 of 2");
+  await expect(prev(page)).toHaveAttribute("aria-disabled", "true");
+  await expect(prev(page)).toBeFocused(); // focus stays put at the first turn
+  await expect(pager(page).getByRole("status")).toHaveText(
+    "Answer 1 of 2: First question",
+  );
+  // Same place: the bubble did not move.
+  expect((await bubble(page).boundingBox())!.y).toBe(top);
+  await next(page).click();
   await expect(question(page)).toHaveText("Second question");
-  await previous(page).click();
-  await expect(history(page).first()).toBeHidden();
+  await expect(lastReply(page)).toContainText("Ooh, fun project!");
   expect(api.blocked).toEqual([]);
   expect(errors()).toEqual([]);
+});
+
+test("no Show more while Blob is thinking", async ({ page }) => {
+  const { api, go } = await setup(page);
+  // A reply that never arrives keeps the bubble in its thinking state.
+  await page.route("**/api/chat", () => new Promise(() => {}));
+  await go();
+  await ask(page, "Still there?");
+  await expect(bubble(page)).toHaveAttribute("data-phase", "asking");
+  await expect(lastReply(page).locator(".ba-dots > span")).toHaveCount(3);
+  await page.waitForTimeout(400); // past the pop-in animation
+  await expect(more(page)).toBeHidden();
+  expect(api.blocked).toEqual([]);
 });
 
 test("keyboard-only flow: Tab to the input, ask, read, Esc returns to the input", async ({
@@ -400,7 +423,7 @@ test("clear chat empties the bubble and starts a new session", async ({
   await ask(page, "First question");
   await expect(lastReply(page)).toContainText("Ask me about Anderson.");
   await ask(page, "Second question");
-  await expect(history(page)).toHaveCount(1);
+  await expect(position(page)).toHaveText("2 of 2");
   await expect(answer(page)).toHaveAttribute("aria-busy", "false");
   await expect.poll(() => chat.requests.length).toBe(2);
   const second = chat.requests[1] as Body;
@@ -420,7 +443,7 @@ test("clear chat empties the bubble and starts a new session", async ({
 
   await ask(page, "Fresh start");
   await expect(lastReply(page)).toContainText("Ask me about Anderson.");
-  await expect(history(page)).toHaveCount(0);
+  await expect(pager(page)).toBeHidden();
   await expect.poll(() => chat.requests.length).toBe(3);
   const third = chat.requests[2] as Body;
   expect(third.messages).toEqual([{ role: "user", content: "Fresh start" }]);
@@ -433,7 +456,7 @@ test.describe("axe", () => {
   // The bubble pop is a fade-in: emulate reduced motion so axe never samples a half-faded colour.
   test.use({ reducedMotion: "reduce" });
 
-  test("clean after a reply, with Previous open and a long clamped answer", async ({
+  test("clean after a reply, paged back, and with a long clamped answer", async ({
     page,
   }) => {
     const { api, go } = await setup(page);
@@ -445,8 +468,11 @@ test.describe("axe", () => {
     await ask(page, "And more?");
     await expect(lastReply(page)).toContainText("(5)");
     await expect(more(page)).toBeVisible();
-    await previous(page).click();
-    const results = await new AxeBuilder({ page }).analyze();
+    let results = await new AxeBuilder({ page }).analyze();
+    expect(results.violations).toEqual([]);
+    await prev(page).click();
+    await expect(position(page)).toHaveText("1 of 2");
+    results = await new AxeBuilder({ page }).analyze();
     expect(results.violations).toEqual([]);
     expect(api.blocked).toEqual([]);
   });

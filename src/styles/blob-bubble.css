@@ -127,7 +127,7 @@ blob-agent:defined .ba-fallback {
 .ba-chip,
 .ba-clear,
 .ba-more,
-.ba-prev-toggle,
+.ba-page,
 .ba-send {
   font: inherit;
   min-height: 2.75rem;
@@ -138,7 +138,7 @@ blob-agent:defined .ba-fallback {
 .ba-chip,
 .ba-clear,
 .ba-more,
-.ba-prev-toggle {
+.ba-page {
   color: var(--white);
   background: var(--background);
   border: 1px solid var(--white-icon-tr);
@@ -146,7 +146,7 @@ blob-agent:defined .ba-fallback {
 .ba-chip:hover,
 .ba-clear:hover,
 .ba-more:hover,
-.ba-prev-toggle:hover {
+.ba-page:not([aria-disabled="true"]):hover {
   border-color: var(--blob);
 }
 .ba-send {
@@ -222,9 +222,17 @@ blob-agent:defined .ba-fallback {
   mask-image: linear-gradient(to bottom, #000 calc(100% - 2.5rem), transparent);
 }
 @media (prefers-reduced-motion: no-preference) {
-  .ba-msg,
+  /* The reply fades only: a transform would overflow the clip for a moment and trip the clamp. */
+  .ba-msg {
+    animation: ba-fade 180ms ease-out;
+  }
   .ba-question {
     animation: ba-pop 180ms ease-out;
+  }
+}
+@keyframes ba-fade {
+  from {
+    opacity: 0;
   }
 }
 @keyframes ba-pop {
@@ -234,31 +242,26 @@ blob-agent:defined .ba-fallback {
   }
 }
 
-/* Earlier turns, newest last, behind a toggle. */
-.ba-prev {
-  display: grid;
-  gap: calc(var(--blob-unit) * 3);
-  justify-items: start;
-}
-.ba-history {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: calc(var(--blob-unit) * 4);
-  width: 100%;
-}
-.ba-prev-turn {
-  display: grid;
+/* Previous / Next cycle the turns in place; the position sits between them. */
+.ba-pager {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: calc(var(--blob-unit) * 2);
-  padding-top: calc(var(--blob-unit) * 3);
-  border-top: 1px solid var(--white-icon-tr);
-  overflow-wrap: anywhere;
 }
-.ba-prev-q {
-  margin: 0;
-  color: var(--white-icon);
+.ba-page {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--blob-unit) * 2);
+}
+.ba-page[aria-disabled="true"] {
+  cursor: default;
+  opacity: 0.5;
+}
+.ba-position {
   font-size: var(--blob-text-sm);
+  color: var(--white-icon);
+  font-variant-numeric: tabular-nums;
 }
 
 /* Messages (P3-09). Built by scripts/blob/messages.ts with createElement only. */
@@ -289,8 +292,39 @@ blob-agent:defined .ba-fallback {
   font-family: ui-monospace, monospace;
   font-size: 0.9em;
 }
+/* Thinking: three dots that pulse in turn (static under reduced motion). */
 .ba-dots {
-  color: var(--white-icon);
+  display: inline-flex;
+  gap: 0.35rem;
+  padding: 0.5rem 0;
+}
+.ba-dots > span {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--blob);
+  opacity: 0.6;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ba-dots > span {
+    animation: ba-dot 1.2s ease-in-out infinite;
+  }
+  .ba-dots > span:nth-child(2) {
+    animation-delay: 0.15s;
+  }
+  .ba-dots > span:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+}
+@keyframes ba-dot {
+  0%,
+  60%,
+  100% {
+    opacity: 0.3;
+  }
+  30% {
+    opacity: 1;
+  }
 }
 .ba-sr {
   position: absolute;
