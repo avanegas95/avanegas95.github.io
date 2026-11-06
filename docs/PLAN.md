@@ -6,8 +6,7 @@
 ## ▶ Current phase: **P6: Production on Vercel and domain cutover** · Status: `Phase 4 (settle)`: avanegas.com served by Vercel since 2026-11-06. P5.5 PASSED 2026-11-05. P5 PASSED 2026-10-24.
 
 **Cutover (2026-11-06, approved by Anderson):** feat/blob merged into main (Pages workflow manual-only); Production built on Vercel; avanegas.com plus www (308 to the apex) attached; Anderson switched the Namecheap A and CNAME records. Post-DNS checks pass: all pages and legacy URLs 200 (`/orbithop` and `/privacy` without a slash 200), `app-ads.txt` byte-identical, resume = public-safe PDF, http→https and www→apex 308, every security header present, no noindex, MX/SPF unchanged, and a real Blob message streams in production. p5-v8 spend eval: gate PASS (50/54). Upstash stays shared between Preview and Production (Anderson: limited environment); Anthropic keys rotated and per-environment.
-- **Next (Phase 4, about 2 weeks):** watch runtime errors and spend; check the Search Console property and the AdMob app-ads.txt status; then retire `deploy.yml` and `CNAME`, remove the Pages custom domain, and make the repo private. `www` TTL is still 30 min.
-- **Follow-ups:** no `robots.txt` or sitemap (the old site had none either; worth adding for Search Console). D-19 (resume download). Brittle eval checks off_topic-03 and tone-04 (handoff item 2).
+- **Next:** see **Post-cutover backlog** below (Phase 4 settle steps first).
 
 **Session 4 (2026-11-06, orchestrator):**
 - Merged into feat/blob (squashed, opus-reviewed): **P6-01** real `#skills` anchor on the About tool list, in ALLOWED_SITE_PATHS and SITE_PATHS (prompt **p5-v8**; the scrubber is unchanged, and `fix/same-site-link-label` stays unmerged). **P6-02** bubble: Previous / Next cycle the turns in place instead of stacking below; three thinking dots; no "Show more" before any text (the pop-in transform overflowed the clip).
@@ -133,6 +132,7 @@ Scope: `docs/tasks/P5.5/_proposal.md`; table: `_proposed-plan.md`; Anderson's to
 | P6-01 | Real `#skills` anchor + allowlist (p5-v8) | opus | opus | merged |
 | P6-02 | Bubble Previous / Next pager, thinking dots, no early Show more | opus | opus | merged |
 | P6-03 | `docs/CUTOVER.md` | opus | Anderson | approved, executed through Phase 3 |
+| P6-04 | /blog/ cards: cover beside the text from md up, so the title and summary are above the fold | opus | sonnet | merged |
 
 Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNAME`, the Pages workflow or Vercel domain settings, until Anderson approves in a message. Then:
 - write and review `docs/CUTOVER.md` (Vercel domain + DNS steps, pre/post checks, rollback to GitHub Pages);
@@ -141,6 +141,34 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 - verify `/orbithop`, `/privacy`, `/app-ads.txt` (AdMob crawler), the resume URL and Search Console;
 - keep GitHub Pages as the fallback for a while, then retire `deploy.yml` and `CNAME`;
 - enable the nightly eval cron (internal results only), behind a human gate.
+
+## Post-cutover backlog (2026-11-06; Anderson reprioritises)
+**A. Phase 4: settle, then retire Pages** (CUTOVER.md steps 14–17)
+- [ ] Watch Vercel runtime errors, spend, Search Console coverage and AdMob's app-ads.txt status for about 2 weeks.
+- [ ] Retire Pages: delete `deploy.yml` and `CNAME` (root and `public/`), and remove the Pages custom domain. **[A]**
+- [ ] Make the repo private (only after Pages is retired). **[A-does]**
+- [ ] Enable the nightly eval cron (internal results, human gate); retire the old `portfolio-v3` Vercel project's variables. **[A]**
+- [ ] Optional: lower the `www` CNAME TTL to 5 min (still 30) while rollback is possible.
+
+**B. Site and SEO**
+- [ ] `robots.txt` and a sitemap (`@astrojs/sitemap`), then submit the sitemap in Search Console. The old site had neither.
+- [ ] D-19: should Blob offer the resume PDF (the site serves it) or keep pointing to LinkedIn? **Anderson decides.**
+- [ ] Blog post pages: check that the full-width cover on `/blog/<slug>/` doesn't crowd the article the way the index did (fixed there in P6-04).
+
+**C. Blob quality**
+- [ ] Client renderer: turn a bare allowed path (`#experience`, `#contact`) into a link. Blob sometimes skips the markdown link the prompt asks for.
+- [ ] Brittle eval checks: grade the tone-04 follow-up offer and the off_topic "redirects" check with the existing judge instead of phrase lists. Both failed correct replies on p5-v8.
+- [ ] Optional: per-environment Upstash key prefix. Preview and Production share one store by decision (2026-11-06), so this is only if Preview use ever grows.
+
+**D. Repo hygiene** **[A]**
+- [ ] Delete the merged or abandoned branches: `fix/same-site-link-label`, `task/P6-01-skills-anchor`, `task/P6-02-bubble-pager`, `task/P6-04-blog-card` (local and origin).
+- [ ] Decide what `feat/blob` is now. `main` is the production branch; either retire `feat/blob` or keep it as the Preview integration branch and fast-forward it from main.
+- [ ] Three old stashes in Anderson's checkout.
+
+**E. Content (Anderson)**
+- [ ] DISCREPANCIES D-16 and D-17.
+- [ ] Orbit Hop and State of Ecosystems rewrites, then relaunch (restore unknowns-09/10 as factual cases).
+- [ ] "Ask Blob about Blob" KB file (see Backlog).
 
 ## Backlog (needs Anderson's decision before planning)
 - **"Ask Blob about Blob" (Anderson, Q47, 2026-10-24).** Visitors can ask Blob about himself: his own likes and dislikes, how he was made, his tooling and the process. The goal is to encourage people who are curious but intimidated by building something similar. Needs a Blob KB file written by Anderson (voice-locked) plus prompt rules. Plan after P5.5.

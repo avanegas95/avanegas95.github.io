@@ -15,49 +15,47 @@ const formattedDate = post.data.pubDate.toLocaleDateString("en-US", {
 });
 ---
 
-<article
-  class="overflow-hidden rounded-lg border border-white/[0.08] bg-[#0a192f]"
->
-  {
-    post.data.cover && (
-      <a
-        href={`/blog/${post.id}/`}
-        class="block aspect-video overflow-hidden bg-[#0c0c0c]"
-        aria-hidden="true"
-        tabindex="-1"
-      >
-        <Picture
-          formats={["avif", "webp"]}
-          fallbackFormat="webp"
-          src={post.data.cover.src}
-          alt=""
-          class="w-full h-full object-cover transition-transform duration-300 hover:scale-[1.02]"
-          loading="lazy"
-          width={800}
-          widths={[400, 800]}
-          sizes="(min-width: 768px) 768px, 100vw"
-        />
-      </a>
-    )
-  }
-  <div class="p-6">
-  <time
-    datetime={post.data.pubDate.toISOString()}
-    class="text-xs text-[var(--white-icon)]"
-  >
-    {formattedDate}
-  </time>
-  <h2 class="mt-2 mb-2 text-xl font-bold">
+<!-- Stacked on phones; side by side from md up, so the wide blog column never puts a
+     full-width 16:9 cover between the visitor and the post's title. -->
+<article class="overflow-hidden rounded-lg border border-white/[0.08] bg-[#0a192f] md:grid md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+  {post.data.cover && (
     <a
       href={`/blog/${post.id}/`}
-      class="text-[var(--white)] hover:text-[var(--sec)] transition-colors duration-300"
+      class="block aspect-video md:aspect-auto md:h-full md:min-h-56 overflow-hidden bg-[#0c0c0c]"
+      aria-hidden="true"
+      tabindex="-1"
     >
-      {post.data.title}
+      <Picture
+        formats={["avif", "webp"]}
+        fallbackFormat="webp"
+        src={post.data.cover.src}
+        alt=""
+        class="w-full h-full object-cover transition-transform duration-300 hover:scale-[1.02]"
+        loading="lazy"
+        width={800}
+        widths={[400, 800]}
+        sizes="(min-width: 768px) 40vw, 100vw"
+      />
     </a>
-  </h2>
-  <p class="text-[var(--white-icon)] text-sm mb-4 leading-relaxed">
-    {post.data.description}
-  </p>
-  <TagPills tags={post.data.tags} />
+  )}
+  <div class="p-6 md:self-center">
+    <time
+      datetime={post.data.pubDate.toISOString()}
+      class="text-xs text-[var(--white-icon)]"
+    >
+      {formattedDate}
+    </time>
+    <h2 class="mt-2 mb-2 text-xl font-bold">
+      <a
+        href={`/blog/${post.id}/`}
+        class="text-[var(--white)] hover:text-[var(--sec)] transition-colors duration-300"
+      >
+        {post.data.title}
+      </a>
+    </h2>
+    <p class="text-[var(--white-icon)] text-sm mb-4 leading-relaxed">
+      {post.data.description}
+    </p>
+    <TagPills tags={post.data.tags} />
   </div>
 </article>

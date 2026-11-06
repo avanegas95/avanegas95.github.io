@@ -63,3 +63,33 @@ for (const path of ["/blog/", `/blog/${PUBLISHED[0]}/`]) {
     expect(results.violations).toEqual([]);
   });
 }
+
+// The blog column is wide (max-w-7xl). A full-width 16:9 cover pushed the first post's title
+// and summary below the fold on a laptop, so from md up the card puts the cover beside the text.
+for (const size of [
+  { width: 1440, height: 900 },
+  { width: 1280, height: 720 },
+]) {
+  test(`/blog/ shows the first post's title and summary above the fold at ${size.width}x${size.height}`, async ({
+    page,
+  }) => {
+    await page.setViewportSize(size);
+    await page.goto("/blog/");
+    const card = page
+      .locator('section[aria-label="Blog posts"] article')
+      .first();
+    for (const el of [card.locator("h2"), card.locator("p").first()]) {
+      const box = (await el.boundingBox())!;
+      expect(box.y + box.height).toBeLessThanOrEqual(size.height);
+    }
+  });
+}
+
+test("/blog/ cards stay stacked on a phone, cover first", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/blog/");
+  const card = page.locator('section[aria-label="Blog posts"] article').first();
+  const cover = (await card.locator("picture, img").first().boundingBox())!;
+  const title = (await card.locator("h2").boundingBox())!;
+  expect(title.y).toBeGreaterThan(cover.y + cover.height - 1);
+});
