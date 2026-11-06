@@ -22,6 +22,7 @@
   - Push only after a green local run or green CI.
   - CI has two tiers and runs as parallel jobs (2026-11-05): checks, one build, then unit, one E2E job per browser and Lighthouse side by side, with cached node_modules and browsers. Pushes to feat/blob get the fast tier (chromium E2E, no Lighthouse). Run the full tier (`gh workflow run quality --ref <branch>`) only at gates and before risky merges: prompt, security, CI or build changes, and the cutover. Content and copy merges need just the fast tier (`npm run check:copy` locally).
   - The machine is often overloaded; rerun timeouts once before judging.
+  - After merging anything that touches the KB, prompt or chat server, send one real message to Blob on the Preview. CI mocks /api/chat, so it can't catch a server-side failure (2026-11-05: every chat failed on the Preview with "gallery file not found" for about an hour).
   - Agents never touch `voice.lock.json`.
 
 **Status legend:** `todo` · `brief` · `wip` · `review` · `changes` · `merged` · `blocked`
@@ -249,3 +250,4 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 2026-11-05 · P5.5-23 · merged (opus CHANGES_REQUESTED → round 2 verified by orchestrator: tone-04 follow-up phrases word-bounded, factual-16 guard no longer flags a fair frisbee/ping-pong sentence). Prompt p5-v4. Full tier 42147383413 green on the merged tree (4m48s). Spend eval pending (Anderson).
 2026-11-05 · task/ci-retry · merged: a hung Playwright/apt install is killed after 4 min and retried once (the mirror stalled twice today). Full tier 42148006551 green.
 2026-11-05 · P5.5-23b · merged (opus APPROVE): prompt p5-v5. Full tier 42149524364 green (WebKit re-run after an apt mirror error). Spend eval 54/54, gate PASS.
+2026-11-05 · fix/chat-runtime-files · merged (opus APPROVE): /api/chat failed on every Preview request since the project content merge, because kb.ts checked src/assets files the function doesn't ship. Checks now run only with the source tree; regression test builds the KB from an empty cwd. Full tier 42151450921 green. Process note added: live chat check on the Preview after KB/prompt/server merges.
