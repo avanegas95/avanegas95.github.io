@@ -166,7 +166,8 @@ export function parseKbSource(src: KbSource): KbFile {
   }
   // Image and video files exist only in the source tree (dev, build, tests).
   // The deployed chat function builds the prompt without src/assets, so it
-  // skips these checks; the build has already run them.
+  // skips these checks; CI enforces them (guard:pii and the unit tests run
+  // buildKb from the repo).
   if (
     src.path.startsWith("projects/") &&
     res.data.topic === "project" &&
