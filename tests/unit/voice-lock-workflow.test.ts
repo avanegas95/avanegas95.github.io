@@ -69,6 +69,9 @@ describe("quality.yml tiers", () => {
       "--project=${{ matrix.browser }}",
     );
     expect(jobBlock("e2e")).toContain("browser: ${{ matrix.browser }}");
+    expect(step("E2E (includes axe)")).toContain(
+      "${{ matrix.browser == 'webkit' && '--workers=2' || '' }}",
+    );
   });
 });
 
