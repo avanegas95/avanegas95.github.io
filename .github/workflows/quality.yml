@@ -127,6 +127,15 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # Playwright's own image ships the browsers and their system packages, so no
+    # apt install runs (GitHub's Ubuntu mirror stalled it three times). The tag
+    # must match @playwright/test in package.json; a unit test keeps them equal.
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.0-noble
+      options: --ipc=host
+    env:
+      # Firefox refuses to start when HOME isn't owned by the container user.
+      HOME: /root
     strategy:
       fail-fast: false
       matrix:
@@ -138,9 +147,6 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: build-output
-      - uses: ./.github/actions/playwright
-        with:
-          browser: ${{ matrix.browser }}
 
       - name: E2E (includes axe)
         # WebKit timed out on networkidle with 4 workers on the 4-vCPU runner; it
@@ -165,15 +171,21 @@ jobs:
     if: github.event_name != 'push'
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # Playwright's own image ships the browsers and their system packages, so no
+    # apt install runs (GitHub's Ubuntu mirror stalled it three times). The tag
+    # must match @playwright/test in package.json; a unit test keeps them equal.
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.0-noble
+      options: --ipc=host
+    env:
+      # Firefox refuses to start when HOME isn't owned by the container user.
+      HOME: /root
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup
       - uses: actions/download-artifact@v4
         with:
           name: build-output
-      - uses: ./.github/actions/playwright
-        with:
-          browser: chromium
 
       - name: Lighthouse
         run: |
