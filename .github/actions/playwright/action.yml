@@ -21,4 +21,7 @@ runs:
     # jobs using this keep a short timeout (a stalled apt mirror once hung 27 min).
     - name: Install Playwright browsers
       shell: bash
-      run: npx playwright install --with-deps ${{ inputs.browser }}
+      # The apt mirror has hung twice; kill a hung attempt after 4 min and retry once.
+      run: |
+        timeout 240 npx playwright install --with-deps ${{ inputs.browser }} ||
+          { echo "::warning::Playwright install hung or failed; retrying once"; timeout 240 npx playwright install --with-deps ${{ inputs.browser }}; }
