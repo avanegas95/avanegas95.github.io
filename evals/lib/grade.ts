@@ -42,6 +42,7 @@ export type CheckId =
   | "must_not_match"
   | "says_unknown"
   | "redirects"
+  | "offers_follow_up"
   | "max_words"
   | "no_headings"
   | "third_person"
@@ -50,11 +51,16 @@ export type CheckId =
   | "stop_reason";
 
 export type CheckResult = { id: CheckId; pass: boolean; detail?: string };
+/** Checks whose phrase pass missed and that a criterion judge may still rescue. */
+export type Criterion = "redirects" | "offers_follow_up";
 export type GradeResult = {
   pass: boolean;
   checks: CheckResult[];
   needsJudge: boolean;
+  /** Phrase-check misses awaiting the criterion judge; the check is failing until then. */
+  criteria?: Criterion[];
 };
+export type CriterionAnswer = "yes" | "no" | "error";
 
 export const UNKNOWN_PATTERNS: readonly RegExp[] = [
   /\b(?:doesn'?t|does not|don'?t|do not|didn'?t|can'?t|cannot|won'?t) (?:really )?(?:know|say|tell|share|confirm|have)\b/iu,
@@ -261,7 +267,13 @@ export function grade(
     const miss = e.mustInclude.filter((s) => !text.includes(norm(s))).length;
     add("must_include", miss === 0, `${miss} required term(s) missing`);
   }
-  if (content && e.mustIncludeAny.length > 0) {
+  const criteria: Criterion[] = [];
+  if (content && e.offersFollowUp) {
+    // The phrase list is the first pass; a miss goes to the criterion judge.
+    const hit = e.mustIncludeAny.some((s) => text.includes(norm(s)));
+    add("offers_follow_up", hit, "no follow-up offer found");
+    if (!hit) criteria.push("offers_follow_up");
+  } else if (content && e.mustIncludeAny.length > 0) {
     add(
       "must_include_any",
       e.mustIncludeAny.some((s) => text.includes(norm(s))),
@@ -293,11 +305,13 @@ export function grade(
   }
   if (content && e.redirects) {
     const fenced = r.text.includes("```") || r.rawText.includes("```");
+    const hit = !fenced && REDIRECT_PATTERNS.some((p) => p.test(text));
     add(
       "redirects",
-      !fenced && REDIRECT_PATTERNS.some((p) => p.test(text)),
+      hit,
       fenced ? "code fence present" : "reply does not redirect to the topic",
     );
+    if (!fenced && !hit) criteria.push("redirects");
   }
   if (e.moods) {
     add(
@@ -308,5 +322,36 @@ export function grade(
   }
 
   const pass = checks.every((k) => k.pass);
-  return { pass, checks, needsJudge: e.judge === "faithfulness" && pass };
+  return {
+    pass,
+    checks,
+    needsJudge: e.judge === "faithfulness" && pass,
+    ...(criteria.length > 0 ? { criteria } : {}),
+  };
+}
+
+/**
+ * Folds a criterion judge's answer into a grade. "yes" passes the check with the
+ * detail "judge: yes" so the report shows it; "no" and "error" (a failed or
+ * unparseable judge call) leave it failing. Pure: returns a new GradeResult.
+ */
+export function applyCriterion(
+  c: EvalCase,
+  g: GradeResult,
+  id: Criterion,
+  answer: CriterionAnswer,
+): GradeResult {
+  const checks = g.checks.map((k) =>
+    k.id === id
+      ? { id, pass: answer === "yes", detail: `judge: ${answer}` }
+      : k,
+  );
+  const criteria = (g.criteria ?? []).filter((x) => x !== id);
+  const pass = checks.every((k) => k.pass);
+  return {
+    pass,
+    checks,
+    needsJudge: c.expect.judge === "faithfulness" && pass,
+    ...(criteria.length > 0 ? { criteria } : {}),
+  };
 }

@@ -28,10 +28,19 @@ import { parseChatRequest } from "../../src/lib/server/input.ts";
 import { createScrubber, scrub } from "../../src/lib/server/scrub.ts";
 import type { CallPlan, SpendMeter } from "./budget.ts";
 import type { EvalCase } from "./case-schema.ts";
-import { grade, type GradeResult, type Reply } from "./grade.ts";
+import {
+  applyCriterion,
+  grade,
+  type Criterion,
+  type GradeResult,
+  type Reply,
+} from "./grade.ts";
 import {
   JUDGE_MAX_TOKENS,
   JUDGE_MODEL,
+  criterionPromptBound,
+  criterionSystem,
+  judgeCriterion,
   judgeFaithfulness,
   judgePromptBound,
   judgeSystem,
@@ -357,13 +366,16 @@ export type EvalPlan = {
   plans: CallPlan[];
   caseCalls: number;
   judgeCalls: number;
+  /** Worst-case criterion-judge calls (phrase-check fallbacks). */
+  criterionCalls: number;
   preflightMicroUsd: number;
 };
 
 /**
  * Call plans for the whole invocation. One plan per model (configs of the same model
  * share the cached prefix, written once by the warm-up call) plus one for the judge.
- * The judge plan assumes every judge-tagged case reaches the judge.
+ * The judge plan assumes every judge-tagged case reaches the judge. A second judge
+ * plan covers the criterion fallbacks, assuming every phrase check misses.
  */
 export function planCalls(
   configs: readonly EvalConfig[],
@@ -398,7 +410,42 @@ export function planCalls(
       calls: judgeCalls,
     });
   }
-  return { plans, caseCalls: configs.length * cases.length, judgeCalls };
+  // Criterion judges: worst case, every redirects / offersFollowUp check misses.
+  let criterionCalls = 0;
+  let cPrefix = 0;
+  let cTurn = 0;
+  for (const c of cases) {
+    for (const k of criteriaOf(c)) {
+      criterionCalls += configs.length;
+      cPrefix = Math.max(cPrefix, prefixTokenBound(criterionSystem(k)));
+      cTurn = Math.max(cTurn, criterionPromptBound(c));
+    }
+  }
+  // One plan for both criteria: the largest prefix and turn, every call priced as
+  // one cache write plus reads (an upper bound even if the prefix is too small to cache).
+  if (criterionCalls > 0) {
+    plans.push({
+      model: JUDGE_MODEL,
+      prefixTokens: cPrefix,
+      turnTokens: cTurn,
+      maxTokens: JUDGE_MAX_TOKENS,
+      calls: criterionCalls,
+    });
+  }
+  return {
+    plans,
+    caseCalls: configs.length * cases.length,
+    judgeCalls,
+    criterionCalls,
+  };
+}
+
+/** Criteria a case could send to the criterion judge. */
+function criteriaOf(c: EvalCase): Criterion[] {
+  const out: Criterion[] = [];
+  if (c.expect.redirects) out.push("redirects");
+  if (c.expect.offersFollowUp) out.push("offers_follow_up");
+  return out;
 }
 
 // ---------------------------------------------------------------------------
@@ -514,6 +561,41 @@ export async function runEval(o: RunOptions): Promise<EvalResult> {
         }
         return r;
       });
+      if (
+        !run.skipped &&
+        !aborted &&
+        !run.errorClass &&
+        run.grade.criteria?.length
+      ) {
+        for (const k of [...run.grade.criteria]) {
+          await warmup.run(`criterion:${k}`, async () => {
+            const sys = criterionSystem(k);
+            const prompt =
+              prefixTokenBound(sys) + criterionPromptBound(c, run.reply.text);
+            const worst = worstCaseCostMicroUsd(
+              JUDGE_MODEL,
+              prompt,
+              JUDGE_MAX_TOKENS,
+            );
+            if (stopped || !ledger.reserve(worst)) {
+              stopped = true;
+              run.skipped = "budget";
+              return;
+            }
+            const v = await judgeCriterion(o.client, k, c, run.reply.text);
+            run.grade = applyCriterion(c, run.grade, k, v.answer);
+            const billed = billableUsage(
+              JUDGE_MODEL,
+              v.usage,
+              v.stopReason !== null,
+              prompt,
+              JUDGE_MAX_TOKENS,
+            );
+            run.costMicroUsd += ledger.settle(worst, JUDGE_MODEL, billed.usage);
+          });
+          if (run.skipped) break;
+        }
+      }
       if (!run.skipped && !aborted && c.expect.judge === "faithfulness") {
         await warmup.run("judge", async () => {
           const prompt =

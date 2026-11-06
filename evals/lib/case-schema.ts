@@ -47,6 +47,9 @@ const ExpectSchema = z.strictObject({
   mustNotMatch: z.array(RegexSource).default([]),
   saysUnknown: z.boolean().default(false),
   redirects: z.boolean().default(false),
+  // The reply invites a follow-up or offers more detail. mustIncludeAny stays the
+  // first pass; on a miss the criterion judge decides (P6-08).
+  offersFollowUp: z.boolean().optional(),
   maxWords: z.number().int().min(1).max(300).default(120),
   moods: z.array(z.enum(MODEL_MOODS)).min(1).optional(),
   judge: z.literal("faithfulness").optional(),

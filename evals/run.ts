@@ -229,7 +229,7 @@ export async function main(
       : HARD_CAP_USD;
   deps.log(`configs: ${labels}`);
   deps.log(
-    `cases: ${cases.length}; requests: ${plan.caseCalls} chat + up to ${plan.judgeCalls} judge`,
+    `cases: ${cases.length}; requests: ${plan.caseCalls} chat + up to ${plan.judgeCalls} judge + up to ${plan.criterionCalls} criterion judge`,
   );
   deps.log(`preflight: ${usd(preflight)} upper bound (cap $${cap.toFixed(2)})`);
   if (preflight > Math.floor(cap * 1_000_000)) {
