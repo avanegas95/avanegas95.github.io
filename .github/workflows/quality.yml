@@ -42,7 +42,10 @@ jobs:
       - name: Install
         run: npm ci
 
+      # Normally ~20 s. A stalled apt mirror once hung this for 27 min; fail fast
+      # instead and re-run.
       - name: Install Playwright browsers
+        timeout-minutes: 8
         run: npx playwright install --with-deps chromium ${{ env.FULL == 'true' && 'firefox webkit' || '' }}
 
       - name: Lint
