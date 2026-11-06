@@ -247,7 +247,16 @@ function d05Violations(bio: string, builtKb: string): string[] {
 /** `bodies` are KB file bodies; every section that mentions the resume must point to LinkedIn. */
 function d06Violations(builtKb: string, bodies: readonly string[]): string[] {
   const v: string[] = [];
-  if (/\.pdf\b/i.test(builtKb)) v.push(".pdf reference in KB");
+  // D-19 (2026-11-06): the KB may name the public-safe resume PDF at its exact path, nothing else.
+  // Every whitespace-delimited token with "pdf" after any non-alphanumeric character (an ASCII
+  // dot, a fullwidth dot, "_", ...), minus trailing sentence punctuation, must be exactly the path.
+  // The bare word "PDF" in prose is not a reference.
+  const pdfs = builtKb.match(/\S*[^\s\p{L}\p{N}]pdf\S*/giu) ?? [];
+  for (const m of pdfs) {
+    if (m.replace(/[.,;:!?]+$/, "") !== "/Anderson_Vanegas_Resume.pdf") {
+      v.push(`.pdf reference in KB: ${m}`);
+    }
+  }
   const resumeSections = bodies
     .flatMap((b) => sectionsOf(b))
     .filter((s) => /\bresume\b/i.test(s.text));
@@ -534,6 +543,38 @@ describe("kb content", () => {
       d06Violations("clean", ["### CV\n\nDownload the resume here."]),
     ).not.toEqual([]);
     expect(d06Violations("clean", ["### Other\n\nNothing."])).not.toEqual([]);
+    expect(
+      d06Violations("Download it at /Anderson_Vanegas_Resume.pdf.", ok),
+    ).toEqual([]);
+    expect(d06Violations("see /other.pdf", ok)).not.toEqual([]);
+    expect(d06Violations("see /anderson_vanegas_resume.pdf", ok)).not.toEqual(
+      [],
+    );
+    expect(
+      d06Violations("https://evil.example/Anderson_Vanegas_Resume.pdf", ok),
+    ).not.toEqual([]);
+    // The whole token must equal the path: no suffix after "pdf", no other dot before it.
+    for (const bad of [
+      "/Anderson_Vanegas_Resume.pdf?x=1",
+      "/Anderson_Vanegas_Resume.pdf#page=2",
+      "/Anderson_Vanegas_Resume.pdf/..",
+      "/Anderson_Vanegas_Resume.pdf-old",
+      "/Anderson_Vanegas_Resume.pdfx",
+      "/Anderson_Vanegas_Resume．pdf",
+      "/Anderson_Vanegas_Resume_pdf",
+      "/Anderson_Vanegas_Resume.PDF",
+      "(/Anderson_Vanegas_Resume.pdf)",
+    ]) {
+      expect(d06Violations(`Get it at ${bad} today.`, ok), bad).not.toEqual([]);
+    }
+    for (const good of [
+      "Get it at /Anderson_Vanegas_Resume.pdf today.",
+      "Get it at /Anderson_Vanegas_Resume.pdf, today.",
+      "Get it at /Anderson_Vanegas_Resume.pdf!",
+      "Download it as a PDF from this site.",
+    ]) {
+      expect(d06Violations(good, ok), good).toEqual([]);
+    }
   });
 
   it("D-07", () => {

@@ -15,6 +15,8 @@ export const SITE_PATHS: readonly string[] = [
   "/orbithop/",
   "/privacy/",
   "/blob-privacy/",
+  // The public-safe resume PDF (D-19). Exact path only: no query, fragment or case variant.
+  "/Anderson_Vanegas_Resume.pdf",
 ];
 
 export const LINK_HOSTS: readonly string[] = [

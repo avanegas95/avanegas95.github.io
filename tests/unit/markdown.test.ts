@@ -638,6 +638,34 @@ describe("renderMarkdown (happy-dom)", () => {
     expect(host.querySelectorAll("ol > li")).toHaveLength(1);
   });
 
+  it("renders the resume PDF link as a same-site link (P6-11)", () => {
+    const host = document.createElement("div");
+    host.append(
+      renderMarkdown(
+        parseMarkdown("Grab [resume](/Anderson_Vanegas_Resume.pdf) here."),
+      ),
+    );
+    const a = host.querySelector("a")!;
+    expect(a.getAttribute("href")).toBe("/Anderson_Vanegas_Resume.pdf");
+    expect(a.textContent).toBe("resume");
+    expect(Array.from(a.attributes).map((x) => x.name)).toEqual(["href"]);
+    expect(host.textContent).toBe("Grab resume here.");
+  });
+
+  it("a bare resume path or a look-alike link target is not linked (P6-11)", () => {
+    for (const src of [
+      "See /Anderson_Vanegas_Resume.pdf for details.",
+      "/Anderson_Vanegas_Resume.pdf",
+      "[resume](/anderson_vanegas_resume.pdf)",
+      "[resume](/Anderson_Vanegas_Resume.pdf?x=1)",
+      "[resume](//evil.com/Anderson_Vanegas_Resume.pdf)",
+    ]) {
+      const host = document.createElement("div");
+      host.append(renderMarkdown(parseMarkdown(src)));
+      expect(host.querySelector("a"), src).toBeNull();
+    }
+  });
+
   it("external links get rel and target; same-site links get neither", () => {
     const frag = renderMarkdown(
       parseMarkdown(

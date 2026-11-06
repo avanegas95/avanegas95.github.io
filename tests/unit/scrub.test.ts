@@ -91,7 +91,8 @@ const mustRemove: ReadonlyArray<readonly [string, string]> = [
   ["[x](//evil.zz)", "evil"],
   ["[x](/\\evil.zz)", "evil"],
   ["[x](/orbithop/../x)", "orbithop"],
-  ["[x](/Anderson_Vanegas_Resume.pdf)", "Resume"],
+  ["[x](/anderson_vanegas_resume.pdf)", "resume"],
+  ["[x](/Anderson_Vanegas_Resume.pdf?x=1)", "Resume"],
   ["[x](evil.zz/login)", "evil"],
   ["x](evil.zz/login)", "evil"],
   ['[x](evil.zz "t")', "evil"],
@@ -570,6 +571,16 @@ describe("performance", { timeout: 60_000 }, () => {
     ["hyphenated labels", (n) => "a-b.c-d.".repeat(n / 8)],
     // P4-15: markdown around digits takes the emphasis-free PII pass.
     ["bold digits", (n) => "**12** ".repeat(Math.round(n / 7))],
+    // P6-11: bare resume paths (kept as text) and near misses (stripped).
+    [
+      "bare resume paths",
+      (n) => "/Anderson_Vanegas_Resume.pdf ".repeat(Math.round(n / 29)),
+    ],
+    [
+      "resume near misses",
+      (n) => "/Anderson_Vanegas_Resume.pdf.!.x ".repeat(Math.round(n / 33)),
+    ],
+    ["slashes", (n) => "/".repeat(n)],
   ];
   const HEAD = "Anderson builds test suites that catch bugs early. ";
 
@@ -792,7 +803,7 @@ describe("allowlist parity with the prompt", () => {
       "/privacy",
       "/api/chat",
       "#top",
-      "/Anderson_Vanegas_Resume.pdf",
+      "/anderson_vanegas_resume.pdf",
       ...kbUrls.flatMap((u) => [`${u}x`, `${u}.evil.zz`, `${u}@evil.zz`]),
       "https://example.com/",
       "mailto:someone@example.com",
@@ -824,10 +835,16 @@ describe("v1 same-site allowlist", () => {
       "/orbithop/",
       "/privacy/",
       "/blob-privacy/",
+      "/Anderson_Vanegas_Resume.pdf",
     ]);
   });
 
-  for (const path of ["#experience", "#skills", "/blob-privacy/"]) {
+  for (const path of [
+    "#experience",
+    "#skills",
+    "/blob-privacy/",
+    "/Anderson_Vanegas_Resume.pdf",
+  ]) {
     it(`keeps ${path}`, () => {
       for (const x of [`[x](${path})`, `[x]: ${path}`]) {
         expect(scrub(x, OPTS)).toBe(x);
@@ -837,11 +854,7 @@ describe("v1 same-site allowlist", () => {
 
   // #experiences is only a page alias now (P5.5-08b); Blob links #experience.
   // #skills became a real anchor in P6-01; #education still has no section.
-  for (const path of [
-    "#experiences",
-    "#education",
-    "/Anderson_Vanegas_Resume.pdf",
-  ]) {
+  for (const path of ["#experiences", "#education"]) {
     it(`strips ${path}`, () => {
       for (const x of [`[x](${path})`, `[x]: ${path}`]) {
         const out = scrub(x, OPTS);
@@ -850,6 +863,151 @@ describe("v1 same-site allowlist", () => {
       }
     });
   }
+});
+
+// --- P6-11: the resume PDF (D-19) ------------------------------------------
+
+const RESUME = "/Anderson_Vanegas_Resume.pdf";
+// Look-alikes of the resume path: none may stay a link (exact match only).
+const RESUME_LOOKALIKES = [
+  "/anderson_vanegas_resume.pdf",
+  "/ANDERSON_VANEGAS_RESUME.PDF",
+  "/Anderson_Vanegas_Resume.PDF",
+  "/Anderson_Vanegas_Resume.pdf?x=1",
+  "/Anderson_Vanegas_Resume.pdf?",
+  "/Anderson_Vanegas_Resume.pdf#page=2",
+  "/Anderson_Vanegas_Resume.pdf#",
+  "//evil.com/Anderson_Vanegas_Resume.pdf",
+  "https://evil.com/Anderson_Vanegas_Resume.pdf",
+  "/Anderson_Vanegas_Resume.pdf/..",
+  "/Anderson_Vanegas_Resume.pdf/",
+  "/files/Anderson_Vanegas_Resume.pdf",
+  "/../Anderson_Vanegas_Resume.pdf",
+  "./Anderson_Vanegas_Resume.pdf",
+  "Anderson_Vanegas_Resume.pdf",
+  "\\Anderson_Vanegas_Resume.pdf",
+  "/Anderson_Vanegas_Resume.pdf.exe",
+  "/Anderson_Vanegas_Resume.pd",
+  "/Anderson%5FVanegas%5FResume.pdf",
+  "/Anderson_Vanegas_Resume%2Epdf",
+  "/Anderson_Vanegas_Resume.pdf%3Fx=1",
+  "/Anderson_Vanegas_Resume.pdf%23page=2",
+  "%2FAnderson_Vanegas_Resume.pdf",
+  "/%41nderson_Vanegas_Resume.pdf",
+  "/Anderson_Vanegas_Resume.pdf%2F..",
+  "/Anderson_Vanegas_Resume.pdf%00",
+];
+
+describe("resume PDF link (P6-11, D-19)", () => {
+  it("keeps the exact resume link", () => {
+    for (const x of [
+      `[his resume](${RESUME})`,
+      `[x]: ${RESUME}`,
+      `Grab [his resume](${RESUME}) or see [LinkedIn](https://www.linkedin.com/in/avanegas95).`,
+    ]) {
+      expect(s(x), x).toBe(x);
+    }
+  });
+
+  for (const target of RESUME_LOOKALIKES) {
+    it(`strips ${target}`, () => {
+      for (const x of [`[his resume](${target})`, `[x]: ${target}`]) {
+        const out = s(x);
+        expect(out, x).toMatch(/\[(?:link )?removed\]/);
+        expect(out, x).not.toContain(target);
+      }
+    });
+  }
+
+  it("streaming matches scrub() with the link split at every boundary", () => {
+    const text = `Sure! Here is [his resume](${RESUME}), and [a fake](/anderson_vanegas_resume.pdf) is not. More words follow so the window fills up nicely.`;
+    const whole = s(text);
+    expect(whole).toContain(`[his resume](${RESUME})`);
+    expect(whole).toContain(LINK_REMOVED);
+    expect(whole).not.toContain("/anderson_vanegas_resume.pdf");
+    for (let k = 1; k < text.length; k++) {
+      expect(streamed([text.slice(0, k), text.slice(k)]), String(k)).toBe(
+        whole,
+      );
+    }
+    expect(streamed(Array.from(text))).toBe(whole);
+  });
+});
+
+// The KB names the PDF as a bare path (faq.md, D-19). Repeated bare, or as link text, it stays
+// plain text: "Resume.pdf" must not be read as a bare domain. Look-alikes are unchanged.
+describe("bare resume path (P6-11)", () => {
+  const keepAll = [
+    `You can also download it as a PDF from this site: ${RESUME}.`,
+    `${RESUME}`,
+    `See ${RESUME}, or LinkedIn.`,
+    `(${RESUME})`,
+    `**${RESUME}**`,
+    `Grab it: ${RESUME}!`,
+    `[${RESUME}](${RESUME})`,
+    `Two: ${RESUME} and ${RESUME}.`,
+  ];
+  for (const x of keepAll) {
+    it(`keeps ${JSON.stringify(x)}`, () => {
+      expect(s(x)).toBe(x);
+    });
+  }
+
+  // Each of these was stripped before P6-11 and must still be.
+  const stripAll: ReadonlyArray<readonly [string, string]> = [
+    [`See ${RESUME}?x=1 now.`, "Resume.pdf?x=1"],
+    [`See ${RESUME}#page=2 now.`, "Resume.pdf#page=2"],
+    [`See ${RESUME}/.. now.`, "Resume.pdf/.."],
+    [`See ${RESUME}.exe now.`, "Resume.pdf.exe"],
+    [`See ${RESUME}x now.`, "Resume.pdfx"],
+    [`See /anderson_vanegas_resume.pdf now.`, "resume.pdf"],
+    [`See /ANDERSON_VANEGAS_RESUME.PDF now.`, "RESUME.PDF"],
+    [`See //evil.com${RESUME} now.`, "evil.com"],
+    [`See https://evil.com${RESUME} now.`, "evil.com"],
+    [`See /files${RESUME} now.`, "Resume.pdf"],
+    [`See x${RESUME} now.`, "Resume.pdf"],
+    [`See .${RESUME} now.`, "Resume.pdf"],
+    [`See /Anderson_Vanegas_Other.pdf now.`, "Other.pdf"],
+    [`See /Anderson_Vanegas_Resume．pdf now.`, "pdf"],
+    [`See ／Anderson_Vanegas_Resume.pdf now.`, "Resume.pdf"],
+    [`[x](${RESUME}?x=1)`, "x=1"],
+  ];
+  for (const [x, gone] of stripAll) {
+    it(`strips ${JSON.stringify(x)}`, () => {
+      const out = s(x);
+      expect(out, x).toContain(LINK_REMOVED);
+      expect(out, x).not.toContain(gone);
+    });
+  }
+
+  it("streaming matches scrub() for every split, including right after .pdf", () => {
+    const texts = [
+      ...keepAll,
+      ...stripAll.map(([x]) => x),
+      `Anderson's resume is on LinkedIn. You can also download it as a PDF from this site: ${RESUME}. More words follow so the window fills up nicely.`,
+    ];
+    for (const text of texts) {
+      const whole = s(text);
+      for (let k = 1; k < text.length; k++) {
+        expect(
+          streamed([text.slice(0, k), text.slice(k)]),
+          `${text} @${k}`,
+        ).toBe(whole);
+      }
+      for (let a = 1; a < text.length; a += 3) {
+        for (let b = a + 1; b < text.length; b += 5) {
+          const parts = [text.slice(0, a), text.slice(a, b), text.slice(b)];
+          expect(streamed(parts), `${text} @${a},${b}`).toBe(whole);
+        }
+      }
+      expect(streamed(Array.from(text))).toBe(whole);
+    }
+    const end = `Here: ${RESUME}`;
+    const sc = createScrubber(OPTS);
+    const out =
+      sc.push(end) + sc.push(". And more text after it.") + sc.flush();
+    expect(out).toBe(`${end}. And more text after it.`);
+  });
 });
 
 // --- P2-12 review round 1 ----------------------------------------------------

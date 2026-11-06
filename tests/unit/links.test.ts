@@ -65,6 +65,8 @@ describe("safeHref allows", () => {
     ["/orbithop/", "/orbithop/", false],
     ["/", "/", false],
     ["/privacy/", "/privacy/", false],
+    ["/Anderson_Vanegas_Resume.pdf", "/Anderson_Vanegas_Resume.pdf", false],
+    ["  /Anderson_Vanegas_Resume.pdf  ", "/Anderson_Vanegas_Resume.pdf", false],
   ])("%s", (raw, href, external) => {
     expect(safeHref(raw)).toEqual({ href, external });
   });
@@ -183,10 +185,50 @@ describe("safeHref rejects", () => {
     "/orbithop",
     "/orbithop/x",
     "/privacy",
-    "/Anderson_Vanegas_Resume.pdf",
     "orbithop/",
     "?x=1",
     "/\\evil.zz",
+  ])("%j", (raw) => {
+    expect(safeHref(raw)).toBeNull();
+  });
+});
+
+// P6-11 (D-19): the resume PDF is allowed by its exact path only.
+describe("safeHref rejects resume look-alikes", () => {
+  it("keeps the resume path last in SITE_PATHS", () => {
+    expect(SITE_PATHS.at(-1)).toBe("/Anderson_Vanegas_Resume.pdf");
+  });
+
+  it.each([
+    "/anderson_vanegas_resume.pdf",
+    "/ANDERSON_VANEGAS_RESUME.PDF",
+    "/Anderson_Vanegas_Resume.PDF",
+    "/Anderson_Vanegas_Resume.pdf?x=1",
+    "/Anderson_Vanegas_Resume.pdf?",
+    "/Anderson_Vanegas_Resume.pdf#page=2",
+    "/Anderson_Vanegas_Resume.pdf#",
+    "//evil.com/Anderson_Vanegas_Resume.pdf",
+    "https://evil.com/Anderson_Vanegas_Resume.pdf",
+    "https://github.com/Anderson_Vanegas_Resume.pdf",
+    "/Anderson_Vanegas_Resume.pdf/..",
+    "/Anderson_Vanegas_Resume.pdf/",
+    "/files/Anderson_Vanegas_Resume.pdf",
+    "/../Anderson_Vanegas_Resume.pdf",
+    "./Anderson_Vanegas_Resume.pdf",
+    "Anderson_Vanegas_Resume.pdf",
+    "\\Anderson_Vanegas_Resume.pdf",
+    "/Anderson_Vanegas_Resume.pdf.exe",
+    "/Anderson_Vanegas_Resume.pd",
+    "/Anderson%5FVanegas%5FResume.pdf",
+    "/Anderson_Vanegas_Resume%2Epdf",
+    "/Anderson_Vanegas_Resume.pdf%3Fx=1",
+    "/Anderson_Vanegas_Resume.pdf%23page=2",
+    "%2FAnderson_Vanegas_Resume.pdf",
+    "/%41nderson_Vanegas_Resume.pdf",
+    "/Anderson_Vanegas_Resume.pdf%2F..",
+    "/Anderson_Vanegas_Resume.pdf%00",
+    "/Anderson_Vanegas_Resume.pdf\u200b",
+    "javascript:/Anderson_Vanegas_Resume.pdf",
   ])("%j", (raw) => {
     expect(safeHref(raw)).toBeNull();
   });

@@ -41,7 +41,7 @@ describe("buildSystemPrompt", () => {
     expect(p).toContain("<mood>");
     expect(p).toContain("<knowledge_base>\n");
     expect(p).toContain("\n</knowledge_base>");
-    expect(PROMPT_VERSION).toBe("p5-v8");
+    expect(PROMPT_VERSION).toBe("p5-v9");
     expect(p).toContain("confused for off-topic or unknown questions");
     expect(p).toContain("curious for open-ended or clarifying questions");
     expect(p).not.toContain("when a question is unclear");
@@ -82,12 +82,23 @@ describe("buildSystemPrompt", () => {
   });
 });
 
-describe("p5-v8 behaviour rules", () => {
+describe("p5-v9 behaviour rules", () => {
   const behaviour = () =>
     buildSystemPrompt(realKb()).split("<knowledge_base>")[0]!;
 
-  it("is version p5-v8", () => {
-    expect(PROMPT_VERSION).toBe("p5-v8");
+  it("is version p5-v9", () => {
+    expect(PROMPT_VERSION).toBe("p5-v9");
+  });
+
+  it("lets the KB decide the resume answer and links the PDF only by its exact path (D-19)", () => {
+    const b = behaviour();
+    const rule = b.split("\n").find((l) => /^- For the resume/.test(l))!;
+    expect(rule).toMatch(/knowledge base's resume answer/);
+    expect(rule).toContain("`/Anderson_Vanegas_Resume.pdf`");
+    expect(rule).toContain("see LinkedIn");
+    expect(b).toContain(
+      "`/Anderson_Vanegas_Resume.pdf`. Never write any other URL.",
+    );
   });
 
   it("points to #contact and allows the contact form (D-13 resolved)", () => {

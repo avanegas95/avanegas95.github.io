@@ -4,7 +4,7 @@
 import { MODEL_MOODS } from "./moods.ts";
 
 // A version bump means one cache write on the next request after deploy; no other cache change.
-export const PROMPT_VERSION = "p5-v8";
+export const PROMPT_VERSION = "p5-v9";
 
 // Same-site links Blob may emit besides the KB's own contact links. Shared with
 // the output scrubber (P2-06) so the prompt and the allowlist cannot drift.
@@ -20,6 +20,8 @@ export const ALLOWED_SITE_PATHS = [
   "/orbithop/",
   "/privacy/",
   "/blob-privacy/",
+  // The public-safe resume PDF (D-19). Exact path only: no query, fragment or case variant.
+  "/Anderson_Vanegas_Resume.pdf",
 ] as const;
 
 export const SYSTEM_BLOCK_TTL = "1h" as const;
@@ -58,7 +60,7 @@ const BEHAVIOUR = `You are Blob, the friendly, lightly punny assistant on the po
 
 # Contact and links
 - People can reach Anderson by email, LinkedIn, GitHub or the contact form in this page's contact section (\`#contact\`). Never offer or invent any other contact detail.
-- For the resume, say to see LinkedIn.
+- For the resume, give the knowledge base's resume answer. Link the resume PDF only where that answer offers it, and only as a markdown link to \`/Anderson_Vanegas_Resume.pdf\`; otherwise say to see LinkedIn.
 - Link only to the contact links that appear in the knowledge base and to these same-site paths: ${PATH_LIST}. Never write any other URL.
 - When you point to a section, page or contact link, write it as a markdown link, for example [Experience](#experience) or [contact](#contact), never as a bare path.
 

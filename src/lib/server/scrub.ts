@@ -65,6 +65,12 @@ const STRAY_LT = "\uFF1C";
 // Same-site relative link targets that may stay links (exact match only):
 // the list the prompt gives Blob.
 const RELATIVE_LINKS: ReadonlySet<string> = new Set(ALLOWED_SITE_PATHS);
+// The same paths written bare (P6-11): an exact, case-sensitive occurrence on a
+// token boundary is plain text, never a bare domain ("Resume.pdf"). In practice
+// this matters only for the resume PDF path, which the KB names bare.
+const BARE_PATHS: readonly string[] = ALLOWED_SITE_PATHS.filter(
+  (p) => p.length > 1 && p.startsWith("/"),
+);
 
 // ---------------------------------------------------------------------------
 // URL policy
@@ -184,7 +190,7 @@ const PRI_PII = 2;
 // and other compatibility forms mapped to ASCII (NFKC), so a fullwidth domain
 // or one with a zero-width space inside is still seen. Folded unit k maps to raw
 // [start[k], end[k]).
-type Folded = { f: string; start: number[]; end: number[] };
+type Folded = { raw: string; f: string; start: number[]; end: number[] };
 
 const FORMAT = /^\p{Cf}$/u;
 const PRINTABLE_ASCII = /^[!-~]+$/;
@@ -214,10 +220,33 @@ function fold(seg: string): Folded {
     }
     i += n;
   }
-  return { f, start, end };
+  return { raw: seg, f, start, end };
 }
 
 const ALNUM = /[A-Za-z0-9]/;
+const URL_UNIT = new RegExp(`^${URL_CHAR}$`);
+const TRAILING_UNIT = /^[.,;:!?)\]*_~]$/;
+// What may come right before a bare path: whitespace or opening markup.
+const BARE_BEFORE = /^[\s(\[*_~"']$/;
+
+// The length of an exact bare allowed path at folded unit `i` of `f` (the slice of
+// `fd.f` from `lo`), or 0. Exact means: the raw text is the path itself (no folded
+// look-alike), it starts a token, and nothing but trailing punctuation follows it
+// before the token ends. Anything else is left to the bare URL rules.
+function barePathAt(fd: Folded, lo: number, f: string, i: number): number {
+  const at = lo + i;
+  if (at > 0 && !BARE_BEFORE.test(fd.f.charAt(at - 1))) return 0;
+  for (const p of BARE_PATHS) {
+    if (!f.startsWith(p, i)) continue;
+    const s = fd.start[at] as number;
+    const e = fd.end[at + p.length - 1] as number;
+    if (fd.raw.slice(s, e) !== p) continue;
+    let j = i + p.length;
+    while (j < f.length && TRAILING_UNIT.test(f.charAt(j))) j++;
+    if (j === f.length || !URL_UNIT.test(f.charAt(j))) return p.length;
+  }
+  return 0;
+}
 
 // A bare URL starting exactly at `i`, without trailing punctuation.
 function bareUrlAt(f: string, i: number): string | null {
@@ -318,6 +347,13 @@ function urlEdits(
       if (RAW_TAG.test(f)) add(i, i + 1, "");
       i++;
       continue;
+    }
+    if (c === "/") {
+      const n = barePathAt(fd, lo, f, i);
+      if (n > 0) {
+        i += n;
+        continue;
+      }
     }
     if (ALNUM.test(c)) {
       const url = bareUrlAt(f, i);

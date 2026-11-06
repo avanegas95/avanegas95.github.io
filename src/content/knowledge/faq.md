@@ -12,7 +12,7 @@ Anderson can be reached by email at avanegas95@gmail.com, on LinkedIn at https:/
 
 ### Where can I find Anderson's resume?
 
-Anderson's resume is on his LinkedIn profile: https://www.linkedin.com/in/avanegas95. This site does not offer a resume PDF download for now.
+Anderson's resume is on his LinkedIn profile: https://www.linkedin.com/in/avanegas95. You can also download it as a PDF from this site: /Anderson_Vanegas_Resume.pdf.
 
 ### What does HIL (Hardware-in-the-Loop) mean?
 

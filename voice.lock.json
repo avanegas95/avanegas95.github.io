@@ -2,9 +2,9 @@
   "version": 1,
   "meta": {
     "action": "accept",
-    "acceptedAt": "2026-11-06T03:06:15.932Z",
+    "acceptedAt": "2026-11-06T19:55:25.912Z",
     "changed": [
-      "projects/paychira.md#body"
+      "faq.md#body"
     ]
   },
   "fields": {
@@ -67,7 +67,7 @@
     "experience.md#roles[3].bullets[2]": "4057bda3a2c2fd44456007667860814e621f35d15bf79543fa176251766f15b9",
     "experience.md#roles[4].note": "01486f701956374870e55370f276e7b21784347702e7f90663053110901b9502",
     "experience.md#summary": "ac5473274582a1e9af764642da3f3fe0e197e88c0b2123012d25b433b50b2742",
-    "faq.md#body": "60dc89117ac3ce362036f6050c7f7167cdef68c15364860cb4fa95ad6582b099",
+    "faq.md#body": "eb00a5f833a3b193e7d48bb02ff4d3d3dfc22b1b35e391466a12cff9f67ccbd1",
     "faq.md#summary": "3adab916b36b176aa24d14ea4549f72aa3dec96c7fa9b60486be28b1030cf2ca",
     "interests.md#body": "bacb2f977b14790a2b395af4ec006b8a33bdf3caff32142f06a2519150e348b2",
     "interests.md#summary": "b96787f1dc4786d6518f5b31c921b836cb16eb8e36096765f6aa0b4c40ea097b",
