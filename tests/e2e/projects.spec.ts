@@ -257,3 +257,34 @@ test.describe("375 px", () => {
     expect(overflow).toBe(false);
   });
 });
+
+test("a screenshot opens large in a dialog; Esc and Close return focus to it", async ({
+  page,
+}) => {
+  const withShots = cards.find((c) => c.data.gallery.length > 0);
+  test.skip(!withShots, "no public project has screenshots");
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto(`/projects/${withShots!.slug}/`);
+  const viewer = page.locator("#shot-viewer");
+  const trigger = page.locator(".shot-zoom").first();
+  await expect(trigger).toHaveAccessibleName(/^Enlarge screenshot: .+/);
+
+  await trigger.focus();
+  await page.keyboard.press("Enter");
+  await expect(viewer).toBeVisible();
+  await expect(viewer.locator("img")).toHaveAttribute("src", /.+/);
+  await expect(viewer.getByRole("button", { name: "Close" })).toBeFocused();
+  expect(
+    (await new AxeBuilder({ page }).include("#shot-viewer").analyze())
+      .violations,
+  ).toEqual([]);
+  await page.keyboard.press("Escape");
+  await expect(viewer).toBeHidden();
+  await expect(trigger).toBeFocused();
+
+  await page.keyboard.press("Enter");
+  await expect(viewer).toBeVisible();
+  await viewer.getByRole("button", { name: "Close" }).click();
+  await expect(viewer).toBeHidden();
+  await expect(trigger).toBeFocused();
+});

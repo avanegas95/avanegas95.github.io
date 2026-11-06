@@ -4,6 +4,7 @@ import {
   GALLERY_ROOT,
   KB_ROOT,
   MEDIA_ROOT,
+  mediaRootFor,
   loadKbSources,
   parseKbSource,
   renderKbSection,
@@ -98,15 +99,23 @@ describe("project KB files", () => {
     }
   });
 
+  it("no hidden project's video ships in public/", () => {
+    for (const { slug, data } of projects) {
+      if (data.public) continue;
+      expect(existsSync(`${MEDIA_ROOT}/${slug}`), slug).toBe(false);
+    }
+  });
+
   it("every video's file, captions and poster exist", () => {
     for (const { slug, data } of projects) {
       const v = data.video;
       if (!v) continue;
-      expect(existsSync(`${MEDIA_ROOT}/${slug}/${v.file}`), v.file).toBe(true);
-      expect(
-        existsSync(`${MEDIA_ROOT}/${slug}/${v.captions}`),
-        v.captions,
-      ).toBe(true);
+      // Hidden projects keep their video outside public/ so it never ships.
+      const root = mediaRootFor(data.public);
+      expect(existsSync(`${root}/${slug}/${v.file}`), v.file).toBe(true);
+      expect(existsSync(`${root}/${slug}/${v.captions}`), v.captions).toBe(
+        true,
+      );
       expect(existsSync(`${GALLERY_ROOT}/${slug}/${v.poster}`), v.poster).toBe(
         true,
       );

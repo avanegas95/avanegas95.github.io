@@ -251,7 +251,10 @@ describe("evals/cases.yaml", () => {
       const section =
         renderKbSection({
           path: "projects/orbit-hop.md",
-          raw: raw.replace(/^public: false$/m, "public: true"),
+          // Its video waits in media-drafts/ while hidden, so drop it here.
+          raw: raw
+            .replace(/^public: false$/m, "public: true")
+            .replace(/^video:\n(?: {2}.*\n)+/m, ""),
         }) ?? "";
       expect(section).toContain(
         "**Role:** He built it solo, with the assistance of AI. Together they designed, coded, implemented, tested, and published. He is also the support contact.",

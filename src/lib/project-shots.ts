@@ -77,6 +77,8 @@ export function checkShotMarkers(
     }
     for (const f of p.files) {
       if (!gallery.includes(f)) err(`not in gallery: ${f}`);
+      // Markdown would turn _ or * into emphasis and break the marker.
+      if (/[_*]/.test(f)) err(`rename ${f}: no _ or * in screenshot names`);
     }
     const blank = (j: number) =>
       j < 0 || j >= lines.length || !lines[j]?.trim();

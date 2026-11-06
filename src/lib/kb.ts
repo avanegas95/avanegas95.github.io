@@ -27,6 +27,14 @@ export const KB_ROOT = "src/content/knowledge";
 export const GALLERY_ROOT = "src/assets/images/projects";
 /** Project video and captions live in <MEDIA_ROOT>/<slug>/, served at /media/<slug>/. */
 export const MEDIA_ROOT = "public/media";
+/** Video for a hidden (public: false) project waits here, outside public/, so it
+ * never ships; move its folder to MEDIA_ROOT when the project is published. */
+export const MEDIA_DRAFTS_ROOT = "media-drafts";
+
+/** Where a project's video and captions must live, by whether it is public. */
+export function mediaRootFor(isPublic: boolean): string {
+  return isPublic ? MEDIA_ROOT : MEDIA_DRAFTS_ROOT;
+}
 export const KB_TOKEN_BUDGET = 15_000;
 
 const BOM = String.fromCharCode(0xfeff);
@@ -161,8 +169,8 @@ export function parseKbSource(src: KbSource): KbFile {
     const v = res.data.video;
     if (v) {
       for (const [root, file] of [
-        [MEDIA_ROOT, v.file],
-        [MEDIA_ROOT, v.captions],
+        [mediaRootFor(res.data.public), v.file],
+        [mediaRootFor(res.data.public), v.captions],
         [GALLERY_ROOT, v.poster],
       ] as const) {
         if (!existsSync(join(root, slug, file))) {

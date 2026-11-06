@@ -50,6 +50,12 @@ describe("checkShotMarkers", () => {
     expect(ok("::shot[nope.png]")[0]).toMatch(/not in gallery: nope\.png/);
   });
 
+  it("rejects file names that Markdown would turn into emphasis", () => {
+    expect(checkShotMarkers("::shot[my_shot.png]", ["my_shot.png"])[0]).toMatch(
+      /no _ or \*/,
+    );
+  });
+
   it("rejects an unknown layout", () => {
     expect(ok("::shot[a.png]{center}")[0]).toMatch(/unknown layout/);
   });

@@ -8,8 +8,7 @@
         "http://localhost:4322/orbithop/",
         "http://localhost:4322/privacy/",
         "http://localhost:4322/blog/",
-        "http://localhost:4322/projects/paychira/",
-        "http://localhost:4322/projects/orbit-hop/"
+        "http://localhost:4322/projects/paychira/"
       ],
       "numberOfRuns": 3,
       "settings": {
