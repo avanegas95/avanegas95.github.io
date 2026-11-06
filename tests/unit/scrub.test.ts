@@ -176,7 +176,7 @@ const mustKeep: readonly string[] = [
   "Blob says hi 👋",
   "[Top](#home)",
   "[About](#about)",
-  "[Experiences](#experiences)",
+  "[Experience](#experience)",
   "[Projects](#projects)",
   "[Contact](#contact)",
   "[Home](/)",
@@ -815,7 +815,7 @@ describe("v1 same-site allowlist", () => {
     expect([...ALLOWED_SITE_PATHS]).toEqual([
       "#home",
       "#about",
-      "#experiences",
+      "#experience",
       "#projects",
       "#contact",
       "/",
@@ -826,7 +826,7 @@ describe("v1 same-site allowlist", () => {
     ]);
   });
 
-  for (const path of ["#experiences", "/blob-privacy/"]) {
+  for (const path of ["#experience", "/blob-privacy/"]) {
     it(`keeps ${path}`, () => {
       for (const x of [`[x](${path})`, `[x]: ${path}`]) {
         expect(scrub(x, OPTS)).toBe(x);
@@ -834,8 +834,9 @@ describe("v1 same-site allowlist", () => {
     });
   }
 
+  // #experiences is only a page alias now (P5.5-08b); Blob links #experience.
   for (const path of [
-    "#experience",
+    "#experiences",
     "#skills",
     "/Anderson_Vanegas_Resume.pdf",
   ]) {

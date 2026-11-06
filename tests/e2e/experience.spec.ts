@@ -206,3 +206,16 @@ for (const scheme of ["light", "dark"] as const) {
     expect(results.violations).toEqual([]);
   });
 }
+
+test("the nav's Experience link scrolls to #experience (P5.5-08b)", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/");
+  await page
+    .getByRole("navigation")
+    .getByRole("link", { name: "Experience", exact: true })
+    .first()
+    .click();
+  await expect(page.locator("#experience")).toBeInViewport();
+});

@@ -192,7 +192,7 @@ test("a link in a long reply cannot take focus while clipped", async ({
 
 test("legacy sections still render and the page is quiet", async ({ page }) => {
   const { blocked, errors } = await open(page);
-  for (const id of ["experiences", "projects", "contact", "about", "home"]) {
+  for (const id of ["experience", "projects", "contact", "about", "home"]) {
     await expect(page.locator(`#${id}`)).toHaveCount(1);
   }
   expect(blocked).toEqual([]);
