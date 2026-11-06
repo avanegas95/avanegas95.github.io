@@ -31,6 +31,11 @@ export const MEDIA_ROOT = "public/media";
  * never ships; move its folder to MEDIA_ROOT when the project is published. */
 export const MEDIA_DRAFTS_ROOT = "media-drafts";
 
+/** True in the repo (dev, build, tests); false in the deployed chat function. */
+export function hasSourceTree(): boolean {
+  return existsSync(GALLERY_ROOT);
+}
+
 /** Where a project's video and captions must live, by whether it is public. */
 export function mediaRootFor(isPublic: boolean): string {
   return isPublic ? MEDIA_ROOT : MEDIA_DRAFTS_ROOT;
@@ -159,7 +164,14 @@ export function parseKbSource(src: KbSource): KbFile {
       .join("; ");
     fail(src.path, `invalid frontmatter (${why})`);
   }
-  if (src.path.startsWith("projects/") && res.data.topic === "project") {
+  // Image and video files exist only in the source tree (dev, build, tests).
+  // The deployed chat function builds the prompt without src/assets, so it
+  // skips these checks; the build has already run them.
+  if (
+    src.path.startsWith("projects/") &&
+    res.data.topic === "project" &&
+    hasSourceTree()
+  ) {
     const slug = src.path.replace(/^projects\//, "").replace(/\.md$/, "");
     for (const g of res.data.gallery) {
       if (!existsSync(join(GALLERY_ROOT, slug, g.file))) {
