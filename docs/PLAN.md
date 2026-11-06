@@ -162,7 +162,7 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 
 **D. Repo hygiene** **[A]**
 - [ ] CI: `quality.yml` runs on pushes to `feat/blob` and on PRs, not on pushes to `main`, which is now the production branch. Add `main` (fast tier), or require PRs into main.
-- [ ] Delete the merged or abandoned branches: `fix/same-site-link-label`, `task/P6-01-skills-anchor`, `task/P6-02-bubble-pager`, `task/P6-04-blog-card` (local and origin).
+- [x] Deleted the merged or abandoned branches (local and origin), plus a stale Dependabot branch with no open PR (2026-11-06).
 - [ ] Decide what `feat/blob` is now. `main` is the production branch; either retire `feat/blob` or keep it as the Preview integration branch and fast-forward it from main.
 - [ ] Three old stashes in Anderson's checkout.
 
