@@ -20,7 +20,7 @@
 - **Process notes:**
   - Merge in a separate detached worktree and push `HEAD:feat/blob`, so Anderson's checkout and dev server are untouched.
   - Push only after a green local run or green CI.
-  - CI has two tiers (2026-10-24). Pushes to feat/blob get the fast tier: chromium E2E, no Lighthouse. Merges don't go through PRs, so after merging any code task, and at every gate, run the full tier with `gh workflow run quality --ref feat/blob` and wait for it to go green. Copy-only pushes need just the fast tier (`npm run check:copy` locally).
+  - CI has two tiers and runs as parallel jobs (2026-11-05): checks, one build, then unit, one E2E job per browser and Lighthouse side by side, with cached node_modules and browsers. Pushes to feat/blob get the fast tier (chromium E2E, no Lighthouse). Run the full tier (`gh workflow run quality --ref <branch>`) only at gates and before risky merges: prompt, security, CI or build changes, and the cutover. Content and copy merges need just the fast tier (`npm run check:copy` locally).
   - The machine is often overloaded; rerun timeouts once before judging.
   - Agents never touch `voice.lock.json`.
 
