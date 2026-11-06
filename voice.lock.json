@@ -2,24 +2,9 @@
   "version": 1,
   "meta": {
     "action": "accept",
-    "acceptedAt": "2026-11-06T00:49:30.337Z",
+    "acceptedAt": "2026-11-06T03:06:15.932Z",
     "changed": [
-      "projects/orbit-hop.md#body",
-      "projects/orbit-hop.md#summary",
-      "projects/orbit-hop.md#techLabel",
-      "projects/paychira.md#body",
-      "projects/paychira.md#role",
-      "projects/paychira.md#summary",
-      "projects/state-of-ecosystems-2026.md#body",
-      "projects/state-of-ecosystems-2026.md#role",
-      "projects/state-of-ecosystems-2026.md#summary",
-      "projects/ai-digest.md#body",
-      "projects/ai-digest.md#summary",
-      "projects/ai-digest.md#techLabel",
-      "projects/avanegas-com.md#body",
-      "projects/avanegas-com.md#summary",
-      "projects/avanegas-com.md#techLabel",
-      "projects/orbit-hop.md#techNote"
+      "projects/paychira.md#body"
     ]
   },
   "fields": {
@@ -97,7 +82,7 @@
     "projects/orbit-hop.md#role": "102248b0a37694cc1ac822866c31d94344c72e63e272b738271fd85a729ecf5f",
     "projects/orbit-hop.md#summary": "1e073e8243462c59af0235de7f19067672f89c424473eb082cd56d03e1fa1ae2",
     "projects/orbit-hop.md#techLabel": "e551641242ce7246ae460270ed60105e4c8370fd38b7144debd8688931c703f6",
-    "projects/paychira.md#body": "c2da3f6463ab30f3df5fb468939fc212528d58dbfb787312ddf75c64e37e0bd7",
+    "projects/paychira.md#body": "cb76e095c9f0491b9134d70fb2023fac7dfd8acbe6f27e4e437e8fe2abd2d9c1",
     "projects/paychira.md#role": "aa1dec56663aa2e3f6717388a4643b62afa0c0d8f4ba3a8ef2482bc5887896e6",
     "projects/paychira.md#summary": "598d6afdc7ad579ee878f6fbca13f9f0ab66ffe4764acf6a1081f1264903a0cf",
     "projects/paychira.md#techLabel": "e551641242ce7246ae460270ed60105e4c8370fd38b7144debd8688931c703f6",

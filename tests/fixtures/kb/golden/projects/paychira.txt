@@ -4,11 +4,11 @@ _Written by Anderson in the first person: "I", "me" and "my" in this section mea
 
 Sales forecasting, realized revenue and profitability for agencies, in production at Datalily: deal pipeline, PandaDoc sync, P&L by project, and an AI ask bar.
 
-**Status:** Live · **Role:** Solo designer and builder, for Datalily · **Stack:** React 18, TypeScript, Vite 7, Tailwind, Radix UI, Recharts, Python, FastAPI, Pydantic, Supabase, Vercel, OpenAI API, PandaDoc API
+**Status:** Live · **Role:** Solo designer and builder, for Datalily · **Stack:**  React 18, TypeScript, Vite 7, Tailwind, Radix UI, Recharts, Python, FastAPI, Pydantic, Supabase, Vercel, OpenAI API, PandaDoc API
 
 ### What it does
 
-Paychira is a sales forecasting, revenue and profitability app built with Datalily for small agencies. I used AI tools to design, build and deploy it for Datalily, which runs on it in production. It turns a deal pipeline into a visual probability-weighted forecast, realized revenue by month, and a margin for every project.
+Paychira is a sales forecasting, revenue and profitability app built for agencies. I used AI tools to design, build and deploy it, working for Datalily, a Boston based content marketing agency It turns a deal pipeline into a visual probability-weighted forecast, realized revenue by month, and a margin for every project.
 
 ### The problem
 

@@ -9,7 +9,7 @@ order: 1
 status: "Live"
 role: "Solo designer and builder, for Datalily"
 tech:
-  - "React 18"
+  - " React 18"
   - "TypeScript"
   - "Vite 7"
   - "Tailwind"
@@ -56,7 +56,7 @@ gallery:
 
 ### What it does
 
-Paychira is a sales forecasting, revenue and profitability app built with Datalily for small agencies. I used AI tools to design, build and deploy it for Datalily, which runs on it in production. It turns a deal pipeline into a visual probability-weighted forecast, realized revenue by month, and a margin for every project.
+Paychira is a sales forecasting, revenue and profitability app built for agencies. I used AI tools to design, build and deploy it, working for Datalily, a Boston based content marketing agency It turns a deal pipeline into a visual probability-weighted forecast, realized revenue by month, and a margin for every project.
 
 ::shot[dashboard.png]
 
