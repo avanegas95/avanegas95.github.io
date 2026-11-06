@@ -1,0 +1,59 @@
+## Skills
+
+Test automation (Pytest, Appium, Selenium), Python and TypeScript, AI-assisted development, and fluent English and Spanish.
+
+### Testing and Automation
+
+- Pytest
+- Appium
+- Selenium
+- X-Ray
+- TestRail
+- Zephyr
+- Buildkite
+- Jenkins
+
+### Programming Languages
+
+- Python
+- TypeScript
+- C
+- C++
+- C#
+- ASP.NET
+- HTML
+- CSS
+- Bash
+
+### Developer Tools
+
+- Git
+- VSCode
+- Cursor
+- Android Emulation
+
+### Programs
+
+- Jira
+- Confluence
+- Microsoft Office/Google tools
+
+### AI-Assisted Development
+
+- Claude Code
+- Copilot
+- Gemini Code Assist
+- CodeRabbit
+- MCP tools
+
+### Operating Systems
+
+- Windows
+- Ubuntu
+- macOS
+- Android/iOS
+
+### Languages
+
+- English (Fluent)
+- Spanish (Fluent)

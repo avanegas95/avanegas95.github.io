@@ -1,0 +1,74 @@
+---
+import BlogHeader from "@/components/blog/BlogHeader.astro";
+import Layout from "@/layouts/Layout.astro";
+
+const site = Astro.site ?? new URL("https://avanegas.com");
+const canonicalUrl = new URL("/blob-privacy/", site).href;
+---
+
+<Layout
+  title="Blob Privacy Note: Anderson Vanegas"
+  description="What Blob, the AI assistant on this site, does with what you type."
+  canonicalUrl={canonicalUrl}
+>
+  <BlogHeader active="none" />
+  <main
+    id="main-content"
+    class="pt-[calc(var(--nav-height)+2rem)] pb-16 max-w-3xl mx-auto px-4 sm:px-6"
+  >
+    <header class="mb-10 fade-in">
+      <h1 class="text-3xl sm:text-4xl font-bold text-[var(--white)] mb-4">
+        Blob privacy note
+      </h1>
+      <p class="text-[var(--white-icon)] leading-relaxed">
+        Blob answers questions about Anderson's work. Here is what happens to
+        what you type.
+      </p>
+    </header>
+
+    <article class="blog-prose fade-in">
+      <h2>Blob is an AI</h2>
+      <p>
+        Blob is powered by Claude, an AI model from Anthropic. It can make
+        mistakes, so check anything important with Anderson.
+      </p>
+
+      <h2>Your questions</h2>
+      <p>
+        Your question is sent to Anthropic so Claude can write an answer. This
+        site does not keep it. Question text is not logged here. Anderson only
+        sees counts, response times, token usage and error codes.
+      </p>
+
+      <h2>Your IP address</h2>
+      <p>
+        To stop abuse, the site limits how many messages one visitor can send.
+        It does this with a salted hash of your IP address, never the address
+        itself. These hashes are short-lived and expire on their own.
+      </p>
+
+      <h2>Your conversation</h2>
+      <p>
+        The chat lives only in your browser tab. If you reload the page, it is
+        cleared.
+      </p>
+
+      <h2>Bot protection</h2>
+      <p>Vercel BotID checks that chat messages come from real visitors.</p>
+
+      <h2>Please keep it light</h2>
+      <p>
+        Don't share personal or sensitive information with Blob, such as
+        passwords, health details or financial data.
+      </p>
+
+      <h2>Questions?</h2>
+      <p>
+        Anderson is happy to help. Use the{" "}
+        <a href="/#contact">contact section</a>, or reach him on
+        <a href="https://www.linkedin.com/in/avanegas95/">LinkedIn</a> or
+        <a href="https://github.com/avanegas95">GitHub</a>.
+      </p>
+    </article>
+  </main>
+</Layout>

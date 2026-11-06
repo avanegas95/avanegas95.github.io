@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Anderson Vanegas</title>
+    <style>
+      /* Fira Code (OFL) from the @fontsource/fira-code devDependency; not copied elsewhere. */
+      @font-face {
+        font-family: "Fira Code";
+        font-weight: 400;
+        src: url("../../node_modules/@fontsource/fira-code/files/fira-code-latin-400-normal.woff2")
+          format("woff2");
+      }
+      @font-face {
+        font-family: "Fira Code";
+        font-weight: 700;
+        src: url("../../node_modules/@fontsource/fira-code/files/fira-code-latin-700-normal.woff2")
+          format("woff2");
+      }
+      /* Tokens mirror src/styles/global.css and src/styles/blob.css. */
+      :root {
+        --background: #0a192f;
+        --sec: #64ffda;
+        --white: #ccd6f6;
+        --white-icon: #8892b0;
+        --blob-lit: #9fffe8; /* color-mix(--sec 62%, white) */
+        --blob-shade: #42a890; /* color-mix(--sec 66%, black) */
+        --eye-bottom: #1a424e; /* color-mix(--background 82%, --sec) */
+        --font: "Fira Code", "SF Mono", "Fira Mono", "Roboto Mono", monospace;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: var(--font);
+      }
+      html,
+      body {
+        width: 1200px;
+        height: 630px;
+        background: var(--background);
+        overflow: hidden;
+      }
+      main {
+        width: 1200px;
+        height: 630px;
+        padding: 0 96px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-left: 8px solid var(--sec);
+      }
+      h1 {
+        font-size: 80px;
+        line-height: 1.1;
+        color: var(--white);
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+      .title {
+        margin-top: 24px;
+        font-size: 40px;
+        color: var(--sec);
+      }
+      .url {
+        margin-top: 64px;
+        font-size: 28px;
+        color: var(--white-icon);
+      }
+      svg {
+        width: 340px;
+        height: 340px;
+        flex: none;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div>
+        <h1>Anderson<br />Vanegas</h1>
+        <p class="title">Staff SQA Engineer</p>
+        <p class="url">avanegas.com</p>
+      </div>
+      <svg viewBox="0 0 100 100" aria-hidden="true">
+        <defs>
+          <radialGradient id="b" cx="0.36" cy="0.28" r="0.85">
+            <stop offset="0" stop-color="var(--blob-lit)" />
+            <stop offset="0.5" stop-color="var(--sec)" />
+            <stop offset="1" stop-color="var(--blob-shade)" />
+          </radialGradient>
+          <linearGradient id="s" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#fff" stop-opacity="0.6" />
+            <stop offset="1" stop-color="#fff" stop-opacity="0" />
+          </linearGradient>
+          <radialGradient id="c">
+            <stop offset="0" stop-color="#000" stop-opacity="1" />
+            <stop offset="1" stop-color="#000" stop-opacity="0" />
+          </radialGradient>
+          <linearGradient id="e" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="var(--background)" />
+            <stop offset="1" stop-color="var(--eye-bottom)" />
+          </linearGradient>
+        </defs>
+        <ellipse cx="50" cy="93" rx="36" ry="5" fill="url(#c)" />
+        <path
+          fill="url(#b)"
+          d="M50 10C70 8 90 24 91 48C92 72 76 92 50 91C26 90 9 74 9 50C9 28 28 12 50 10Z"
+        />
+        <ellipse
+          fill="url(#s)"
+          cx="34"
+          cy="27"
+          rx="13"
+          ry="7"
+          transform="rotate(-28 34 27)"
+        />
+        <rect fill="url(#e)" x="32" y="41" width="12" height="17" rx="2.6" />
+        <rect fill="url(#e)" x="56" y="41" width="12" height="17" rx="2.6" />
+      </svg>
+    </main>
+  </body>
+</html>

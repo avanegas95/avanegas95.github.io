@@ -1,0 +1,120 @@
+---
+import "../../styles/blob-bubble.css";
+import BlobFigure from "./BlobFigure.astro";
+import { COPY } from "../../scripts/blob/copy";
+
+// NOTE: any page that mounts <BlobAgent> must also load src/scripts/botid-init.ts (a module
+// script on the page). It attaches the BotID challenge header to POST /api/chat; without it
+// every chat request is rejected. See src/pages/dev/[page].astro.
+
+interface Props {
+  // Sizes the hero Blob only; the component fills its container and has no page-level
+  // positioning, so any placement (P5-04c) can wrap it.
+  size?: "hero" | "compact";
+}
+const { size = "hero" } = Astro.props;
+
+// Provisional (pending Anderson): the no-JS resume link goes to LinkedIn, not the PDF.
+const RESUME_HREF = "https://www.linkedin.com/in/avanegas95";
+---
+
+<blob-agent>
+  <div class="ba-fallback">
+    <BlobFigure size={size} />
+    <!-- prettier-ignore -->
+    <p>{COPY.noJs.before}<a href={RESUME_HREF}>{COPY.noJs.resume}</a>{COPY.noJs.middle}<a href="#contact">{COPY.noJs.contact}</a>{COPY.noJs.after}</p>
+  </div>
+
+  <div class="ba-ui">
+    <div class="ba-figure" data-ba="figure">
+      <BlobFigure size={size} />
+    </div>
+
+    <form class="ba-form" data-ba="form">
+      <label for="blob-input">{COPY.inputLabel}</label>
+      <div class="ba-row">
+        <input
+          id="blob-input"
+          data-ba="input"
+          type="text"
+          maxlength="500"
+          autocomplete="off"
+          placeholder={COPY.inputPlaceholder}
+        />
+        <button type="submit" class="ba-send">
+          {COPY.send}
+        </button>
+      </div>
+    </form>
+
+    <div class="ba-foot">
+      <!-- prettier-ignore -->
+      <p>{COPY.disclaimer.before}<a href="#contact">{COPY.disclaimer.linkLabel}</a>{COPY.disclaimer.after}</p>
+      <button type="button" class="ba-clear" data-ba="clear">
+        {COPY.clear}
+      </button>
+    </div>
+
+    <div class="ba-reply">
+      <p class="ba-question" data-ba="question" hidden></p>
+      <div class="ba-bubble" data-ba="bubble" data-phase="idle">
+        <div class="ba-answer" data-ba="answer" aria-live="polite">
+          <div class="ba-clip" data-ba="clip" data-expanded="false">
+            <p class="ba-greeting" data-ba="greeting">
+              {COPY.greeting}
+            </p>
+          </div>
+        </div>
+        <button
+          type="button"
+          class="ba-more"
+          data-ba="more"
+          aria-expanded="false"
+          hidden
+        >
+          {COPY.showMore}
+        </button>
+        <ul class="ba-chips" data-ba="starters">
+          {COPY.chips.map((chip) => (
+            <li>
+              <button type="button" class="ba-chip" data-ba="chip">
+                {chip}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div
+        class="ba-pager"
+        data-ba="pager"
+        role="group"
+        aria-label={COPY.pagerLabel}
+        hidden
+      >
+        <button
+          type="button"
+          class="ba-page"
+          data-ba="prev"
+          aria-disabled="true"
+        >
+          <span aria-hidden="true">‹</span>
+          {COPY.previous}
+        </button>
+        <span class="ba-position" data-ba="position"></span>
+        <button
+          type="button"
+          class="ba-page"
+          data-ba="next"
+          aria-disabled="true"
+        >
+          {COPY.next}
+          <span aria-hidden="true">›</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</blob-agent>
+
+<script>
+  import "../../scripts/blob/index";
+</script>

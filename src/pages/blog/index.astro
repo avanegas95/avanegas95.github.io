@@ -1,7 +1,7 @@
 ---
 import PostCard from "@/components/blog/PostCard.astro";
 import BlogLayout from "@/layouts/BlogLayout.astro";
-import { getCollection } from "astro:content";
+import { getPublishedPosts } from "@/lib/blog-posts";
 import {
   formatTagLabel,
   getAllTags,
@@ -9,7 +9,7 @@ import {
   tagUrl,
 } from "@/lib/blog-tags";
 
-const posts = sortPostsFeaturedFirst(await getCollection("blog"));
+const posts = sortPostsFeaturedFirst(await getPublishedPosts());
 const tags = getAllTags(posts);
 ---
 
@@ -43,7 +43,7 @@ const tags = getAllTags(posts);
                 class="inline-flex items-center gap-1.5 px-3 py-1 text-xs border border-[#ffffff20] text-[var(--white-icon)] rounded-full hover:border-[var(--sec)] hover:text-[var(--sec)] transition-colors duration-300"
               >
                 {formatTagLabel(tag)}
-                <span class="text-[var(--white-icon)]/70">({count})</span>
+                <span class="text-[var(--white-icon)]">({count})</span>
               </a>
             </li>
           ))}

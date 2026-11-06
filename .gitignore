@@ -5,7 +5,7 @@ dist/
 .astro/
 
 # dependencies
-node_modules/
+node_modules
 
 # logs
 npm-debug.log*
@@ -22,3 +22,18 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# local env and Vercel link (never commit)
+.env*.local
+.vercel
+
+# eval run output (local only)
+evals/results/
+
+# Private content-intake drafts (never commit)
+docs/content-intake/private/
+test-results/
+playwright-report/
+coverage/
+reports/
+.lighthouseci/

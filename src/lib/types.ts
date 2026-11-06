@@ -1,20 +1,8 @@
-import type { ImageMetadata } from "astro";
-
 export interface NavItem {
   label: string;
   href: string;
   number: string;
   icon?: string;
-}
-
-export interface Project {
-  title: string;
-  description: string;
-  tech: string[];
-  image: ImageMetadata;
-  github: string;
-  external: string;
-  featured: boolean;
 }
 
 export interface SocialLink {

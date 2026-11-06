@@ -1,0 +1,352 @@
+---
+import { Image, getImage } from "astro:assets";
+import { render } from "astro:content";
+import type { CollectionEntry } from "astro:content";
+import BlogHeader from "@/components/blog/BlogHeader.astro";
+import Layout from "@/layouts/Layout.astro";
+import { projectImage } from "@/lib/project-images";
+import { projectLinks } from "@/lib/project-links";
+import { checkShotMarkers, splitHtmlAtShots } from "@/lib/project-shots";
+import { getPublicProjects } from "@/lib/site-content";
+
+export async function getStaticPaths() {
+  const projects = await getPublicProjects();
+  return projects.map((project) => ({
+    params: { slug: project.id },
+    props: project,
+  }));
+}
+
+const project = Astro.props as CollectionEntry<"projects">;
+const d = project.data;
+const { Content } = await render(project);
+const links = projectLinks(d);
+const site = Astro.site ?? new URL("https://avanegas.com");
+const canonicalUrl = new URL(`/projects/${project.id}/`, site).href;
+
+const cover = d.cover ? projectImage(project.id, d.cover) : undefined;
+const ogSource = cover
+  ? await getImage({ src: cover, width: 1200, format: "jpg" })
+  : undefined;
+const ogImage = ogSource ? new URL(ogSource.src, site).href : undefined;
+
+// Each screenshot also gets a large version for the click-to-enlarge viewer.
+const images = new Map(
+  await Promise.all(
+    d.gallery.flatMap((g) => {
+      const src = projectImage(project.id, g.file);
+      if (!src) return [];
+      return [
+        getImage({
+          src,
+          width: Math.min(src.width, 1920),
+          format: "webp",
+        }).then(
+          (large) => [g.file, { src, alt: g.alt, large: large.src }] as const,
+        ),
+      ];
+    }),
+  ),
+);
+const isPortrait = (src: { width: number; height: number }) =>
+  src.height > src.width;
+
+// ::shot[...] markers in the body place gallery images between the prose
+// (src/lib/project-shots.ts). A bad marker fails dev and build with its line.
+const shotProblems = checkShotMarkers(
+  project.body ?? "",
+  d.gallery.map((g) => g.file),
+);
+if (shotProblems.length > 0) {
+  throw new Error(`projects/${project.id}.md: ${shotProblems.join("; ")}`);
+}
+const segments = splitHtmlAtShots(project.rendered?.html ?? "").map((seg) =>
+  seg.kind === "html"
+    ? seg
+    : {
+        ...seg,
+        images: seg.files.flatMap((f) => {
+          const img = images.get(f);
+          return img ? [img] : [];
+        }),
+      },
+);
+const placed = new Set(
+  segments.flatMap((seg) => (seg.kind === "shot" ? seg.files : [])),
+);
+
+// Anything not placed inline goes in the grid at the end.
+const gallery = d.gallery.flatMap((g) => {
+  const img = images.get(g.file);
+  return img && !placed.has(g.file) ? [img] : [];
+});
+// Phone screenshots read better side by side than one per row.
+const portrait = gallery.length > 0 && gallery.every((g) => isPortrait(g.src));
+
+const videoPoster = d.video
+  ? projectImage(project.id, d.video.poster)
+  : undefined;
+const video =
+  d.video && videoPoster
+    ? {
+        src: `/media/${project.id}/${d.video.file}`,
+        captions: `/media/${project.id}/${d.video.captions}`,
+        poster: await getImage({
+          src: videoPoster,
+          width: 480,
+          format: "webp",
+        }),
+        description: d.video.description,
+      }
+    : undefined;
+---
+
+<Layout
+  title={d.title}
+  description={d.summary}
+  canonicalUrl={canonicalUrl}
+  ogImage={ogImage}
+>
+  <BlogHeader active="none" />
+  <main
+    id="main-content"
+    class="pt-[calc(var(--nav-height)+2rem)] pb-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+  >
+    <article class="fade-in">
+      <header class="mb-8 pb-8 border-b border-[#ffffff10]">
+        <a
+          href="/#projects"
+          class="text-sm text-[var(--sec)] hover:opacity-80 transition-opacity"
+        >
+          ← Back to projects
+        </a>
+        <p
+          class="mt-4 text-xs uppercase tracking-wide text-[var(--sec)] font-mono"
+          data-testid="project-status"
+        >
+          {d.status}
+        </p>
+        <h1 class="mt-2 text-3xl sm:text-4xl font-bold text-[var(--white)]">
+          {d.title}
+        </h1>
+        <p class="mt-4 text-[var(--white-icon)] leading-relaxed">{d.summary}</p>
+        <p class="mt-4 text-sm text-[var(--white-icon)]">
+          <span class="font-semibold">{d.techLabel}:</span>
+          <span data-testid="project-tech">{d.tech.join(", ")}</span>
+          {d.techNote && <span> ({d.techNote})</span>}
+        </p>
+        {(links.repo || links.live || links.appStore) && (
+          <ul class="mt-4 flex flex-wrap gap-4 list-none p-0">
+            {links.appStore && (
+              <li>
+                <a
+                  href={links.appStore}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-sm text-[var(--sec)] hover:opacity-80 underline underline-offset-4"
+                  data-testid="project-app-store"
+                >
+                  Download on the App Store
+                </a>
+              </li>
+            )}
+            {links.live && (
+              <li>
+                <a
+                  href={links.live}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-sm text-[var(--sec)] hover:opacity-80 underline underline-offset-4"
+                >
+                  Visit {d.title}
+                </a>
+              </li>
+            )}
+            {links.repo && (
+              <li>
+                <a
+                  href={links.repo}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-sm text-[var(--sec)] hover:opacity-80 underline underline-offset-4"
+                >
+                  {d.title} on GitHub
+                </a>
+              </li>
+            )}
+          </ul>
+        )}
+      </header>
+
+      <h2 class="sr-only">Details</h2>
+      <div class="blog-prose project-body">
+        {project.rendered?.html ? (
+          segments.map((seg) =>
+            seg.kind === "html" ? (
+              <Fragment set:html={seg.html} />
+            ) : (
+              <Fragment>
+                {seg.layout !== "full" && seg.layout !== "pair" && (
+                  <div class="shot-clear" aria-hidden="true" />
+                )}
+                <div
+                  class:list={[
+                    "shot",
+                    `shot--${seg.layout}`,
+                    seg.layout !== "pair" &&
+                      seg.images.every((img) => isPortrait(img.src)) &&
+                      "shot--portrait",
+                  ]}
+                  data-shot={seg.layout}
+                >
+                  {seg.images.map((img) => (
+                    <button
+                      type="button"
+                      class="shot-zoom"
+                      data-zoom-src={img.large}
+                      aria-label={`Enlarge screenshot: ${img.alt}`}
+                    >
+                      <Image
+                        src={img.src}
+                        alt={img.alt}
+                        widths={
+                          seg.layout === "full"
+                            ? [480, 768, 1024, 1280]
+                            : [320, 480, 640, 800]
+                        }
+                        sizes={
+                          seg.layout === "full"
+                            ? "(min-width: 1280px) 1216px, 100vw"
+                            : seg.layout === "pair"
+                              ? "(min-width: 1280px) 600px, 50vw"
+                              : "(min-width: 1280px) 550px, (min-width: 640px) 45vw, 100vw"
+                        }
+                      />
+                    </button>
+                  ))}
+                </div>
+              </Fragment>
+            ),
+          )
+        ) : (
+          <Content />
+        )}
+      </div>
+
+      {video && (
+        <section class="mt-12" aria-labelledby="video-heading">
+          <h2
+            id="video-heading"
+            class="text-2xl font-semibold text-[var(--white)] mb-4"
+          >
+            Preview
+          </h2>
+          <video
+            controls
+            playsinline
+            preload="none"
+            poster={video.poster.src}
+            width={video.poster.attributes.width}
+            height={video.poster.attributes.height}
+            aria-describedby="video-description"
+            class="block w-full max-w-xs h-auto mx-auto rounded-xl border border-white/[0.08] bg-black"
+            data-testid="project-video"
+          >
+            <source src={video.src} type="video/mp4" />
+            <track
+              kind="captions"
+              src={video.captions}
+              srclang="en"
+              label="English"
+              default
+            />
+          </video>
+          <p
+            id="video-description"
+            class="mt-4 text-sm text-[var(--white-icon)] leading-relaxed"
+          >
+            {video.description}
+          </p>
+        </section>
+      )}
+
+      {gallery.length > 0 && (
+        <section class="mt-12" aria-labelledby="gallery-heading">
+          <h2
+            id="gallery-heading"
+            class="text-2xl font-semibold text-[var(--white)] mb-4"
+          >
+            {placed.size > 0 ? "More screenshots" : "Screenshots"}
+          </h2>
+          <ul
+            class:list={[
+              "grid list-none p-0",
+              portrait
+                ? "grid-cols-2 sm:grid-cols-4 gap-4"
+                : "gap-6 md:grid-cols-2",
+            ]}
+          >
+            {gallery.map((g, i) => (
+              <li>
+                <button
+                  type="button"
+                  class="shot-zoom"
+                  data-zoom-src={g.large}
+                  aria-label={`Enlarge screenshot: ${g.alt}`}
+                >
+                  <Image
+                    src={g.src}
+                    alt={g.alt}
+                    widths={portrait ? [240, 360, 480] : [480, 768, 1024]}
+                    sizes={
+                      portrait
+                        ? "(min-width: 1280px) 300px, (min-width: 640px) 25vw, 50vw"
+                        : "(min-width: 1280px) 600px, (min-width: 768px) 50vw, 100vw"
+                    }
+                    class="w-full h-auto rounded-xl border border-white/[0.08]"
+                    loading={!video && i === 0 ? "eager" : "lazy"}
+                  />
+                </button>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+    </article>
+  </main>
+
+  {/* Click-to-enlarge viewer. A native modal dialog: Esc closes it, focus is
+      trapped while open and returns to the screenshot on close. */}
+  <dialog id="shot-viewer" class="shot-viewer" aria-label="Enlarged screenshot">
+    <button
+      type="button"
+      class="shot-viewer__close"
+      aria-label="Close"
+      autofocus
+    >
+      ✕
+    </button>
+    <img class="shot-viewer__img" alt="" />
+  </dialog>
+</Layout>
+
+<script>
+  const viewer = document.getElementById(
+    "shot-viewer",
+  ) as HTMLDialogElement | null;
+  const big = viewer?.querySelector("img");
+  if (viewer && big) {
+    for (const btn of document.querySelectorAll<HTMLButtonElement>(
+      ".shot-zoom",
+    )) {
+      btn.addEventListener("click", () => {
+        big.src = btn.dataset["zoomSrc"] ?? "";
+        big.alt = btn.querySelector("img")?.alt ?? "";
+        viewer.showModal();
+      });
+    }
+    // Any click inside the open viewer (image, backdrop or the close button) closes it.
+    viewer.addEventListener("click", () => viewer.close());
+    viewer.addEventListener("close", () => big.removeAttribute("src"));
+  }
+</script>

@@ -77,7 +77,9 @@ import { navItems } from "@/data/nav";
 
     const observerCallback = (entries: IntersectionObserverEntry[]) => {
       entries.forEach((entry: IntersectionObserverEntry) => {
-        const id = entry.target.getAttribute("id");
+        const rawId = entry.target.getAttribute("id");
+        // #about has no nav link of its own; it counts as Home.
+        const id = rawId === "about" ? "home" : rawId;
         const activeLinks = document.querySelectorAll(`nav a[href="#${id}"]`);
 
         if (entry.isIntersecting && entry.intersectionRatio >= 0.2) {

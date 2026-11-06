@@ -1,6 +1,7 @@
 ---
 import SocialLinks from "@/components/ui/SocialLinks.astro";
 import { footerTech } from "@/data/footer-tech";
+import { footerLinks } from "@/data/footer-links";
 import { footerSocialLinks } from "@/data/social-links";
 ---
 
@@ -43,20 +44,22 @@ import { footerSocialLinks } from "@/data/social-links";
         class="flex flex-col items-center lg:items-start space-y-4 md:space-y-6 fade-in"
         style="animation-delay: 0.2s"
       >
-        <div class="w-full max-w-xs">
-          <iframe
-            title="Spotify album player"
-            style="border-radius:12px; background-color: #0a192f;"
-            src="https://open.spotify.com/embed/album/5K79FLRUCSysQnVESLcTdb?utm_source=generator&theme=0"
-            width="100%"
-            height="152"
-            class="border-0 transition-all duration-300 hover:scale-105"
-            allowfullscreen
-            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-            loading="lazy"
-          >
-          </iframe>
-        </div>
+        <nav aria-label="Site links" class="w-full max-w-xs">
+          <ul class="grid grid-cols-1 gap-2 md:gap-3 list-none p-0 m-0">
+            {
+              footerLinks.map((link) => (
+                <li>
+                  <a
+                    href={link.href}
+                    class="text-[var(--white-icon)] text-xs md:text-sm hover:text-[var(--sec)] transition-all duration-300 rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--sec)]"
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
       </div>
     </div>
 
@@ -68,7 +71,7 @@ import { footerSocialLinks } from "@/data/social-links";
         class="text-center text-xs md:text-sm text-[var(--white-icon)] space-y-1 md:space-y-2"
       >
         <span class="block sm:inline">
-          Copyright © 2026 <a
+          Copyright © {new Date().getFullYear()} <a
             href="https://github.com/avanegas95"
             class="hover:text-[var(--sec)] transition-all duration-300"
             >Anderson Vanegas</a
