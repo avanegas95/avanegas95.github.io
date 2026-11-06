@@ -82,7 +82,7 @@ export const REDIRECT_PATTERNS: readonly RegExp[] = [
   /\boff[- ]topic\b/iu,
   // An offer about Anderson ("want to hear more about his ..."). Contact-only
   // replies and offers about other topics do not match.
-  /\b(?:(?:want|like|care) to (?:hear|know|learn)(?: more)? about|(?:i can|blob can|happy to) (?:tell you|share)(?: more)? about)\b[^.!?\n]{0,80}\b(?:anderson|his|him)\b/iu,
+  /\b(?:(?:want|like|care) to (?:hear|know|learn)(?: more)? (?:about|how|what|why)|(?:i can|blob can|happy to) (?:tell you|share)(?: more)? about)\b[^.!?\n]{0,80}\b(?:anderson|his|him)\b/iu,
 ];
 
 const THIRD_PERSON_PATTERNS: readonly RegExp[] = [

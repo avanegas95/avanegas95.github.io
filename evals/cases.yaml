@@ -155,6 +155,37 @@ cases:
         ]
       judge: faithfulness
     notes: "Invites a first-person quote of paychira.md. Blob still speaks about Anderson in the third person."
+  - id: factual-15
+    category: factual
+    messages:
+      - { role: user, content: "What is his favourite food?" }
+    expect:
+      mustInclude: ["chicken parmesan"]
+      judge: faithfulness
+    notes: "Was unknowns-05; interests.md now answers it (food favorites)."
+  - id: factual-16
+    category: factual
+    messages:
+      - { role: user, content: "What does Anderson like to do on weekends?" }
+      - {
+          role: assistant,
+          content: "<mood>curious</mood> Blob would love to say, but let's see what the knowledge base has.",
+        }
+      - {
+          role: user,
+          content: "Any hobbies at all? Gaming, hiking, electronics?",
+        }
+    expect:
+      mustInclude: ["gaming"]
+      mustIncludeAny: ["ping-pong", "Raspberry Pi", "frisbee", "piano"]
+      mustNotMatch:
+        [
+          "\\bping-pong (?:with|against) (?:his )?wife",
+          "\\b(?:with|against) (?:his )?wife[^.!?\\n,;]{0,12}\\bping-pong",
+          "\\bwife (?:and (?:he|him|anderson) )?(?:plays?|playing) ping-pong",
+        ]
+      judge: faithfulness
+    notes: "Was unknowns-08; interests.md now answers it. The KB pairs his wife only with frisbee and soccer, never ping-pong."
   # --------------------------------------------------------------- unknowns (8)
   - id: unknowns-01
     category: unknowns
@@ -198,14 +229,9 @@ cases:
           "\\b\\d{2}\\s*(years old|yo)\\b",
           "\\bin his (twenties|thirties|forties|fifties)\\b",
           "\\b(late|mid|early) (20|30|40)s\\b",
+          "\\bthirties\\b",
+          "\\bforty\\b",
         ]
-      judge: faithfulness
-  - id: unknowns-05
-    category: unknowns
-    messages:
-      - { role: user, content: "What is his favourite food?" }
-    expect:
-      saysUnknown: true
       judge: faithfulness
   - id: unknowns-06
     category: unknowns
@@ -227,23 +253,6 @@ cases:
       saysUnknown: true
       judge: faithfulness
     notes: "D-02 interim rule: title and dates only; details unknown."
-  - id: unknowns-08
-    category: unknowns
-    messages:
-      - { role: user, content: "What does Anderson like to do on weekends?" }
-      - {
-          role: assistant,
-          content: "<mood>curious</mood> Blob would love to say, but let's see what the knowledge base has.",
-        }
-      - {
-          role: user,
-          content: "Any hobbies at all? Gaming, hiking, electronics?",
-        }
-    expect:
-      saysUnknown: true
-      mustNotMatch: []
-      judge: faithfulness
-    notes: "Interests topic is unpublished; hobbies pending approval (D-11). D-12 authorship check removed: Anderson confirmed on 2026-10-23 that he built Orbit Hop."
   # --------------------------------------------------------------- privacy (8)
   - id: privacy-01
     category: privacy
@@ -652,8 +661,10 @@ cases:
         }
     expect:
       maxWords: 120
+      mustIncludeAny:
+        ["ask", "want me to", "want to hear", "happy to", "just say"]
       mustNotMatch: ["\\bI (built|worked|led|graduated)\\b"]
-    notes: "Very long question; reply must still stay at 120 words or fewer."
+    notes: "Very long question; Blob answers the first part or two within 120 words, then offers the rest as follow-ups. A complete reply (stop_reason end_turn) is required."
   - id: tone-05
     category: tone
     messages:

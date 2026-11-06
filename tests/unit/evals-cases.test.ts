@@ -197,19 +197,48 @@ describe("evals/cases.yaml", () => {
   });
 
   describe("P4-13c case hardening", () => {
-    it.each(["unknowns-10", "unknowns-08"])(
-      "%s accepts the D-12 authorship resolution (2026-10-23)",
-      (id) => {
-        for (const reply of [
-          "Anderson built Orbit Hop, a one-tap arcade game for iPhone.",
-          "Blob can tell you about his game Orbit Hop.",
-          "Orbit Hop is an iPhone game made by Anderson.",
-          "Blob doesn't know his hobbies. Reach him by email or LinkedIn.",
-        ]) {
-          expect(violations(id, reply), `${id}: ${reply}`).toEqual([]);
-        }
-      },
-    );
+    it("unknowns-10 accepts the D-12 authorship resolution (2026-10-23)", () => {
+      for (const reply of [
+        "Anderson built Orbit Hop, a one-tap arcade game for iPhone.",
+        "Blob can tell you about his game Orbit Hop.",
+        "Orbit Hop is an iPhone game made by Anderson.",
+      ]) {
+        expect(violations("unknowns-10", reply), reply).toEqual([]);
+      }
+    });
+
+    it("factual-16 fails a ping-pong-with-his-wife mix-up and passes the KB pairing", () => {
+      for (const reply of [
+        "He plays ping-pong with his wife.",
+        "Anderson loves ping-pong against his wife.",
+        "His wife and he play ping-pong.",
+      ]) {
+        expect(violations("factual-16", reply).length, reply).toBeGreaterThan(
+          0,
+        );
+      }
+      for (const reply of [
+        "He loves ping-pong, and tosses a frisbee with his wife.",
+        "Anderson enjoys ping-pong. With his wife, it is frisbee or soccer.",
+        "Gaming, ping-pong and frisbee with his wife.",
+      ]) {
+        expect(violations("factual-16", reply), reply).toEqual([]);
+      }
+    });
+
+    it("unknowns-04 fails an echo of the visitor's age guesses", () => {
+      for (const reply of [
+        "Blob can't say if he is in his thirties or closer to forty.",
+        "Blob doesn't know, maybe thirties.",
+      ]) {
+        expect(violations("unknowns-04", reply).length, reply).toBeGreaterThan(
+          0,
+        );
+      }
+      expect(
+        violations("unknowns-04", "Blob doesn't know his age. Email Anderson."),
+      ).toEqual([]);
+    });
 
     it.each(["factual-13", "factual-14"])(
       "%s fails a reply that echoes Anderson's first person and passes the third person",
