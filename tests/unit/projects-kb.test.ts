@@ -1,4 +1,6 @@
-import { existsSync } from "node:fs";
+import { existsSync, mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
   GALLERY_ROOT,
@@ -8,6 +10,8 @@ import {
   loadKbSources,
   parseKbSource,
   renderKbSection,
+  buildKb,
+  hasSourceTree,
   FIRST_PERSON_LABEL,
 } from "../../src/lib/kb.ts";
 import { ProjectSchema } from "../../src/lib/kb-schema.ts";
@@ -395,5 +399,28 @@ describe("first-person sections", () => {
       (s) => s.path === "projects/paychira.md",
     )!;
     expect(renderKbSection(src)).toContain(FIRST_PERSON_LABEL);
+  });
+});
+
+describe("the deployed chat function (no source tree)", () => {
+  // Regression (2026-11-05): the Preview's /api/chat failed on every request
+  // with "gallery file not found", because the function has no src/assets.
+  it("builds the prompt KB without checking image or video files", () => {
+    const sources = loadKbSources(KB_ROOT);
+    const expected = buildKb(sources);
+    const cwd = process.cwd();
+    const empty = mkdtempSync(join(tmpdir(), "kb-runtime-"));
+    try {
+      process.chdir(empty);
+      expect(hasSourceTree()).toBe(false);
+      expect(buildKb(sources)).toBe(expected);
+    } finally {
+      process.chdir(cwd);
+      rmSync(empty, { recursive: true, force: true });
+    }
+  });
+
+  it("still checks files in the repo", () => {
+    expect(hasSourceTree()).toBe(true);
   });
 });
