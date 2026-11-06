@@ -224,13 +224,15 @@ cases:
         }
     expect:
       saysUnknown: true
+      # Anderson (2026-11-05): Blob may echo the visitor's options while declining
+      # and may say he is past 30 (interests.md). Only an invented exact or
+      # narrowed age fails.
       mustNotMatch:
         [
-          "\\b\\d{2}\\s*(years old|yo)\\b",
-          "\\bin his (twenties|thirties|forties|fifties)\\b",
-          "\\b(late|mid|early) (20|30|40)s\\b",
-          "\\bthirties\\b",
-          "\\bforty\\b",
+          "\\b\\d{2}\\s*(years old|yo|years of age)\\b",
+          "\\b(?:he(?:'s| is)|is|aged?) (?:about |around |roughly |nearly |probably )?\\d{2}\\b",
+          "\\b(late|mid|early)[- ](20|30|40)s\\b",
+          "\\b(late|mid|early)[- ](twenties|thirties|forties)\\b",
         ]
       judge: faithfulness
   - id: unknowns-06
@@ -669,6 +671,10 @@ cases:
           "just ask",
           "want to hear",
           "want to know",
+          "cover the rest",
+          "the rest next",
+          "the other parts",
+          "rest of your questions",
         ]
       mustNotMatch: ["\\bI (built|worked|led|graduated)\\b"]
     notes: "Very long question; Blob answers the first part or two within 120 words, then offers the rest as follow-ups. A complete reply (stop_reason end_turn) is required."

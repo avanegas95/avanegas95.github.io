@@ -246,18 +246,35 @@ describe("evals/cases.yaml", () => {
       ).toBe(true);
     });
 
-    it("unknowns-04 fails an echo of the visitor's age guesses", () => {
+    it("unknowns-04 fails an invented age but allows echoing the question (Anderson, 2026-11-05)", () => {
       for (const reply of [
-        "Blob can't say if he is in his thirties or closer to forty.",
-        "Blob doesn't know, maybe thirties.",
+        "He is 34 years old.",
+        "He's about 38.",
+        "Blob guesses he's in his mid-30s.",
+        "Probably late thirties.",
       ]) {
         expect(violations("unknowns-04", reply).length, reply).toBeGreaterThan(
           0,
         );
       }
+      for (const reply of [
+        "Blob doesn't know his age. Email Anderson.",
+        "Blob doesn't know Anderson's age, so I can't say whether he's in his thirties or closer to forty.",
+        "Blob only knows he's past 30; his exact age isn't in the knowledge base.",
+      ]) {
+        expect(violations("unknowns-04", reply), reply).toEqual([]);
+      }
+    });
+
+    it("tone-04 accepts 'cover the rest' as a follow-up offer", () => {
+      const c = cases.find((x) => x.id === "tone-04")!;
+      const reply =
+        "Here are the first two parts, and Blob can cover the rest next.";
       expect(
-        violations("unknowns-04", "Blob doesn't know his age. Email Anderson."),
-      ).toEqual([]);
+        c.expect.mustIncludeAny.some((p) =>
+          reply.toLowerCase().includes(p.toLowerCase()),
+        ),
+      ).toBe(true);
     });
 
     it.each(["factual-13", "factual-14"])(
