@@ -3,6 +3,7 @@ import { defineConfig } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 
 import react from "@astrojs/react";
+import sitemap from "@astrojs/sitemap";
 import vercel from "@astrojs/vercel";
 
 // https://astro.build/config
@@ -43,5 +44,11 @@ export default defineConfig({
     port: 4321,
   },
 
-  integrations: [react()],
+  integrations: [
+    react(),
+    // Public pages only: /dev/* is preview-only and /api/* is on-demand, neither is a page.
+    sitemap({
+      filter: (page) => !/\/(dev|api)(\/|$)/.test(new URL(page).pathname),
+    }),
+  ],
 });

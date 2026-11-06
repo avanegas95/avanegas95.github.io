@@ -14,7 +14,7 @@ describe("astro.config.mjs", () => {
   });
 
   it("keeps the react integration and aliases", () => {
-    expect(src).toMatch(/integrations:\s*\[react\(\)\]/);
+    expect(src).toMatch(/integrations:\s*\[\s*react\(\),\s*(\/\/[^\n]*\n\s*)?sitemap\(/);
     expect(src).toContain('"@": "/src"');
   });
 
