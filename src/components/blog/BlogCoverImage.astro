@@ -12,7 +12,7 @@ const { src, alt, caption } = Astro.props;
 
 <figure class="my-8">
   <div
-    class="relative aspect-video overflow-hidden rounded-lg border border-[#ffffff10] bg-[#0c0c0c]"
+    class="relative aspect-[2/1] overflow-hidden rounded-lg border border-[#ffffff10] bg-[#0c0c0c]"
   >
     <Picture
       formats={["avif", "webp"]}
@@ -21,7 +21,7 @@ const { src, alt, caption } = Astro.props;
       alt={alt}
       width={1200}
       widths={[400, 800, 1200]}
-      sizes="(min-width: 768px) 768px, 100vw"
+      sizes="(min-width: 880px) 768px, (min-width: 768px) calc(100vw - 7rem), (min-width: 640px) calc(100vw - 6rem), calc(100vw - 4rem)"
       class="w-full h-full object-cover"
       loading="eager"
       fetchpriority="high"
