@@ -161,6 +161,7 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 - [ ] Optional: per-environment Upstash key prefix. Preview and Production share one store by decision (2026-11-06), so this is only if Preview use ever grows.
 
 **D. Repo hygiene** **[A]**
+- [ ] CI: `quality.yml` runs on pushes to `feat/blob` and on PRs, not on pushes to `main`, which is now the production branch. Add `main` (fast tier), or require PRs into main.
 - [ ] Delete the merged or abandoned branches: `fix/same-site-link-label`, `task/P6-01-skills-anchor`, `task/P6-02-bubble-pager`, `task/P6-04-blog-card` (local and origin).
 - [ ] Decide what `feat/blob` is now. `main` is the production branch; either retire `feat/blob` or keep it as the Preview integration branch and fast-forward it from main.
 - [ ] Three old stashes in Anderson's checkout.
