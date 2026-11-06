@@ -16,7 +16,7 @@ import Anthropic, {
 } from "@anthropic-ai/sdk";
 import { CHAT_MODELS, type ChatEnv } from "./env.ts";
 
-export const MAX_TOKENS = 1024;
+export const MAX_TOKENS = 2048;
 
 // Shown when the model refuses (stop_reason "refusal"); P2-10 discards partial text,
 // emits `reset`, sets mood `confused` and sends this instead.

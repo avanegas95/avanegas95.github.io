@@ -279,13 +279,13 @@ describe("buildParams", () => {
       system: SYSTEM,
       messages: MSGS,
     });
-    expect(MAX_TOKENS).toBe(1024);
+    expect(MAX_TOKENS).toBe(2048);
   });
 
   it("Sonnet adds betas and fallbacks", () => {
     expect(buildParams("claude-sonnet-5-5", "medium", SYSTEM, MSGS)).toEqual({
       model: "claude-sonnet-5-5",
-      max_tokens: 1024,
+      max_tokens: MAX_TOKENS,
       output_config: { effort: "medium" },
       system: SYSTEM,
       messages: MSGS,

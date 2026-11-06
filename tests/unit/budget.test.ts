@@ -1,5 +1,6 @@
 // Redis is fully faked in memory: no network, no @upstash/redis client.
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { MAX_TOKENS } from "../../src/lib/server/anthropic.ts";
 import {
   BUDGET_TTL_SECONDS,
   STORE_TIMEOUT_MS,
@@ -311,7 +312,7 @@ describe("kill switch end to end (fake store)", () => {
     s.latencyMs = 1; // force interleaving between check and record
     const BUDGET_MICRO = 10_000;
     const N = 20;
-    const maxTokens = 1024;
+    const maxTokens = MAX_TOKENS;
     const prompt = 8300;
     const worst = worstCaseCostMicroUsd("claude-haiku-5-5", prompt, maxTokens);
     // Pre-load to just under the budget: every one of the N racers passes the check.

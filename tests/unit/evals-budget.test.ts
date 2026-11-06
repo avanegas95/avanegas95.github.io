@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { MAX_TOKENS } from "../../src/lib/server/anthropic.ts";
 import {
   HARD_CAP_USD,
   SpendMeter,
@@ -164,6 +165,14 @@ describe("preflightMicroUsd", () => {
   it("both plans together = 631,435 µ$ and are allowed", () => {
     const total = preflightMicroUsd([plan(HAIKU), plan(SONNET)]);
     expect(total).toBe(631_435);
+    expect(spendAllowed(ARGV, ENV, total)).toEqual({ ok: true });
+  });
+
+  it("a 54-case Haiku run at the real MAX_TOKENS (chat + judge calls) stays under the $1 cap", () => {
+    const total = preflightMicroUsd([
+      { ...plan(HAIKU, 54 + 22 + 7), maxTokens: MAX_TOKENS },
+    ]);
+    expect(total).toBeLessThan(1_000_000);
     expect(spendAllowed(ARGV, ENV, total)).toEqual({ ok: true });
   });
 
