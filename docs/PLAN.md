@@ -8,6 +8,11 @@
 **Cutover (2026-11-06, approved by Anderson):** feat/blob merged into main (Pages workflow manual-only); Production built on Vercel; avanegas.com plus www (308 to the apex) attached; Anderson switched the Namecheap A and CNAME records. Post-DNS checks pass: all pages and legacy URLs 200 (`/orbithop` and `/privacy` without a slash 200), `app-ads.txt` byte-identical, resume = public-safe PDF, http→https and www→apex 308, every security header present, no noindex, MX/SPF unchanged, and a real Blob message streams in production. p5-v8 spend eval: gate PASS (50/54). Upstash stays shared between Preview and Production (Anderson: limited environment); Anthropic keys rotated and per-environment.
 - **Next:** see **Post-cutover backlog** below (Phase 4 settle steps first).
 
+**Session 5 (2026-11-06, orchestrator):** Anderson: work the autonomous backlog; after independent review and green CI, push to main (production); keep feat/blob as the Preview integration branch (task branches cut from it, merge into it, then fast-forward main). Old branches and stashes deleted on his OK.
+- Merged and live on avanegas.com (all reviewed; full CI tier green on the final tip, Lighthouse included): **P6-05** CI fast tier on pushes to main. **P6-06** `robots.txt` (Disallow /api/ and /dev/) and `@astrojs/sitemap` (9 public URLs). **P6-07** client links bare allowed `#` anchors (no scrubber or prompt change; still p5-v8). **P6-08** eval judge fallback for `redirects` and tone-04's follow-up offer (budget bound includes the criterion calls). **P6-09** blog post page: 3xl reading column, 2:1 cover with exact `sizes`, placeholder caption removed, dates formatted in UTC (local non-UTC builds showed the day before).
+- Production checked after the push: legacy URLs, resume, robots, sitemap 200, no noindex; a real Blob message in production linked Skills, Experience and Projects.
+- **Waiting on Anderson:** submit `https://avanegas.com/sitemap-index.xml` in Search Console; run the spend eval once to see P6-08's judge fallback on real replies; D-19; content items (E).
+
 **Session 4 (2026-11-06, orchestrator):**
 - Merged into feat/blob (squashed, opus-reviewed): **P6-01** real `#skills` anchor on the About tool list, in ALLOWED_SITE_PATHS and SITE_PATHS (prompt **p5-v8**; the scrubber is unchanged, and `fix/same-site-link-label` stays unmerged). **P6-02** bubble: Previous / Next cycle the turns in place instead of stacking below; three thinking dots; no "Show more" before any text (the pop-in transform overflowed the clip).
 - `docs/CUTOVER.md` drafted: the order, checks and rollback. Key trap: `deploy.yml` publishes `dist/` but feat/blob builds `.vercel/output/`, so the merge to main must make the Pages workflow manual-only in the same commit.
@@ -133,6 +138,11 @@ Scope: `docs/tasks/P5.5/_proposal.md`; table: `_proposed-plan.md`; Anderson's to
 | P6-02 | Bubble Previous / Next pager, thinking dots, no early Show more | opus | opus | merged |
 | P6-03 | `docs/CUTOVER.md` | opus | Anderson | approved, executed through Phase 3 |
 | P6-04 | /blog/ cards: cover beside the text from md up, so the title and summary are above the fold | opus | sonnet | merged |
+| P6-05 | CI fast tier on pushes to main | sonnet | sonnet | merged |
+| P6-06 | robots.txt + sitemap | sonnet | sonnet | merged |
+| P6-07 | Client links bare allowed `#` anchors | opus | opus | merged |
+| P6-08 | Eval judge fallback for two brittle checks | sonnet | opus | merged |
+| P6-09 | Blog post page layout; UTC dates | sonnet | sonnet | merged |
 
 Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNAME`, the Pages workflow or Vercel domain settings, until Anderson approves in a message. Then:
 - write and review `docs/CUTOVER.md` (Vercel domain + DNS steps, pre/post checks, rollback to GitHub Pages);
@@ -151,20 +161,20 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 - [ ] Optional: lower the `www` CNAME TTL to 5 min (still 30) while rollback is possible.
 
 **B. Site and SEO**
-- [ ] `robots.txt` and a sitemap (`@astrojs/sitemap`), then submit the sitemap in Search Console. The old site had neither.
+- [x] `robots.txt` and a sitemap (P6-06). - [ ] Submit `https://avanegas.com/sitemap-index.xml` in Search Console. **[A-does]**
 - [ ] D-19: should Blob offer the resume PDF (the site serves it) or keep pointing to LinkedIn? **Anderson decides.**
-- [ ] Blog post pages: check that the full-width cover on `/blog/<slug>/` doesn't crowd the article the way the index did (fixed there in P6-04).
+- [x] Blog post pages reworked (P6-09).
 
 **C. Blob quality**
-- [ ] Client renderer: turn a bare allowed path (`#experience`, `#contact`) into a link. Blob sometimes skips the markdown link the prompt asks for.
-- [ ] Brittle eval checks: grade the tone-04 follow-up offer and the off_topic "redirects" check with the existing judge instead of phrase lists. Both failed correct replies on p5-v8.
+- [x] Client renderer links bare allowed `#` anchors (P6-07).
+- [x] Brittle eval checks get a judge fallback (P6-08). Next spend eval shows it on real replies.
 - [ ] Optional: per-environment Upstash key prefix. Preview and Production share one store by decision (2026-11-06), so this is only if Preview use ever grows.
 
 **D. Repo hygiene** **[A]**
-- [ ] CI: `quality.yml` runs on pushes to `feat/blob` and on PRs, not on pushes to `main`, which is now the production branch. Add `main` (fast tier), or require PRs into main.
+- [x] CI runs the fast tier on pushes to main (P6-05).
 - [x] Deleted the merged or abandoned branches (local and origin), plus a stale Dependabot branch with no open PR (2026-11-06).
-- [ ] Decide what `feat/blob` is now. `main` is the production branch; either retire `feat/blob` or keep it as the Preview integration branch and fast-forward it from main.
-- [ ] Three old stashes in Anderson's checkout.
+- [x] `feat/blob` stays the Preview integration branch; main fast-forwards from it after review and green CI (Anderson, 2026-11-06).
+- [x] Old stashes dropped (Anderson, 2026-11-06).
 
 **E. Content (Anderson)**
 - [ ] DISCREPANCIES D-16 and D-17.
