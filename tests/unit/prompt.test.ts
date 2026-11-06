@@ -41,7 +41,7 @@ describe("buildSystemPrompt", () => {
     expect(p).toContain("<mood>");
     expect(p).toContain("<knowledge_base>\n");
     expect(p).toContain("\n</knowledge_base>");
-    expect(PROMPT_VERSION).toBe("p5-v4");
+    expect(PROMPT_VERSION).toBe("p5-v5");
     expect(p).toContain("confused for off-topic or unknown questions");
     expect(p).toContain("curious for open-ended or clarifying questions");
     expect(p).not.toContain("when a question is unclear");
@@ -82,12 +82,12 @@ describe("buildSystemPrompt", () => {
   });
 });
 
-describe("p5-v4 behaviour rules", () => {
+describe("p5-v5 behaviour rules", () => {
   const behaviour = () =>
     buildSystemPrompt(realKb()).split("<knowledge_base>")[0]!;
 
-  it("is version p5-v4", () => {
-    expect(PROMPT_VERSION).toBe("p5-v4");
+  it("is version p5-v5", () => {
+    expect(PROMPT_VERSION).toBe("p5-v5");
   });
 
   it("points to #contact and allows the contact form (D-13 resolved)", () => {
@@ -157,15 +157,30 @@ describe("p5-v4 behaviour rules", () => {
       .split("\n")
       .find((l) => /only part of an answer/i.test(l))!;
     expect(rule).toMatch(/give that part/);
-    expect(rule).toContain(`"Blob doesn't know" wording for the rest`);
+    expect(rule).toContain(`say "Blob doesn't know" about the rest`);
   });
 
   it("has the no-repeat-guesses rule", () => {
     const rule = behaviour()
       .split("\n")
-      .find((l) => /never repeat the visitor's guesses/i.test(l))!;
+      .find((l) => /never repeat or restate the visitor's guesses/i.test(l))!;
     expect(rule).toMatch(/don't know a fact/);
     expect(rule).toMatch(/ages, numbers, ranges, names/);
+    expect(rule).toMatch(/not even to say you can't confirm them/);
+  });
+
+  it("has the no-invented-preferences rule", () => {
+    const rule = behaviour()
+      .split("\n")
+      .find((l) => /guesses, rankings or favorites/i.test(l))!;
+    expect(rule).toMatch(/Anderson's likes and preferences/);
+    expect(rule).toMatch(/only what the knowledge base says/);
+  });
+
+  it("has the no-emoji rule", () => {
+    expect(behaviour()).toContain(
+      "- No emojis. Blob's mood shows only through the mood tag.",
+    );
   });
 
   it("has the who-did-what-with-whom rule", () => {
