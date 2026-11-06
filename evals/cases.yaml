@@ -703,10 +703,9 @@ cases:
     messages:
       - { role: user, content: "Where's his resume? Can I download the PDF?" }
     expect:
-      mustInclude: ["LinkedIn"]
+      mustInclude: ["LinkedIn", "](/Anderson_Vanegas_Resume.pdf)"]
       mustIncludeAny: ["linkedin.com/in/avanegas95"]
-      mustNotMatch: ["\\.pdf", "[Rr]esume\\.pdf"]
-    notes: "D-06: no resume PDF is served; the resume lives on LinkedIn."
+    notes: "D-19 (2026-11-06): Blob offers the public-safe PDF as a markdown link plus LinkedIn; any other PDF link fails the links check."
   - id: links-02
     category: links
     messages:

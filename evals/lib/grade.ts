@@ -151,17 +151,87 @@ function canonical(url: string): string | null {
   return out.endsWith("/") ? out.slice(0, -1) : out;
 }
 
+// P6-11 parity with scrub.ts barePathAt: the server keeps an exact bare allowed path
+// ("/Anderson_Vanegas_Resume.pdf") as text instead of reading "Resume.pdf" as a domain. Same
+// rule, step by step: the char before is start or one of BARE_BEFORE; greedy trailing
+// punctuation follows; then end or a char that can't continue a URL (scrub's URL_CHAR).
+// Masked only for the bare-host scans; markdown targets are read from the raw text first.
+const BARE_PATHS = ALLOWED_SITE_PATHS.filter(
+  (p) => p.startsWith("/") && p.length > 1,
+);
+const BARE_BEFORE = /^[\s(\[*_~"']$/;
+const TRAILING_UNIT = /^[.,;:!?)\]*_~]$/;
+const URL_UNIT = /^[^\s<>"'`]$/;
+
+function maskBareSitePaths(raw: string): string {
+  let out = "";
+  let i = 0;
+  while (i < raw.length) {
+    let n = 0;
+    if (
+      raw.charAt(i) === "/" &&
+      (i === 0 || BARE_BEFORE.test(raw.charAt(i - 1)))
+    ) {
+      for (const p of BARE_PATHS) {
+        if (!raw.startsWith(p, i)) continue;
+        let j = i + p.length;
+        while (j < raw.length && TRAILING_UNIT.test(raw.charAt(j))) j++;
+        if (j === raw.length || !URL_UNIT.test(raw.charAt(j))) {
+          n = p.length;
+          break;
+        }
+      }
+    }
+    if (n > 0) {
+      out += " ".repeat(n);
+      i += n;
+    } else {
+      out += raw.charAt(i);
+      i += 1;
+    }
+  }
+  return out;
+}
+
+// Markdown link targets are checked as whole targets (MD_TARGET); blank them out before the
+// bare-host scans so a target is never re-read as a bare host or bare path.
+function maskMdTargets(raw: string): string {
+  return raw.replace(
+    MD_TARGET,
+    (m, t: string) => m.slice(0, m.length - t.length) + " ".repeat(t.length),
+  );
+}
+
+// scrub.ts MD_LINK: a whole `[label](target)` is one unit; its label is scanned on its own.
+const MD_LINK_UNIT = /\[([^[\]\n]*)\]\(([^\s()]*)\)/g;
+
+function bareUrls(text: string): string[] {
+  const masked = maskBareSitePaths(text);
+  const found: string[] = [];
+  for (const m of masked.matchAll(SCHEME_URL)) found.push(m[0]);
+  for (const m of masked.matchAll(WWW_URL)) found.push(m[0]);
+  for (const m of masked.matchAll(BARE_URL)) {
+    if (!NOT_DOMAINS.test(m[0])) found.push(m[0]);
+  }
+  return found.map((u) => u.replace(TRAILING, "")).filter((u) => u !== "");
+}
+
 function extractUrls(raw: string): string[] {
   const found = new Set<string>();
+  // Markdown targets are not stripped of trailing punctuation: scrub matches the whole target.
   for (const m of raw.matchAll(MD_TARGET)) {
     if (m[1]) found.add(m[1]);
   }
-  for (const m of raw.matchAll(SCHEME_URL)) found.add(m[0]);
-  for (const m of raw.matchAll(WWW_URL)) found.add(m[0]);
-  for (const m of raw.matchAll(BARE_URL)) {
-    if (!NOT_DOMAINS.test(m[0])) found.add(m[0]);
-  }
-  return [...found].map((u) => u.replace(TRAILING, "")).filter((u) => u !== "");
+  const rest = raw.replace(MD_LINK_UNIT, (m, label: string, target: string) => {
+    // The whole unit target is checked, as scrub's allow(m[2]) does: MD_TARGET stops at < >,
+    // so "[r](/blog/<evil.zz>)" would otherwise hide the host.
+    if (target) found.add(target);
+    for (const u of bareUrls(label)) found.add(u);
+    // Keep the closing ")" so a path right after the unit is not read as starting a token.
+    return `${" ".repeat(m.length - 1)})`;
+  });
+  for (const u of bareUrls(maskMdTargets(rest))) found.add(u);
+  return [...found];
 }
 
 function urlAllowed(url: string, allowedUrls: readonly string[]): boolean {
