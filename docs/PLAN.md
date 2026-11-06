@@ -10,9 +10,8 @@
 - **Launch scope:** Paychira is the only public project. Orbit Hop and State of Ecosystems are `public: false` until Anderson rewrites them after the Vercel cutover (Orbit Hop's video waits in `media-drafts/`).
 - **Open tasks, in order:**
   - P5.5-23 done: spend eval on p5-v5 passed 54/54 (gate PASS).
-  - P5.5-08b: nav: `#experience`, drop the `#experiences` alias in nav.ts, prompt.ts and links.ts.
-  - P5.5-13d: re-brief as a resume facts check (report-only).
-  - Then the P5.5 gate, then P6 on Anderson's approval.
+  - 08b and 13d done (2026-11-05). Next: the P5.5 gate, then P6 on Anderson's approval.
+  - Anderson to decide DISCREPANCIES D-16 (Staff 7th bullet) and D-17 (Paychira resume vs KB); D-18 waits for the SoE relaunch.
 - **Waiting on Anderson:**
   - Rotate the Anthropic API key (it was printed in a terminal on 2026-11-05) and update it in Vercel.
   - Optional, after the cutover: rewrite Orbit Hop and SoE, then `public: true` (and move `media-drafts/orbit-hop/` back to `public/media/`).
@@ -113,8 +112,8 @@ Scope: `docs/tasks/P5.5/_proposal.md`; table: `_proposed-plan.md`; Anderson's to
 | P5.5-06 | Contact polish + Formspree E2E | sonnet | sonnet | 13a, 13c | 4 | merged |
 | P5.5-13b | Projects render from KB + `/projects/<slug>/` detail pages with optional screenshots | sonnet | opus | 03, 13a, 13c, H4 | 4 | merged |
 | P5.5-04 | Hero + About moved verbatim from Anderson's edited components into the KB | sonnet | sonnet | 13a, 13c, H2, H4 ✓ | 4 | merged |
-| P5.5-08b | Nav fix (also: switch nav.ts, prompt.ts, links.ts to `#experience`, then drop the `#experiences` alias span and its CSS) | haiku | sonnet | 05, 08a | 5 | brief |
-| P5.5-13d | Resume facts check vs KB (hand-made PDF; re-brief) | sonnet | opus | 05, 13a, 13c, P5-05, H5 | 5 | brief |
+| P5.5-08b | Nav fix (also: switch nav.ts, prompt.ts, links.ts to `#experience`; the `#experiences` alias span stays for old live-site links) | haiku | sonnet | 05, 08a | 5 | merged |
+| P5.5-13d | Resume facts check vs KB (hand-made PDF; re-brief) | sonnet | opus | 05, 13a, 13c, P5-05, H5 | 5 | merged |
 
 ## P6: Production on Vercel and domain cutover (NOT planned; only on Anderson's explicit final approval)
 Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNAME`, the Pages workflow or Vercel domain settings, until Anderson approves in a message. Then:
@@ -251,3 +250,5 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 2026-11-05 · task/ci-retry · merged: a hung Playwright/apt install is killed after 4 min and retried once (the mirror stalled twice today). Full tier 42148006551 green.
 2026-11-05 · P5.5-23b · merged (opus APPROVE): prompt p5-v5. Full tier 42149524364 green (WebKit re-run after an apt mirror error). Spend eval 54/54, gate PASS.
 2026-11-05 · fix/chat-runtime-files · merged (opus APPROVE): /api/chat failed on every Preview request since the project content merge, because kb.ts checked src/assets files the function doesn't ship. Checks now run only with the source tree; regression test builds the KB from an empty cwd. Full tier 42151450921 green. Process note added: live chat check on the Preview after KB/prompt/server merges.
+2026-11-05 · P5.5-13d · done (report only): PDF text equals resume.md, both PII-clean. Three KB conflicts recorded as DISCREPANCIES D-16, D-17 and D-18 for Anderson.
+2026-11-05 · P5.5-08b · merged (opus APPROVE): nav says Experience → #experience with a briefcase icon; Blob's allowlist (server and client) switched to #experience; PROMPT_VERSION p5-v6; #experiences alias kept for old live-site links. Full tier 42154783012 green.
