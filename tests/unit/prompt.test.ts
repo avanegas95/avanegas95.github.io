@@ -41,7 +41,7 @@ describe("buildSystemPrompt", () => {
     expect(p).toContain("<mood>");
     expect(p).toContain("<knowledge_base>\n");
     expect(p).toContain("\n</knowledge_base>");
-    expect(PROMPT_VERSION).toBe("p5-v6");
+    expect(PROMPT_VERSION).toBe("p5-v7");
     expect(p).toContain("confused for off-topic or unknown questions");
     expect(p).toContain("curious for open-ended or clarifying questions");
     expect(p).not.toContain("when a question is unclear");
@@ -82,12 +82,12 @@ describe("buildSystemPrompt", () => {
   });
 });
 
-describe("p5-v6 behaviour rules", () => {
+describe("p5-v7 behaviour rules", () => {
   const behaviour = () =>
     buildSystemPrompt(realKb()).split("<knowledge_base>")[0]!;
 
-  it("is version p5-v6", () => {
-    expect(PROMPT_VERSION).toBe("p5-v6");
+  it("is version p5-v7", () => {
+    expect(PROMPT_VERSION).toBe("p5-v7");
   });
 
   it("points to #contact and allows the contact form (D-13 resolved)", () => {
@@ -175,6 +175,18 @@ describe("p5-v6 behaviour rules", () => {
       .find((l) => /guesses, rankings or favorites/i.test(l))!;
     expect(rule).toMatch(/Anderson's likes and preferences/);
     expect(rule).toMatch(/only what the knowledge base says/);
+  });
+
+  it("tells Blob to write same-site paths as markdown links", () => {
+    expect(behaviour()).toContain(
+      "write it as a markdown link, for example [Experience](#experience) or [contact](#contact), never as a bare path.",
+    );
+  });
+
+  it("the no-repeat-guesses rule has a concrete example", () => {
+    expect(behaviour()).toContain(
+      'say only that Blob doesn\'t know his age; never write "thirties" or "forty".',
+    );
   });
 
   it("has the no-emoji rule", () => {
