@@ -5,17 +5,14 @@
 
 ## ▶ Current phase: **P6: Production on Vercel and domain cutover** · Status: `waiting on Anderson's explicit approval`. P5.5 PASSED 2026-11-05. P5 PASSED 2026-10-24.
 
-**Handoff (2026-11-05, orchestrator session 3):**
-- **Merged:** 03, 04, 05, 06, 08a, 13a, 13b, 13c, 15, 16 (rounds 1–3), 17, 18, 19, 20, 21, 22, and task/projects-content (Paychira first-person page, inline screenshots, viewer, clickable cards, wider pages, prompt p5-v3).
-- **Launch scope:** Paychira is the only public project. Orbit Hop and State of Ecosystems are `public: false` until Anderson rewrites them after the Vercel cutover (Orbit Hop's video waits in `media-drafts/`).
-- **Open tasks, in order:**
-  - P5.5-23 done: spend eval on p5-v5 passed 54/54 (gate PASS).
-  - P5.5 PASSED (2026-11-05). Before the cutover (small, do first): (a) Blob linked a nonexistent #skills and visitors saw "[link removed]"; render a disallowed same-site link as its plain label instead, or list the real sections in the prompt (scrubber change: opus review); (b) grade tone-04's follow-up offer and off_topic redirects with the judge instead of phrase lists. Then P6 on Anderson's approval.
-  - Anderson to decide DISCREPANCIES D-16 (Staff 7th bullet) and D-17 (Paychira resume vs KB); D-18 waits for the SoE relaunch.
-- **Waiting on Anderson:**
-  - Rotate the Anthropic API key (it was printed in a terminal on 2026-11-05) and update it in Vercel.
-  - Optional, after the cutover: rewrite Orbit Hop and SoE, then `public: true` (and move `media-drafts/orbit-hop/` back to `public/media/`).
-- **Repo state:** `main`, `feat/blob` and `task/projects-content` (merged; safe to delete). Three old stashes remain, left for Anderson.
+**Handoff (2026-11-05, end of orchestrator session 3; next: P6 cutover with a new agent):**
+- **State:** P5.5 PASSED. feat/blob is green and is the release candidate. Prompt p5-v7; spend eval gate PASS twice. Paychira is the only public project; Orbit Hop and SoE are `public: false` (Orbit Hop video in `media-drafts/`).
+- **Do before the cutover:**
+  1. **"[link removed]" UX.** Blob sometimes links a section that doesn't exist (seen: `#skills`), and visitors see "[link removed]". Branch `fix/same-site-link-label` tried changing the scrubber and did not pass review; don't merge it, delete it. Preferred fix: give the site a real `#skills` anchor (the tools/skills strip) and add it to ALLOWED_SITE_PATHS and SITE_PATHS (opus review, PROMPT_VERSION bump, spend eval). Any scrubber change must keep the streaming invariant (`createScrubber` pieces equal `scrub()`).
+  2. **Brittle eval checks.** tone-04's follow-up offer and the off_topic "redirects" check use phrase lists that miss correct replies. Grade them with the existing judge instead.
+- **P6 cutover (Anderson approves each outward step):** separate Preview Upstash DB (N-1); write and review `docs/CUTOVER.md` (Vercel domain + DNS, pre/post checks, rollback to Pages); close the stale Dependabot PRs #145–#149 on main; merge feat/blob into main; Anderson approves the domain/DNS change; verify `/orbithop`, `/privacy`, `/app-ads.txt` (AdMob), the resume PDF, the Search Console, and no noindex header in production; keep Pages as fallback for a while; make the repo private.
+- **Waiting on Anderson:** rotate the test Anthropic key and the Preview bypass value; decide DISCREPANCIES D-16 and D-17; optional: Orbit Hop and SoE rewrites after the cutover.
+- **Repo state:** `main`, `feat/blob`, and `fix/same-site-link-label` (unmerged; delete it). Three old stashes remain, left for Anderson.
 - **Process notes:**
   - Merge in a separate detached worktree and push `HEAD:feat/blob`, so Anderson's checkout and dev server are untouched.
   - Push only after a green local run or green CI.
@@ -254,4 +251,4 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 2026-11-05 · P5.5-13d · done (report only): PDF text equals resume.md, both PII-clean. Three KB conflicts recorded as DISCREPANCIES D-16, D-17 and D-18 for Anderson.
 2026-11-05 · P5.5-08b · merged (opus APPROVE): nav says Experience → #experience with a briefcase icon; Blob's allowlist (server and client) switched to #experience; PROMPT_VERSION p5-v6; #experiences alias kept for old live-site links. Full tier 42154783012 green.
 2026-11-05 · task/ci-pw-container · merged: E2E and Lighthouse run in mcr.microsoft.com/playwright (browsers preinstalled; no apt), after the Ubuntu mirror stalled installs three times and the kill-and-retry left apt holding its lock. Full tier 42156129671 green (5m10s); this run is also the P5.5 gate's CI criterion.
-2026-11-05 · P5.5 GATE · PASSED. CI full tier 42156129671 green (Playwright container) and 42156965278 on p5-v7; Preview header check passed (Anderson); live Preview chat works, incl. injection redirect and #experience; spend eval on p5-v7 with final grading: gate PASS twice (52/54, 51/54; non-gated misses only). Merged P5.5-23c (prompt p5-v7: markdown links for sections, generic no-echo example). Bypass value and a test API key were shown in this session's transcript; Anderson to rotate both.
+2026-11-05 · P5.5 GATE · PASSED. CI full tier 42156129671 green (Playwright container) and 42156965278 on p5-v7; Preview header check passed (Anderson); live Preview chat works, incl. injection redirect and #experience; spend eval on p5-v7 with final grading: gate PASS twice (52/54, 51/54; non-gated misses only). Merged P5.5-23c (prompt p5-v7: markdown links for sections, generic no-echo example).
