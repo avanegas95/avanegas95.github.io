@@ -3,14 +3,14 @@
 > The live plan for porting Blob into this repo. Only the orchestrator edits this file. Product decisions are in `docs/SCOPE.md` (carried over from portfolio-v3; read it as applying to this repo). Agent rules are in `CLAUDE.md`. Briefs go in `docs/tasks/<phase>/<task-id>.md`.
 > History for P0–P4 (all PASSED) and the private review material (security review, red-team checklist, eval reports, research) are in the **private** sibling repo `../portfolio-v3` (local path `/Users/anderson/Github Projects/portfolio-v3`). Read them there and never copy them into this public repo.
 
-## ▶ Current phase: **P5.5: Portfolio improvement** · Status: `in progress` (2026-10-24). P5 PASSED 2026-10-24. P6 waits on Anderson's explicit approval.
+## ▶ Current phase: **P6: Production on Vercel and domain cutover** · Status: `waiting on Anderson's explicit approval`. P5.5 PASSED 2026-11-05. P5 PASSED 2026-10-24.
 
 **Handoff (2026-11-05, orchestrator session 3):**
 - **Merged:** 03, 04, 05, 06, 08a, 13a, 13b, 13c, 15, 16 (rounds 1–3), 17, 18, 19, 20, 21, 22, and task/projects-content (Paychira first-person page, inline screenshots, viewer, clickable cards, wider pages, prompt p5-v3).
 - **Launch scope:** Paychira is the only public project. Orbit Hop and State of Ecosystems are `public: false` until Anderson rewrites them after the Vercel cutover (Orbit Hop's video waits in `media-drafts/`).
 - **Open tasks, in order:**
   - P5.5-23 done: spend eval on p5-v5 passed 54/54 (gate PASS).
-  - 08b and 13d done (2026-11-05). Next: the P5.5 gate, then P6 on Anderson's approval.
+  - P5.5 PASSED (2026-11-05). Before the cutover (small, do first): (a) Blob linked a nonexistent #skills and visitors saw "[link removed]"; render a disallowed same-site link as its plain label instead, or list the real sections in the prompt (scrubber change: opus review); (b) grade tone-04's follow-up offer and off_topic redirects with the judge instead of phrase lists. Then P6 on Anderson's approval.
   - Anderson to decide DISCREPANCIES D-16 (Staff 7th bullet) and D-17 (Paychira resume vs KB); D-18 waits for the SoE relaunch.
 - **Waiting on Anderson:**
   - Rotate the Anthropic API key (it was printed in a terminal on 2026-11-05) and update it in Vercel.
@@ -138,6 +138,7 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 ## Decision log
 | Date | Decision | By |
 |---|---|---|
+| 2026-11-05 | unknowns-04 (age): Blob may echo the visitor's options while declining and may say Anderson is past 30 (interests.md); only an invented exact or narrowed age fails. | Anderson |
 | 2026-11-05 | Eval gate PASS on prompt p5-v5 (haiku-low): 54/54, every category 100%, $0.017 (Anderson's spend run). p5-v4 had scored 51/54; round 3 added no-emoji, no-restated-guesses and no-invented-preferences rules plus a universal no_emoji grader check. | orchestrator |
 | 2026-11-05 | Long multi-part questions: Blob answers the first part or two within the normal reply length, then offers the rest as follow-up questions the visitor can ask, instead of raising the token limit (settles the tone-04 question deferred since P4). | Anderson |
 | 2026-11-05 | First spend eval in this repo (p5-v3, haiku-low): 47/54, gate FAIL. The four cases for this change pass (factual-13/14, unknowns-09/10); the seven failures predate it (stale unknowns cases after P5.5-16/17, three small prompt slips, tone-04). Fixed in P5.5-23 before the P5.5 gate. | orchestrator |
@@ -253,3 +254,4 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 2026-11-05 · P5.5-13d · done (report only): PDF text equals resume.md, both PII-clean. Three KB conflicts recorded as DISCREPANCIES D-16, D-17 and D-18 for Anderson.
 2026-11-05 · P5.5-08b · merged (opus APPROVE): nav says Experience → #experience with a briefcase icon; Blob's allowlist (server and client) switched to #experience; PROMPT_VERSION p5-v6; #experiences alias kept for old live-site links. Full tier 42154783012 green.
 2026-11-05 · task/ci-pw-container · merged: E2E and Lighthouse run in mcr.microsoft.com/playwright (browsers preinstalled; no apt), after the Ubuntu mirror stalled installs three times and the kill-and-retry left apt holding its lock. Full tier 42156129671 green (5m10s); this run is also the P5.5 gate's CI criterion.
+2026-11-05 · P5.5 GATE · PASSED. CI full tier 42156129671 green (Playwright container) and 42156965278 on p5-v7; Preview header check passed (Anderson); live Preview chat works, incl. injection redirect and #experience; spend eval on p5-v7 with final grading: gate PASS twice (52/54, 51/54; non-gated misses only). Merged P5.5-23c (prompt p5-v7: markdown links for sections, generic no-echo example). Bypass value and a test API key were shown in this session's transcript; Anderson to rotate both.
