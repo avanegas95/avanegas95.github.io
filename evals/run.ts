@@ -30,7 +30,13 @@ import {
   spendAllowed,
 } from "./lib/budget.ts";
 import { parseCasesYaml, type EvalCase } from "./lib/case-schema.ts";
-import { resultFileName, summarize, type RawResult } from "./lib/report.ts";
+import {
+  casePassed,
+  resultFileName,
+  summarize,
+  type RawResult,
+} from "./lib/report.ts";
+import type { CaseRun } from "./lib/runner.ts";
 import type { EvalSummary } from "./lib/summary-schema.ts";
 
 type Runner = typeof import("./lib/runner.ts");
@@ -136,6 +142,32 @@ export function parseArgs(argv: readonly string[]): Args {
 
 const usd = (micro: number): string => `$${(micro / 1_000_000).toFixed(4)}`;
 const pct = (r: number): string => `${(r * 100).toFixed(1)}%`;
+
+/**
+ * One live line per finished case: position, config, id, verdict, failed check ids and the
+ * running spend. Ids and check names only, never reply text (transcripts stay in results/).
+ */
+export function progressLine(
+  n: number,
+  total: number,
+  label: string,
+  run: CaseRun,
+  spentMicroUsd: number,
+): string {
+  const width = String(total).length;
+  const pos = `[${String(n).padStart(width, " ")}/${total}]`;
+  let verdict: string;
+  if (run.skipped) verdict = `SKIP (${run.skipped})`;
+  else if (run.errorClass) verdict = `ERROR (${run.errorClass})`;
+  else if (casePassed(run)) verdict = "PASS";
+  else {
+    const failed = run.grade.checks.filter((c) => !c.pass).map((c) => c.id);
+    if (run.grade.needsJudge && run.judge?.faithful !== true)
+      failed.push("judge");
+    verdict = `FAIL (${failed.join(", ")})`;
+  }
+  return `${pos} ${label} ${run.id}: ${verdict} · ${usd(spentMicroUsd)}`;
+}
 
 function printSummary(
   log: (l: string) => void,
@@ -268,6 +300,7 @@ export async function main(
   const client = await deps.createClient(env["ANTHROPIC_API_KEY"] as string);
   const meter = new SpendMeter(args.maxUsd);
   const runAt = new Date(deps.now()).toISOString();
+  const done = new Map<unknown, number>();
   const { results, budgetStopped, aborted } = await runner.runEval({
     client,
     configs,
@@ -277,6 +310,18 @@ export async function main(
     kb,
     meter,
     now: deps.now,
+    onCase: (cfg, run) => {
+      done.set(cfg, (done.get(cfg) ?? 0) + 1);
+      deps.log(
+        progressLine(
+          done.get(cfg) as number,
+          cases.length,
+          runner.configLabel(cfg),
+          run,
+          meter.spentMicroUsd,
+        ),
+      );
+    },
   });
 
   const kbSha = kbSha256(kb);
