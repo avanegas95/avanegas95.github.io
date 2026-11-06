@@ -223,6 +223,24 @@ const rows: Row[] = [
   ],
   [
     "redirects",
+    "offer: want to know how Anderson ... (off_topic-04)",
+    mkCase({ redirects: true }, "off_topic"),
+    mkReply(
+      "Weather forecasts are outside my patch! Want to know how Anderson tests robots instead?",
+    ),
+    true,
+  ],
+  [
+    "redirects",
+    "offer about another topic, no Anderson, still fails",
+    mkCase({ redirects: true }, "off_topic"),
+    mkReply(
+      "Weather is outside my patch. Want to know how clouds form? Try a weather service.",
+    ),
+    false,
+  ],
+  [
+    "redirects",
     "offer: want to know",
     mkCase({ redirects: true }, "off_topic"),
     mkReply("Want to know about Anderson instead?"),

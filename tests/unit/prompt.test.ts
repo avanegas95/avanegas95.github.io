@@ -41,7 +41,7 @@ describe("buildSystemPrompt", () => {
     expect(p).toContain("<mood>");
     expect(p).toContain("<knowledge_base>\n");
     expect(p).toContain("\n</knowledge_base>");
-    expect(PROMPT_VERSION).toBe("p5-v3");
+    expect(PROMPT_VERSION).toBe("p5-v4");
     expect(p).toContain("confused for off-topic or unknown questions");
     expect(p).toContain("curious for open-ended or clarifying questions");
     expect(p).not.toContain("when a question is unclear");
@@ -82,12 +82,12 @@ describe("buildSystemPrompt", () => {
   });
 });
 
-describe("p5-v3 behaviour rules", () => {
+describe("p5-v4 behaviour rules", () => {
   const behaviour = () =>
     buildSystemPrompt(realKb()).split("<knowledge_base>")[0]!;
 
-  it("is version p5-v3", () => {
-    expect(PROMPT_VERSION).toBe("p5-v3");
+  it("is version p5-v4", () => {
+    expect(PROMPT_VERSION).toBe("p5-v4");
   });
 
   it("points to #contact and allows the contact form (D-13 resolved)", () => {
@@ -140,6 +140,48 @@ describe("p5-v3 behaviour rules", () => {
     expect(b).toContain("four short sentences");
     expect(b).toContain("five short bullets");
     expect(b).toContain("one short line per part");
+  });
+
+  it("reconciles long multi-part questions into one rule: first parts, then follow-ups", () => {
+    const b = behaviour();
+    const rules = b.split("\n").filter((l) => /multi-part/i.test(l));
+    expect(rules).toHaveLength(1);
+    expect(rules[0]).toMatch(/first part or two/);
+    expect(rules[0]).toMatch(/within the length limit/);
+    expect(rules[0]).toMatch(/follow-up questions the visitor can ask/);
+    expect(b).not.toMatch(/offer to go deeper/);
+  });
+
+  it("has the partial-answer rule", () => {
+    const rule = behaviour()
+      .split("\n")
+      .find((l) => /only part of an answer/i.test(l))!;
+    expect(rule).toMatch(/give that part/);
+    expect(rule).toContain(`"Blob doesn't know" wording for the rest`);
+  });
+
+  it("has the no-repeat-guesses rule", () => {
+    const rule = behaviour()
+      .split("\n")
+      .find((l) => /never repeat the visitor's guesses/i.test(l))!;
+    expect(rule).toMatch(/don't know a fact/);
+    expect(rule).toMatch(/ages, numbers, ranges, names/);
+  });
+
+  it("has the who-did-what-with-whom rule", () => {
+    const rule = behaviour()
+      .split("\n")
+      .find((l) => /who did something with whom/i.test(l))!;
+    expect(rule).toMatch(/only when the knowledge base pairs them/);
+  });
+
+  it("has the no-persona rule", () => {
+    const rule = behaviour()
+      .split("\n")
+      .find((l) => /requested persona/i.test(l))!;
+    expect(rule).toMatch(/voice or style/);
+    expect(rule).toMatch(/not even one word/);
+    expect(rule).toMatch(/before redirecting/);
   });
 });
 
