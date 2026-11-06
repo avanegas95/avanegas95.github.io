@@ -11,7 +11,8 @@
 **Session 5 (2026-11-06, orchestrator):** Anderson: work the autonomous backlog; after independent review and green CI, push to main (production); keep feat/blob as the Preview integration branch (task branches cut from it, merge into it, then fast-forward main). Old branches and stashes deleted on his OK.
 - Merged and live on avanegas.com (all reviewed; full CI tier green on the final tip, Lighthouse included): **P6-05** CI fast tier on pushes to main. **P6-06** `robots.txt` (Disallow /api/ and /dev/) and `@astrojs/sitemap` (9 public URLs). **P6-07** client links bare allowed `#` anchors (no scrubber or prompt change; still p5-v8). **P6-08** eval judge fallback for `redirects` and tone-04's follow-up offer (budget bound includes the criterion calls). **P6-09** blog post page: 3xl reading column, 2:1 cover with exact `sizes`, placeholder caption removed, dates formatted in UTC (local non-UTC builds showed the day before).
 - Production checked after the push: legacy URLs, resume, robots, sitemap 200, no noindex; a real Blob message in production linked Skills, Experience and Projects.
-- **Waiting on Anderson:** submit `https://avanegas.com/sitemap-index.xml` in Search Console; run the spend eval once to see P6-08's judge fallback on real replies; D-19; content items (E).
+- Later the same day: **P6-10** eval prints a live line per case. Spend eval on p5-v8 with the P6-08 fallback: 54/54, gate PASS, $0.018 (tone-04 passed via the judge). **P6-11** D-19 resolved by Anderson: Blob offers the resume PDF (no password; he rewrote the faq answer and accepted the voice lock). The path is an exact allowed link on server and client, prompt **p5-v9**, and the server keeps an exact bare path as text (it had read `Resume.pdf` as a domain). Opus-reviewed twice; full tier green; live, and a real production message linked the PDF and LinkedIn.
+- **Waiting on Anderson:** Search Console: verify the avanegas.com Domain property (TXT record added and visible on public DNS), then submit `sitemap-index.xml`; spend eval on p5-v9; content items (E).
 
 **Session 4 (2026-11-06, orchestrator):**
 - Merged into feat/blob (squashed, opus-reviewed): **P6-01** real `#skills` anchor on the About tool list, in ALLOWED_SITE_PATHS and SITE_PATHS (prompt **p5-v8**; the scrubber is unchanged, and `fix/same-site-link-label` stays unmerged). **P6-02** bubble: Previous / Next cycle the turns in place instead of stacking below; three thinking dots; no "Show more" before any text (the pop-in transform overflowed the clip).
@@ -143,6 +144,8 @@ Scope: `docs/tasks/P5.5/_proposal.md`; table: `_proposed-plan.md`; Anderson's to
 | P6-07 | Client links bare allowed `#` anchors | opus | opus | merged |
 | P6-08 | Eval judge fallback for two brittle checks | sonnet | opus | merged |
 | P6-09 | Blog post page layout; UTC dates | sonnet | sonnet | merged |
+| P6-10 | Eval live per-case progress | orchestrator | sonnet | merged |
+| P6-11 | Resume PDF link (D-19), p5-v9 | opus | opus | merged |
 
 Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNAME`, the Pages workflow or Vercel domain settings, until Anderson approves in a message. Then:
 - write and review `docs/CUTOVER.md` (Vercel domain + DNS steps, pre/post checks, rollback to GitHub Pages);
@@ -162,7 +165,7 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 
 **B. Site and SEO**
 - [x] `robots.txt` and a sitemap (P6-06). - [ ] Submit `https://avanegas.com/sitemap-index.xml` in Search Console. **[A-does]**
-- [ ] D-19: should Blob offer the resume PDF (the site serves it) or keep pointing to LinkedIn? **Anderson decides.**
+- [x] D-19: Blob offers the resume PDF (P6-11).
 - [x] Blog post pages reworked (P6-09).
 
 **C. Blob quality**
