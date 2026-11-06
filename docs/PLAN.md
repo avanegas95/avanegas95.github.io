@@ -3,7 +3,11 @@
 > The live plan for porting Blob into this repo. Only the orchestrator edits this file. Product decisions are in `docs/SCOPE.md` (carried over from portfolio-v3; read it as applying to this repo). Agent rules are in `CLAUDE.md`. Briefs go in `docs/tasks/<phase>/<task-id>.md`.
 > History for P0–P4 (all PASSED) and the private review material (security review, red-team checklist, eval reports, research) are in the **private** sibling repo `../portfolio-v3` (local path `/Users/anderson/Github Projects/portfolio-v3`). Read them there and never copy them into this public repo.
 
-## ▶ Current phase: **P6: Production on Vercel and domain cutover** · Status: `waiting on Anderson's explicit approval`. P5.5 PASSED 2026-11-05. P5 PASSED 2026-10-24.
+## ▶ Current phase: **P6: Production on Vercel and domain cutover** · Status: `Phase 4 (settle)`: avanegas.com served by Vercel since 2026-11-06. P5.5 PASSED 2026-11-05. P5 PASSED 2026-10-24.
+
+**Cutover (2026-11-06, approved by Anderson):** feat/blob merged into main (Pages workflow manual-only); Production built on Vercel; avanegas.com plus www (308 to the apex) attached; Anderson switched the Namecheap A and CNAME records. Post-DNS checks pass: all pages and legacy URLs 200 (`/orbithop` and `/privacy` without a slash 200), `app-ads.txt` byte-identical, resume = public-safe PDF, http→https and www→apex 308, every security header present, no noindex, MX/SPF unchanged, and a real Blob message streams in production. p5-v8 spend eval: gate PASS (50/54). Upstash stays shared between Preview and Production (Anderson: limited environment); Anthropic keys rotated and per-environment.
+- **Next (Phase 4, about 2 weeks):** watch runtime errors and spend; check the Search Console property and the AdMob app-ads.txt status; then retire `deploy.yml` and `CNAME`, remove the Pages custom domain, and make the repo private. `www` TTL is still 30 min.
+- **Follow-ups:** no `robots.txt` or sitemap (the old site had none either; worth adding for Search Console). D-19 (resume download). Brittle eval checks off_topic-03 and tone-04 (handoff item 2).
 
 **Session 4 (2026-11-06, orchestrator):**
 - Merged into feat/blob (squashed, opus-reviewed): **P6-01** real `#skills` anchor on the About tool list, in ALLOWED_SITE_PATHS and SITE_PATHS (prompt **p5-v8**; the scrubber is unchanged, and `fix/same-site-link-label` stays unmerged). **P6-02** bubble: Previous / Next cycle the turns in place instead of stacking below; three thinking dots; no "Show more" before any text (the pop-in transform overflowed the clip).
@@ -128,7 +132,7 @@ Scope: `docs/tasks/P5.5/_proposal.md`; table: `_proposed-plan.md`; Anderson's to
 |---|---|---|---|---|
 | P6-01 | Real `#skills` anchor + allowlist (p5-v8) | opus | opus | merged |
 | P6-02 | Bubble Previous / Next pager, thinking dots, no early Show more | opus | opus | merged |
-| P6-03 | `docs/CUTOVER.md` | opus | Anderson | review |
+| P6-03 | `docs/CUTOVER.md` | opus | Anderson | approved, executed through Phase 3 |
 
 Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNAME`, the Pages workflow or Vercel domain settings, until Anderson approves in a message. Then:
 - write and review `docs/CUTOVER.md` (Vercel domain + DNS steps, pre/post checks, rollback to GitHub Pages);
