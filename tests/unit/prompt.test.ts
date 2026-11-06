@@ -184,8 +184,11 @@ describe("p5-v7 behaviour rules", () => {
   });
 
   it("the no-repeat-guesses rule has a concrete example", () => {
+    // The example must not copy an eval case (unknowns-04), or the eval only
+    // proves memorisation.
+    expect(behaviour()).not.toMatch(/thirties|closer to forty/i);
     expect(behaviour()).toContain(
-      'say only that Blob doesn\'t know his age; never write "thirties" or "forty".',
+      'for "Is he 35 or 40?", say only that Blob doesn\'t know his age, without naming any number or range.',
     );
   });
 
