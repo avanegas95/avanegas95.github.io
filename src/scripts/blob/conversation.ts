@@ -132,10 +132,12 @@ export function attachConversation(
     const live = (): boolean => inflight === ctrl;
     let buffer = "";
     let started = false;
-    const render = (): void => {
-      reply.setMarkdown(buffer);
+    // Frames render a partial reply; done renders the final one.
+    const render = (partial = false): void => {
+      reply.setMarkdown(buffer, partial);
       bubble.sync();
     };
+    const renderPartial = (): void => render(true);
     const fail = (code: ClientErrorCode): void => {
       if (!live()) return;
       cancelFrame();
@@ -162,7 +164,7 @@ export function attachConversation(
               talking(true);
             }
             buffer += t;
-            paint = render;
+            paint = renderPartial;
             frame ||= requestAnimationFrame(flush);
           },
           onReset() {

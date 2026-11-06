@@ -307,6 +307,139 @@ describe("parseMarkdown: everything else is literal text", () => {
   });
 });
 
+describe("parseMarkdown: bare section anchors (P6-07)", () => {
+  const A = (h: string): Inline => link(h, txt(h));
+
+  it.each<[string, Block[]]>([
+    ["See #experience.", [P(txt("See "), A("#experience"), txt("."))]],
+    ["(#skills)", [P(txt("("), A("#skills"), txt(")"))]],
+    ["#home", [P(A("#home"))]],
+    [
+      "#about, #projects; #contact! #skills? #home:",
+      [
+        P(
+          A("#about"),
+          txt(", "),
+          A("#projects"),
+          txt("; "),
+          A("#contact"),
+          txt("! "),
+          A("#skills"),
+          txt("? "),
+          A("#home"),
+          txt(":"),
+        ),
+      ],
+    ],
+    ["**#skills**", [P({ t: "strong", c: [A("#skills")] })]],
+    ["- see #projects", [{ t: "ul", items: [[txt("see "), A("#projects")]] }]],
+    ["see\n#about", [P(txt("see "), A("#about"))]],
+  ])("%j links", (src, expected) => {
+    expect(parseMarkdown(src)).toEqual(expected);
+  });
+
+  it.each([
+    "#education",
+    "#experiences",
+    "a#skills",
+    "foo#skills",
+    "#skills-x",
+    "#skills_x",
+    "##skills",
+    "#Skills",
+    "#skills/",
+    "#skills'",
+    "\\#skills",
+    "/blog/",
+    "see / and /orbithop/",
+    "#",
+  ])("%j stays text", (src) => {
+    expect(parseMarkdown(src)).toEqual([P(txt(src))]);
+  });
+
+  it("a non-matching # leaves the following syntax alone (as before P6-07)", () => {
+    expect(parseMarkdown("#_em_ ok")).toEqual([
+      P(txt("#"), { t: "em", c: [txt("em")] }, txt(" ok")),
+    ]);
+    expect(parseMarkdown(` #${GH}`)).toEqual([P(txt("#"), link(GH, txt(GH)))]);
+    expect(parseMarkdown("#**b**")).toEqual([
+      P(txt("#"), { t: "strong", c: [txt("b")] }),
+    ]);
+  });
+
+  it("not inside inline code or a code fence", () => {
+    expect(parseMarkdown("`#skills`")).toEqual([
+      P({ t: "code", v: "#skills" }),
+    ]);
+    expect(parseMarkdown("```\n#skills\n```")).toEqual([
+      P(txt("``` #skills ```")),
+    ]);
+  });
+
+  it("an existing [label](#anchor) stays one link with its label", () => {
+    expect(parseMarkdown("[his work](#experience)")).toEqual([
+      P(link("#experience", txt("his work"))),
+    ]);
+    expect(parseMarkdown("[#skills](#skills)")).toEqual([
+      P(link("#skills", txt("#skills"))),
+    ]);
+  });
+
+  it("an unfinished [label](#anchor target is not linked", () => {
+    expect(parseMarkdown("see [his work](#experience")).toEqual([
+      P(txt("see [his work](#experience")),
+    ]);
+  });
+
+  it("renders like an existing same-site link", () => {
+    const host = document.createElement("div");
+    host.append(renderMarkdown(parseMarkdown("See #experience.")));
+    const a = host.querySelector("a")!;
+    expect(a.getAttribute("href")).toBe("#experience");
+    expect(a.textContent).toBe("#experience");
+    expect(Array.from(a.attributes).map((x) => x.name)).toEqual(["href"]);
+    expect(host.textContent).toBe("See #experience.");
+  });
+
+  it("streaming: a token at the end of a partial chunk waits for its boundary", () => {
+    const linked = (src: string, partial: boolean): boolean =>
+      allInlines(parseMarkdown(src, { partial })).some((x) => x.t === "link");
+    expect(linked("see #skil", true)).toBe(false);
+    expect(linked("see #skills", true)).toBe(false);
+    expect(linked("see #skills ", true)).toBe(true);
+    expect(linked("see #skills.", true)).toBe(true);
+    expect(linked("see #skills and more", true)).toBe(true);
+    // Only the tail of the reply is held back.
+    expect(linked("see #skills\n\nnext #ab", true)).toBe(true);
+    expect(linked("- #about\n- #proj", true)).toBe(true);
+    expect(linked("**#skills**", true)).toBe(true);
+    // The final render links a token at the very end, like a one-shot render.
+    expect(linked("see #skills", false)).toBe(true);
+    const full = "see #skills and more";
+    expect(parseMarkdown(full, { partial: true })).toEqual(parseMarkdown(full));
+    expect(parseMarkdown(full, { partial: false })).toEqual(
+      parseMarkdown(full),
+    );
+  });
+
+  it("streaming: partial prefixes stay safe and the final render equals one-shot", () => {
+    const full = "Check #experience, then (#skills) and #projects.";
+    for (let i = 0; i <= full.length; i++) {
+      for (const x of allInlines(
+        parseMarkdown(full.slice(0, i), { partial: true }),
+      )) {
+        if (x.t === "link") {
+          expect(["#experience", "#skills", "#projects"]).toContain(x.href);
+          expect(x.c).toEqual([txt(x.href)]);
+        }
+      }
+    }
+    expect(parseMarkdown(full, { partial: false })).toEqual(
+      parseMarkdown(full),
+    );
+  });
+});
+
 const CORPUS = [
   "Anderson is a **Staff SQA Engineer** in the Boston area.",
   `You can reach him on [LinkedIn](${LI}) or [GitHub](${GH}).`,
@@ -338,11 +471,12 @@ const CORPUS = [
   "Escapes \\*x\\* and \\[y\\]",
   '[a](https://github.com/avanegas95 "title")',
   "Privacy: [policy](/privacy/) and [home](/)",
+  "Bare anchors: see #experience, (#skills) and #projects.",
 ];
 
 describe("streaming prefixes", () => {
-  it("has a 30-sample corpus", () => {
-    expect(CORPUS).toHaveLength(30);
+  it("has a 31-sample corpus", () => {
+    expect(CORPUS).toHaveLength(31);
   });
 
   it("every prefix of every sample parses and renders without throwing", () => {
@@ -376,9 +510,9 @@ describe("linear-ish time (scaling ratio, not wall clock)", () => {
   // its 10 x 2 KB, above CPU timer jitter; real runs are well over it.
   const FLOOR_MS_PER_CHAR = 0.25 / (10 * 2048);
   // Per-character cost of a 20 KB input vs a 2 KB input. Linear ≈ 1, quadratic ≈ 10.
-  function perCharRatio(unit: string): number {
+  function perCharRatio(unit: string, bigSize = 20480): number {
     const small = unit.repeat(Math.ceil(2048 / unit.length));
-    const big = unit.repeat(Math.ceil(20480 / unit.length));
+    const big = unit.repeat(Math.ceil(bigSize / unit.length));
     // CPU time, not wall clock: a descheduled run says nothing about cost.
     // Best of 3 runs.
     const time = (s: string, reps: number): number => {
@@ -410,9 +544,22 @@ describe("linear-ish time (scaling ratio, not wall clock)", () => {
     "https://github.com/ ",
     "- ",
     "*a ",
+    "#",
+    "#skill",
+    "#skills ",
+    "(#skills)",
   ])("%j repeated", (unit) => {
     expect(perCharRatio(unit)).toBeLessThan(5);
   });
+
+  it.each(["#", "#skill", "#skills "])(
+    "50k chars of %j repeated, also while streaming",
+    (unit) => {
+      expect(perCharRatio(unit, 51200)).toBeLessThan(5);
+      const big = unit.repeat(Math.ceil(51200 / unit.length));
+      expect(() => parseMarkdown(big, { partial: true })).not.toThrow();
+    },
+  );
 });
 
 describe("renderMarkdown (happy-dom)", () => {

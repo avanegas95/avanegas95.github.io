@@ -1,11 +1,13 @@
 // Tiny, XSS-safe markdown subset for Blob's replies (SCOPE §4.3, §6.6). Parsing yields a small
 // AST; rendering builds DOM with createElement/createTextNode only, never HTML strings.
 // Supported: paragraphs, one-level `-`/`*`/`1.` lists, **strong**, *em*/_em_, `code`,
-// [label](url) and bare https:// URLs. Everything else (HTML, headings, images, tables, quotes,
-// code fences, reference links and definitions, <autolinks>) stays literal text.
+// [label](url), bare https:// URLs and bare allowed `#` anchors. Everything else (HTML, headings,
+// images, tables, quotes, code fences, reference links and definitions, <autolinks>) stays text.
 // The caller re-parses the whole reply on every streamed delta, so any prefix must parse, and
 // parsing is linear: closers come from precomputed "next index" tables, never regex backtracking.
-import { safeHref } from "./links";
+// While streaming ({ partial: true }) a bare anchor at the very end of the reply waits for its
+// boundary, so `#skil` -> `#skills` never flashes; the final render is the one-shot render.
+import { SITE_PATHS, safeHref } from "./links";
 
 export type Inline =
   | { t: "text"; v: string }
@@ -56,7 +58,12 @@ function definition(line: string): { targetNext: boolean } | null {
   return { targetNext: line.slice(close + 2).trim() === "" };
 }
 
-export function parseMarkdown(src: string): Block[] {
+export function parseMarkdown(
+  src: string,
+  opts: { partial?: boolean } = {},
+): Block[] {
+  // The reply's last token may still be growing: only when streaming and not after whitespace.
+  const openTail = opts.partial === true && !/\s$/.test(src);
   const blocks: Block[] = [];
   let para: Line[] | null = null;
   let list: { t: "ul" | "ol"; items: Line[][] } | null = null;
@@ -68,9 +75,17 @@ export function parseMarkdown(src: string): Block[] {
     if (list) flush();
     (para ??= []).push({ text, literal: true });
   };
-  const flush = (): void => {
-    if (para) blocks.push({ t: "p", c: parseLines(para) });
-    if (list) blocks.push({ t: list.t, items: list.items.map(parseLines) });
+  const flush = (tail = false): void => {
+    if (para) blocks.push({ t: "p", c: parseLines(para, tail) });
+    if (list) {
+      const last = list.items.length - 1;
+      blocks.push({
+        t: list.t,
+        items: list.items.map((item, k) =>
+          parseLines(item, tail && k === last),
+        ),
+      });
+    }
     para = null;
     list = null;
   };
@@ -106,12 +121,15 @@ export function parseMarkdown(src: string): Block[] {
       (para ??= []).push({ text: line, literal: false });
     }
   }
-  flush();
+  flush(openTail);
   return blocks;
 }
 
-/** Joins lines with a space; runs of normal lines get inline parsing, literal lines don't. */
-function parseLines(lines: Line[]): Inline[] {
+/**
+ * Joins lines with a space; runs of normal lines get inline parsing, literal lines don't.
+ * `openTail`: these lines end the streamed reply, so their last token may be unfinished.
+ */
+function parseLines(lines: Line[], openTail = false): Inline[] {
   const segments: Line[] = [];
   for (const line of lines) {
     const last = segments[segments.length - 1];
@@ -122,7 +140,9 @@ function parseLines(lines: Line[]): Inline[] {
   segments.forEach((seg, i) => {
     if (i > 0) out.push({ t: "text", v: " " });
     if (seg.literal) out.push({ t: "text", v: seg.text });
-    else out.push(...parseInline(seg.text));
+    else {
+      out.push(...parseInline(seg.text, openTail && i === segments.length - 1));
+    }
   });
   return mergeText(out);
 }
@@ -159,6 +179,10 @@ function isWordChar(ch: string | undefined): boolean {
 
 const URL_CHAR = /[A-Za-z0-9\-._~:/?#@!$&'()+,;=%]/;
 const TRAILING_PUNCT = ".,;:!?'\"_";
+// Bare `#` anchors: only the allowed in-page sections, matched exactly on a token boundary.
+const ANCHORS = SITE_PATHS.filter((p) => p[0] === "#");
+const ANCHOR_CHAR = /[A-Za-z0-9_-]/;
+const ANCHOR_END = ".,;:!?)";
 
 type Flags = {
   strong: boolean;
@@ -167,7 +191,7 @@ type Flags = {
   link: boolean;
 };
 
-function parseInline(s: string): Inline[] {
+function parseInline(s: string, openTail: boolean): Inline[] {
   const n = s.length;
   const at = (j: number): string | undefined =>
     j >= 0 && j < n ? s[j] : undefined;
@@ -329,6 +353,37 @@ function parseInline(s: string): Inline[] {
           i = shape.paren + 1;
           continue;
         }
+      } else if (
+        ch === "#" &&
+        !flags.link &&
+        (i === start || prev === undefined || isSpace(prev) || prev === "(") &&
+        // Not the target of an unfinished `[label](` while streaming.
+        !(prev === "(" && at(i - 2) === "]")
+      ) {
+        let j = i + 1;
+        while (j < end && ANCHOR_CHAR.test(s[j]!)) j++;
+        const raw = s.slice(i, j);
+        const next = at(j);
+        const bounded =
+          j === end
+            ? !(openTail && j === n)
+            : isSpace(next) || ANCHOR_END.includes(next!);
+        const target = bounded && ANCHORS.includes(raw) ? safeHref(raw) : null;
+        if (target) {
+          emit({
+            t: "link",
+            href: target.href,
+            external: target.external,
+            c: [{ t: "text", v: raw }],
+          });
+          i = j;
+          continue;
+        }
+        // No match: only the `#` is text; the rest may start other syntax (`#_em_`, `#https://`).
+        // Still linear: the run after `#` holds no `#`, so no character is scanned here twice.
+        buf += "#";
+        i++;
+        continue;
       } else if (
         (ch === "h" || ch === "H") &&
         !flags.link &&

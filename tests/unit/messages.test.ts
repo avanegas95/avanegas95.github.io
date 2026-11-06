@@ -35,6 +35,14 @@ describe("appendAssistant", () => {
     expect(m.el.querySelector(".ba-text")?.childNodes.length).toBe(0);
   });
 
+  it("holds back a bare #anchor at the end of a partial render only", () => {
+    const m = appendAssistant(log);
+    m.setMarkdown("See #skills", true);
+    expect(m.el.querySelector("a")).toBeNull();
+    m.setMarkdown("See #skills");
+    expect(m.el.querySelector("a")?.getAttribute("href")).toBe("#skills");
+  });
+
   it("renders no emoji badge and offers no mood glyph API", () => {
     const m = appendAssistant(log);
     m.setMarkdown("Hello");

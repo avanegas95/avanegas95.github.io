@@ -12,7 +12,8 @@ function bubble(log: HTMLElement, role: "user" | "assistant"): HTMLElement {
 }
 
 export function appendAssistant(log: HTMLElement): {
-  setMarkdown(src: string): void;
+  /** `partial`: more deltas may follow, so the reply's last token may be unfinished. */
+  setMarkdown(src: string, partial?: boolean): void;
   setError(msg: Message): void;
   el: HTMLElement;
 } {
@@ -33,8 +34,10 @@ export function appendAssistant(log: HTMLElement): {
 
   return {
     el,
-    setMarkdown(src) {
-      body.replaceChildren(renderMarkdown(parseMarkdown(src), doc));
+    setMarkdown(src, partial = false) {
+      body.replaceChildren(
+        renderMarkdown(parseMarkdown(src, { partial }), doc),
+      );
     },
     setError(msg) {
       const p = doc.createElement("p");

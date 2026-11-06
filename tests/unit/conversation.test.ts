@@ -337,6 +337,29 @@ describe("empty reply", () => {
     });
   }
 
+  it("a bare #anchor at the end of a streamed frame links only once its boundary or done arrives", () => {
+    submit("hi");
+    const reply = current()!;
+    last().h.onDelta("See #skil");
+    frame();
+    last().h.onDelta("ls");
+    frame();
+    expect(reply.querySelector("a")).toBeNull();
+    last().h.onDelta(" or #about");
+    frame();
+    expect(
+      Array.from(reply.querySelectorAll("a")).map((a) =>
+        a.getAttribute("href"),
+      ),
+    ).toEqual(["#skills"]);
+    last().h.onDone("ok");
+    expect(
+      Array.from(reply.querySelectorAll("a")).map((a) =>
+        a.getAttribute("href"),
+      ),
+    ).toEqual(["#skills", "#about"]);
+  });
+
   it("a normal reply is unaffected", () => {
     submit("hi");
     last().h.onDelta("Hello!");
