@@ -64,6 +64,10 @@ describe("quality.yml tiers", () => {
     expect(jobBlock("lighthouse")).toContain("if: github.event_name != 'push'");
   });
 
+  it("pushes to main and feat/blob trigger the workflow", () => {
+    expect(yml).toMatch(/\n {2}push:\n {4}branches: \[main, feat\/blob\]\n/);
+  });
+
   it("each E2E job runs only its own browser", () => {
     expect(step("E2E (includes axe)")).toContain(
       "--project=${{ matrix.browser }}",

@@ -1,10 +1,10 @@
 name: quality
 
-# Internal PR gates for feat/blob (CLAUDE.md rules 5, 7, 8, 12). Nothing here deploys or
+# Internal PR gates for feat/blob and main, the production branch since the P6 cutover (CLAUDE.md rules 5, 7, 8, 12). Nothing here deploys or
 # publishes: results are artifacts only, no secrets are referenced, and the real Anthropic API
 # is never called (E2E intercepts /api/chat; unit tests mock the SDK).
 #
-# Pushes to feat/blob run the fast tier: everything except firefox/webkit E2E and Lighthouse.
+# Pushes to main and feat/blob run the fast tier: everything except firefox/webkit E2E and Lighthouse.
 # Pull requests and manual runs (`gh workflow run quality --ref feat/blob`) run the full tier,
 # which is the rule 8 gate.
 #
@@ -14,7 +14,7 @@ name: quality
 on:
   pull_request:
   push:
-    branches: [feat/blob]
+    branches: [main, feat/blob]
   workflow_dispatch:
 
 # Pushes: one group per SHA, so a later commit never cancels an earlier commit's run.
