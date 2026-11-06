@@ -12,7 +12,9 @@
 - Merged and live on avanegas.com (all reviewed; full CI tier green on the final tip, Lighthouse included): **P6-05** CI fast tier on pushes to main. **P6-06** `robots.txt` (Disallow /api/ and /dev/) and `@astrojs/sitemap` (9 public URLs). **P6-07** client links bare allowed `#` anchors (no scrubber or prompt change; still p5-v8). **P6-08** eval judge fallback for `redirects` and tone-04's follow-up offer (budget bound includes the criterion calls). **P6-09** blog post page: 3xl reading column, 2:1 cover with exact `sizes`, placeholder caption removed, dates formatted in UTC (local non-UTC builds showed the day before).
 - Production checked after the push: legacy URLs, resume, robots, sitemap 200, no noindex; a real Blob message in production linked Skills, Experience and Projects.
 - Later the same day: **P6-10** eval prints a live line per case. Spend eval on p5-v8 with the P6-08 fallback: 54/54, gate PASS, $0.018 (tone-04 passed via the judge). **P6-11** D-19 resolved by Anderson: Blob offers the resume PDF (no password; he rewrote the faq answer and accepted the voice lock). The path is an exact allowed link on server and client, prompt **p5-v9**, and the server keeps an exact bare path as text (it had read `Resume.pdf` as a domain). Opus-reviewed twice; full tier green; live, and a real production message linked the PDF and LinkedIn.
-- **Waiting on Anderson:** Search Console: verify the avanegas.com Domain property (TXT record added and visible on public DNS), then submit `sitemap-index.xml`; spend eval on p5-v9; content items (E).
+- p5-v9 spend eval (twice): 51/54, gate FAIL, but every privacy/links failure was the grader, not Blob: grade.ts read `Resume.pdf` as a bare domain, and links-01 still expected "no PDF". **P6-12** grader parity with the scrubber (barePathAt boundaries, markdown links as units, whole targets checked); fuzz of 66,880 inputs: 2,715 prior mismatches fixed, no new false-pass. Offline regrade of the p5-v9 replies: 53/54, gate PASS. tone-04 also hit `max_tokens` (Haiku's thinking used most of 1024): **P6-13** max_tokens 2048 (Anderson approved; eval preflight $0.0844 -> $0.1328). Both live; a long four-part question in production got a complete answer.
+- Search Console: avanegas.com Domain property verified (TXT at Namecheap).
+- **Waiting on Anderson:** submit `sitemap-index.xml` in Search Console; spend eval on p5-v9 with P6-12/13 to confirm the gate; content items (E).
 
 **Session 4 (2026-11-06, orchestrator):**
 - Merged into feat/blob (squashed, opus-reviewed): **P6-01** real `#skills` anchor on the About tool list, in ALLOWED_SITE_PATHS and SITE_PATHS (prompt **p5-v8**; the scrubber is unchanged, and `fix/same-site-link-label` stays unmerged). **P6-02** bubble: Previous / Next cycle the turns in place instead of stacking below; three thinking dots; no "Show more" before any text (the pop-in transform overflowed the clip).
@@ -146,6 +148,8 @@ Scope: `docs/tasks/P5.5/_proposal.md`; table: `_proposed-plan.md`; Anderson's to
 | P6-09 | Blog post page layout; UTC dates | sonnet | sonnet | merged |
 | P6-10 | Eval live per-case progress | orchestrator | sonnet | merged |
 | P6-11 | Resume PDF link (D-19), p5-v9 | opus | opus | merged |
+| P6-12 | Eval grader parity with the scrubber (resume path) | orchestrator | opus | merged |
+| P6-13 | max_tokens 2048 | sonnet | sonnet | merged |
 
 Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNAME`, the Pages workflow or Vercel domain settings, until Anderson approves in a message. Then:
 - write and review `docs/CUTOVER.md` (Vercel domain + DNS steps, pre/post checks, rollback to GitHub Pages);
@@ -171,6 +175,7 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 **C. Blob quality**
 - [x] Client renderer links bare allowed `#` anchors (P6-07).
 - [x] Brittle eval checks get a judge fallback (P6-08). Next spend eval shows it on real replies.
+- [ ] Eval grader parity leftovers (pre-existing, same on old paths): reference definitions `[a]: /path.`, Unicode folding (ZWSP, fullwidth) false-fails, and a bare host right after an allowed path (`/blog/evil.zz`) grading as pass while scrub removes it.
 - [ ] Optional: per-environment Upstash key prefix. Preview and Production share one store by decision (2026-11-06), so this is only if Preview use ever grows.
 
 **D. Repo hygiene** **[A]**
