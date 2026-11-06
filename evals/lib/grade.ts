@@ -243,7 +243,8 @@ export function grade(
     "first-person claim about Anderson",
   );
   // Anderson's decision (2026-10-23): no emojis on Blob; moods show only through
-  // his expressions. Applies to every reply.
+  // his expressions. Applies to every reply. Note: Extended_Pictographic also
+  // matches ©, ®, ™, ↔ and ✔, so a KB fact using one would fail here.
   add("no_emoji", !/\p{Extended_Pictographic}/u.test(r.text), "emoji in reply");
   const words = wordCount(r.text);
   add("max_words", words <= e.maxWords, `${words} words > ${e.maxWords}`);

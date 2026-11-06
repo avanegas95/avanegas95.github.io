@@ -9,7 +9,7 @@
 - **Merged:** 03, 04, 05, 06, 08a, 13a, 13b, 13c, 15, 16 (rounds 1–3), 17, 18, 19, 20, 21, 22, and task/projects-content (Paychira first-person page, inline screenshots, viewer, clickable cards, wider pages, prompt p5-v3).
 - **Launch scope:** Paychira is the only public project. Orbit Hop and State of Ecosystems are `public: false` until Anderson rewrites them after the Vercel cutover (Orbit Hop's video waits in `media-drafts/`).
 - **Open tasks, in order:**
-  - P5.5-23 merged; Anderson runs the spend eval on p5-v4 to confirm the gate.
+  - P5.5-23 done: spend eval on p5-v5 passed 54/54 (gate PASS).
   - P5.5-08b: nav: `#experience`, drop the `#experiences` alias in nav.ts, prompt.ts and links.ts.
   - P5.5-13d: re-brief as a resume facts check (report-only).
   - Then the P5.5 gate, then P6 on Anderson's approval.
@@ -138,6 +138,7 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 ## Decision log
 | Date | Decision | By |
 |---|---|---|
+| 2026-11-05 | Eval gate PASS on prompt p5-v5 (haiku-low): 54/54, every category 100%, $0.017 (Anderson's spend run). p5-v4 had scored 51/54; round 3 added no-emoji, no-restated-guesses and no-invented-preferences rules plus a universal no_emoji grader check. | orchestrator |
 | 2026-11-05 | Long multi-part questions: Blob answers the first part or two within the normal reply length, then offers the rest as follow-up questions the visitor can ask, instead of raising the token limit (settles the tone-04 question deferred since P4). | Anderson |
 | 2026-11-05 | First spend eval in this repo (p5-v3, haiku-low): 47/54, gate FAIL. The four cases for this change pass (factual-13/14, unknowns-09/10); the seven failures predate it (stale unknowns cases after P5.5-16/17, three small prompt slips, tone-04). Fixed in P5.5-23 before the P5.5 gate. | orchestrator |
 | 2026-11-05 | Project write-ups are in Anderson's own first person. A KB file with `firstPerson: true` gets a fixed label in Blob's prompt ("I/me/my mean Anderson"), and a new Voice rule tells Blob to restate it in the third person (PROMPT_VERSION p5-v3; eval cases factual-13/14). Paychira is the first. | Anderson |
@@ -247,3 +248,4 @@ Nothing in this phase starts, and no agent touches avanegas.com DNS, the v1 `CNA
 2026-11-05 · task/ci-parallel · merged: CI split into parallel jobs (checks, build, unit, E2E per browser, Lighthouse) with cached node_modules and browsers. Full tier 3m53s on run 42146899274 (was ~10.5 min); WebKit keeps 2 workers (timed out with 4).
 2026-11-05 · P5.5-23 · merged (opus CHANGES_REQUESTED → round 2 verified by orchestrator: tone-04 follow-up phrases word-bounded, factual-16 guard no longer flags a fair frisbee/ping-pong sentence). Prompt p5-v4. Full tier 42147383413 green on the merged tree (4m48s). Spend eval pending (Anderson).
 2026-11-05 · task/ci-retry · merged: a hung Playwright/apt install is killed after 4 min and retried once (the mirror stalled twice today). Full tier 42148006551 green.
+2026-11-05 · P5.5-23b · merged (opus APPROVE): prompt p5-v5. Full tier 42149524364 green (WebKit re-run after an apt mirror error). Spend eval 54/54, gate PASS.
