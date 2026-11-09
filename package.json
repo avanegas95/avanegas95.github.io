@@ -41,7 +41,7 @@
     "@playwright/test": "1.64.0",
     "@tailwindcss/vite": "^4.3.3",
     "@types/node": "^24.19.2",
-    "@vitest/coverage-v8": "5.0.4",
+    "@vitest/coverage-v8": "5.1.0",
     "astro": "^7.3.8",
     "eslint": "^10.12.0",
     "eslint-plugin-astro": "^3.2.1",
